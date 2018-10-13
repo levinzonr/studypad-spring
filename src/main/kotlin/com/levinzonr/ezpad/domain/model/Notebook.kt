@@ -1,4 +1,4 @@
-package com.levinzonr.ezpad.domain
+package com.levinzonr.ezpad.domain.model
 
 import java.util.*
 import javax.persistence.Entity
