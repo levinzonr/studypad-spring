@@ -1,6 +1,9 @@
 package com.levinzonr.ezpad.controllers
 
-import com.levinzonr.ezpad.domain.dto.UserDto
+import com.levinzonr.ezpad.domain.dto.FieldError
+import com.levinzonr.ezpad.domain.dto.UserResponse
+import com.levinzonr.ezpad.domain.errors.InvalidPayloadException
+import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.payload.CreateUserPayload
 import com.levinzonr.ezpad.security.EzpadUserDetails
 import com.levinzonr.ezpad.services.UserService
@@ -19,21 +22,18 @@ class UserRestController {
     private lateinit var userService: UserService
 
     @GetMapping("/me")
-    fun getCurrentUser(@AuthenticationPrincipal userDetails: EzpadUserDetails) : UserDto {
-        val user = userService.getUserById(userDetails.userId)
-                .orElseThrow { ChangeSetPersister.NotFoundException() }
-        return user.toDto()
+    fun getCurrentUser(@AuthenticationPrincipal userDetails: EzpadUserDetails) : UserResponse {
+        userDetails.userId?.let {
+            return userService.getUserById(it).toDto()
+        }
+        throw InvalidPayloadException(listOf(FieldError("uuid", "Auth id is missing")))
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createNewUser(@Valid @RequestBody payload: CreateUserPayload) : UserDto {
-        val user = userService.createUser(payload.email, payload.password, payload.firstName, payload.lastName ,null)
-        if (user == null) {
-            throw Exception("Error")
-        } else {
-            return user.toDto()
-        }
+    fun createNewUser(@Valid @RequestBody payload: CreateUserPayload) : UserResponse {
+        val user =  userService.createUser(payload.email, payload.password, payload.firstName, payload.lastName ,null)
+        return user.toDto()
     }
 
 }

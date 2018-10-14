@@ -1,6 +1,6 @@
 package com.levinzonr.ezpad.domain.model
 
-import com.levinzonr.ezpad.domain.dto.UserDto
+import com.levinzonr.ezpad.domain.dto.UserResponse
 import java.util.*
 import javax.persistence.*
 
@@ -22,8 +22,8 @@ data class User(
     val roles = setOf(UserRole.USER)
 
 
-    fun toDto(): UserDto {
-        return UserDto(
+    fun toDto(): UserResponse {
+        return UserResponse(
                 uuid = id.toString(),
                 email = email,
                 fistName = firstName,

@@ -1,5 +1,10 @@
 package com.levinzonr.ezpad.services
 
+import com.levinzonr.ezpad.domain.ApiMessages
+import com.levinzonr.ezpad.domain.dto.FieldError
+import com.levinzonr.ezpad.domain.errors.BadRequestException
+import com.levinzonr.ezpad.domain.errors.InvalidPayloadException
+import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,11 +21,12 @@ class UserServiceImpl : UserService {
     @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
 
+
     override fun createUser(email: String, password: String,
-                            firstName: String?, lastName: String?, photoUrl: String?): User? {
+                            firstName: String?, lastName: String?, photoUrl: String?): User {
 
         userRepository.findByEmail(email)?.let {
-            return null
+           throw BadRequestException(ApiMessages.ErrorMessages.ERROR_USER_EXISTS)
         }
 
         val user = User(
@@ -35,8 +41,11 @@ class UserServiceImpl : UserService {
         return userRepository.save(user)
     }
 
-    override fun getUserById(uuid: UUID?): Optional<User> {
-        return if (uuid != null) userRepository.findById(uuid)
-        else Optional.empty()
+    override fun getUserById(uuid: UUID): User {
+        return userRepository.findById(uuid)
+                .orElseThrow {
+                    NotFoundException.Builder(User::class)
+                        .buildWithId(uuid.toString())
+                }
     }
 }

@@ -1,6 +1,6 @@
 package com.levinzonr.ezpad.domain.dto
 
-data class UserDto(
+data class UserResponse(
         val uuid: String,
         val email: String,
         val fistName: String?,

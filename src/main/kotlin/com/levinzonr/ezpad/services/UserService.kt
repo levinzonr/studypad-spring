@@ -8,9 +8,9 @@ interface UserService {
     fun createUser(
             email: String, password: String,
             firstName: String?, lastName: String?,
-            photoUrl: String? ) : User?
+            photoUrl: String? ) : User
 
 
-    fun getUserById(uuid: UUID?) : Optional<User>
+    fun getUserById(uuid: UUID) : User
 
 }
