@@ -13,4 +13,7 @@ interface UserService {
 
     fun getUserById(uuid: UUID) : User
 
+    fun updateUserById(uuid: String, firstName: String?,
+                       lastName: String?, password: String?) : User
+
 }

@@ -29,6 +29,7 @@ class UserServiceImpl : UserService {
            throw BadRequestException(ApiMessages.ErrorMessages.ERROR_USER_EXISTS)
         }
 
+
         val user = User(
                 email = email,
                 password = passwordEncoder.encode(password),
@@ -47,5 +48,17 @@ class UserServiceImpl : UserService {
                     NotFoundException.Builder(User::class)
                         .buildWithId(uuid.toString())
                 }
+    }
+
+    override fun updateUserById(uuid: String, firstName: String?, lastName: String?, password: String?) : User {
+        val user = getUserById(UUID.fromString(uuid))
+        val newPassword = if (password != null) passwordEncoder.encode(password) else null
+        val updated = user.copy(
+                firstName = firstName ?: user.firstName,
+                lastName = lastName ?: user.lastName,
+                displayName = "$firstName $lastName",
+                password = newPassword ?: user.password
+        )
+        return userRepository.save(updated)
     }
 }

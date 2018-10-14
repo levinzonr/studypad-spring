@@ -22,7 +22,7 @@ data class User(
     val roles = setOf(UserRole.USER)
 
 
-    fun toDto(): UserResponse {
+    fun toResponse(): UserResponse {
         return UserResponse(
                 uuid = id.toString(),
                 email = email,
