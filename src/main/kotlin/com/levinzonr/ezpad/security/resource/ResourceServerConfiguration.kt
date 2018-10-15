@@ -21,6 +21,7 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
     override fun configure(http: HttpSecurity?) {
         http?.authorizeRequests()
                 ?.antMatchers(HttpMethod.POST, "/oauth/**")?.permitAll()
+                ?.antMatchers("/auth/**")?.permitAll()
                 ?.antMatchers(HttpMethod.OPTIONS, "/api/**")?.permitAll()
                 ?.and()
                 ?.antMatcher("/api/**")?.authorizeRequests()
