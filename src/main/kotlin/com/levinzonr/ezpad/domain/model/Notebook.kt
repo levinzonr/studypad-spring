@@ -1,16 +1,19 @@
 package com.levinzonr.ezpad.domain.model
 
-import java.util.*
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
 data class Notebook(
         @Id
-        @GeneratedValue
-        val id: UUID? = null,
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        val id: Long? = null,
+        val name: String,
+        val colour: String? = null,
 
-        val name: String? = null,
-        val colour: String? = null
+        @ManyToOne
+        @JoinColumn(name = "user_id")
+        val user: User,
+
+        @OneToMany(mappedBy = "notebook", cascade = [CascadeType.ALL])
+        val notes: List<Note> = listOf()
 )

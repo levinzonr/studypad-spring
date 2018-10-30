@@ -7,13 +7,14 @@ interface UserService {
 
     fun createUser(
             email: String, password: String,
-            firstName: String?, lastName: String?,
-            photoUrl: String? ) : User
+            firstName: String? = null, lastName: String? = null,
+            photoUrl: String? = null ) : User
 
 
     fun getUserById(uuid: UUID) : User
 
     fun updateUserById(uuid: String, firstName: String?,
                        lastName: String?, password: String?) : User
+
 
 }

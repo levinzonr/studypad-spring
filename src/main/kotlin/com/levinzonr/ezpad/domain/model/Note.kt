@@ -1,13 +1,17 @@
 package com.levinzonr.ezpad.domain.model
 
 import java.util.*
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
 
+@Entity
 data class Note(
         @Id
-        @GeneratedValue
-        val id: UUID? = null,
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        val id: Long? = null,
         val title: String? = null,
-        val content: String? = null
+        val content: String? = null,
+
+        @ManyToOne
+        @JoinColumn(name = "notebook_id")
+        val notebook: Notebook
 )

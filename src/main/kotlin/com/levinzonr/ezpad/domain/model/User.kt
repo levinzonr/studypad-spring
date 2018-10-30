@@ -14,6 +14,9 @@ data class User(
         val lastName: String? = null,
         val displayName: String? = null,
         val photoUrl: String? = null,
+
+        @OneToMany(mappedBy = "user")
+        val notebooks: List<Notebook> = listOf(),
         val password: String? = null) {
 
 
