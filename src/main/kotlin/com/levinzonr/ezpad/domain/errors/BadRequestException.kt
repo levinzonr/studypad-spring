@@ -1,7 +1,7 @@
 package com.levinzonr.ezpad.domain.errors
 
 import com.levinzonr.ezpad.domain.ApiMessages
-import com.levinzonr.ezpad.domain.dto.ErrorResponse
+import com.levinzonr.ezpad.domain.responses.ErrorResponse
 
 class BadRequestException(message: String) : EzpadException(message) {
     override fun toResponse(): ErrorResponse {

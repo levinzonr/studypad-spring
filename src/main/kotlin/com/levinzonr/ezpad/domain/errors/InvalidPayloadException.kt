@@ -1,8 +1,8 @@
 package com.levinzonr.ezpad.domain.errors
 
 import com.levinzonr.ezpad.domain.ApiMessages
-import com.levinzonr.ezpad.domain.dto.ErrorResponse
-import com.levinzonr.ezpad.domain.dto.FieldError
+import com.levinzonr.ezpad.domain.responses.ErrorResponse
+import com.levinzonr.ezpad.domain.responses.FieldError
 
 class InvalidPayloadException(private val errors: List<FieldError>? = null) : EzpadException("") {
 

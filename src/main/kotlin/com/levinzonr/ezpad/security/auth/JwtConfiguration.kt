@@ -15,32 +15,6 @@ import org.springframework.core.io.ClassPathResource
 
 
 
-@Configuration
 class JwtConfiguration {
-
-    @Autowired
-    private lateinit var accessTokenConverter: JwtAccessTokenConverter
-
-
-    @Bean
-    @Qualifier("tokenStore")
-    fun tokenStore(): TokenStore {
-        return JwtTokenStore(accessTokenConverter)
-    }
-
-    @Bean
-    protected fun jwtTokenEnhancer(): JwtAccessTokenConverter {
-        val converter = JwtAccessTokenConverter()
-        val resource = ClassPathResource("public.cert")
-        var publicKey: String? = null
-        try {
-            publicKey = String(FileCopyUtils.copyToByteArray(resource.inputStream))
-        } catch (e: IOException) {
-            throw RuntimeException(e)
-        }
-
-        converter.setVerifierKey(publicKey)
-        return converter
-    }
 
 }

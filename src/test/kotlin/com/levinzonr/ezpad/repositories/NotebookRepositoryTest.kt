@@ -67,6 +67,10 @@ class NotebookRepositoryTest {
 
         assert(notebookRepository.findByUser(users.last()).isEmpty())
 
+
+        val oneById = notebookRepository.findByUserId(users.first().id!!)
+        assert(!oneById.isEmpty())
+
     }
 
 }

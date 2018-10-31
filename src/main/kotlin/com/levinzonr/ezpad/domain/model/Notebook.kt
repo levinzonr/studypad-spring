@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.domain.model
 
+import com.levinzonr.ezpad.domain.responses.NotebookResponse
 import javax.persistence.*
 
 @Entity
@@ -16,4 +17,15 @@ data class Notebook(
 
         @OneToMany(mappedBy = "notebook", cascade = [CascadeType.ALL])
         val notes: List<Note> = listOf()
-)
+) {
+
+        fun toResponse() : NotebookResponse {
+                return NotebookResponse(
+                        id = id!!,
+                        name = name,
+                        color = colour!!,
+                        notesCount = notes.count()
+
+                )
+        }
+}

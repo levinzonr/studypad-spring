@@ -1,14 +1,13 @@
 package com.levinzonr.ezpad.domain.model
 
-import com.levinzonr.ezpad.domain.dto.UserResponse
-import java.util.*
+import com.levinzonr.ezpad.domain.responses.UserResponse
 import javax.persistence.*
 
 @Entity
 data class User(
         @Id
-        @GeneratedValue
-        val id: UUID? = null,
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        val id: Long? = null,
         val email: String,
         val firstName: String? = null,
         val lastName: String? = null,
@@ -27,7 +26,7 @@ data class User(
 
     fun toResponse(): UserResponse {
         return UserResponse(
-                uuid = id.toString(),
+                uuid = id!!,
                 email = email,
                 fistName = firstName,
                 lastName = lastName,

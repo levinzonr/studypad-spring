@@ -1,16 +1,13 @@
 package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.ApiMessages
-import com.levinzonr.ezpad.domain.dto.FieldError
 import com.levinzonr.ezpad.domain.errors.BadRequestException
-import com.levinzonr.ezpad.domain.errors.InvalidPayloadException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class UserServiceImpl : UserService {
@@ -42,16 +39,16 @@ class UserServiceImpl : UserService {
         return userRepository.save(user)
     }
 
-    override fun getUserById(uuid: UUID): User {
-        return userRepository.findById(uuid)
+    override fun getUserById(id: Long): User {
+        return userRepository.findById(id)
                 .orElseThrow {
                     NotFoundException.Builder(User::class)
-                        .buildWithId(uuid.toString())
+                        .buildWithId(id.toString())
                 }
     }
 
-    override fun updateUserById(uuid: String, firstName: String?, lastName: String?, password: String?) : User {
-        val user = getUserById(UUID.fromString(uuid))
+    override fun updateUserById(uuid: Long, firstName: String?, lastName: String?, password: String?) : User {
+        val user = getUserById(uuid)
         val newPassword = if (password != null) passwordEncoder.encode(password) else null
         val updated = user.copy(
                 firstName = firstName ?: user.firstName,

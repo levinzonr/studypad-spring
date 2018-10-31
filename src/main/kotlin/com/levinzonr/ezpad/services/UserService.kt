@@ -11,9 +11,9 @@ interface UserService {
             photoUrl: String? = null ) : User
 
 
-    fun getUserById(uuid: UUID) : User
+    fun getUserById(id: Long) : User
 
-    fun updateUserById(uuid: String, firstName: String?,
+    fun updateUserById(id: Long, firstName: String?,
                        lastName: String?, password: String?) : User
 
 

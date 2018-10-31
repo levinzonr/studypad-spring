@@ -1,7 +1,7 @@
-package com.levinzonr.ezpad.domain.dto
+package com.levinzonr.ezpad.domain.responses
 
 data class UserResponse(
-        val uuid: String,
+        val uuid: Long,
         val email: String,
         val fistName: String?,
         val lastName: String?,

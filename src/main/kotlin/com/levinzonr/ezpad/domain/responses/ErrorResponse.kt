@@ -1,4 +1,4 @@
-package com.levinzonr.ezpad.domain.dto
+package com.levinzonr.ezpad.domain.responses
 
 data class ErrorResponse(
         val type: String,

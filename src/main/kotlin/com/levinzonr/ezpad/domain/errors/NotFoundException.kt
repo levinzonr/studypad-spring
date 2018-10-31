@@ -1,11 +1,10 @@
 package com.levinzonr.ezpad.domain.errors
 
 import com.levinzonr.ezpad.domain.ApiMessages
-import com.levinzonr.ezpad.domain.dto.ErrorResponse
+import com.levinzonr.ezpad.domain.responses.ErrorResponse
 import com.levinzonr.ezpad.domain.model.Note
 import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.model.User
-import java.lang.RuntimeException
 import kotlin.reflect.KClass
 
 class NotFoundException(message: String) : EzpadException(message) {

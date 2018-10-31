@@ -1,8 +1,8 @@
 package com.levinzonr.ezpad.controllers
 
 import com.levinzonr.ezpad.domain.ApiMessages
-import com.levinzonr.ezpad.domain.dto.ErrorResponse
-import com.levinzonr.ezpad.domain.dto.FieldError
+import com.levinzonr.ezpad.domain.responses.ErrorResponse
+import com.levinzonr.ezpad.domain.responses.FieldError
 import com.levinzonr.ezpad.domain.errors.BadRequestException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import org.springframework.http.HttpStatus
@@ -22,7 +22,7 @@ class RestControllerExceptionHandler {
     fun handle(excetption: Exception) : ErrorResponse {
         return ErrorResponse(
                 type = ApiMessages.ErrorTypes.TYPE_UNKNOWN,
-                message = ApiMessages.ErrorMessages.ERROR_UNKNOWN
+                message = ApiMessages.ErrorMessages.ERROR_UNKNOWN + ": " + excetption.localizedMessage
         )
     }
 
