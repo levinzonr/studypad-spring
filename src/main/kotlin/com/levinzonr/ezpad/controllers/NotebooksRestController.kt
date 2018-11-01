@@ -1,6 +1,7 @@
 package com.levinzonr.ezpad.controllers
 
 import com.levinzonr.ezpad.domain.payload.CreateNotebookPayload
+import com.levinzonr.ezpad.domain.responses.NoteResponse
 import com.levinzonr.ezpad.domain.responses.NotebookResponse
 import com.levinzonr.ezpad.security.EzpadUserDetails
 import com.levinzonr.ezpad.services.NotebookService
@@ -54,5 +55,10 @@ class NotebooksRestController {
         val user = userService.getUserById(id)
         return notebooksService.updateNotebook(id, createNotebookPayload.name, createNotebookPayload.color).toResponse()
 
+    }
+
+    @GetMapping("/{id}/notes")
+    fun getNotesFromNotebook(@PathVariable("id") id : Long) : List<NoteResponse> {
+        return notebooksService.getNotebookDetails(id).notes.map { it.toResponse() }
     }
 }
