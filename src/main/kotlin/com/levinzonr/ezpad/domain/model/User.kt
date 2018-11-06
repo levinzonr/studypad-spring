@@ -16,12 +16,11 @@ data class User(
 
         @OneToMany(mappedBy = "user")
         val notebooks: List<Notebook> = listOf(),
-        val password: String? = null) {
+        val password: String? = null,
 
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
-    val roles = setOf(UserRole.USER)
+        @ElementCollection(fetch = FetchType.EAGER)
+        @Enumerated(EnumType.STRING)
+        val roles: Set<UserRole> = setOf(UserRole.USER)) {
 
 
     fun toResponse(): UserResponse {
