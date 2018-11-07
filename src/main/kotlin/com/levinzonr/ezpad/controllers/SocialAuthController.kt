@@ -55,12 +55,16 @@ class SocialAuthController {
         val fbTemplate = FacebookTemplate(facebookLogin.token)
         val fbUser = fbTemplate.fetchObject("me", FacebookUser::class.java, *(fields))
         val user = userService.processFacebookUser(fbUser)
-        return RestAuthHelper.authRedirect("${request.baseUrl}/oauth/token", user.email, fbUser.id.toString())
+        return RestAuthHelper.authRedirect(request.baseUrl, user.email, fbUser.id.toString()).also {
+            it.user = user.toResponse()
+        }
     }
 
     @PostMapping("/email")
     fun loginViaEmail(request: HttpServletRequest, @Valid @RequestBody emailLoginPayload: EmailLoginPayload) : TokenResponse {
-        return RestAuthHelper.authRedirect("${request.baseUrl}/oauth/token", emailLoginPayload.email, emailLoginPayload.password)
+        return RestAuthHelper.authRedirect(request.baseUrl, emailLoginPayload.email, emailLoginPayload.password).also {
+            it.user = userService.getUserEmail(emailLoginPayload.email).toResponse()
+        }
     }
 
 

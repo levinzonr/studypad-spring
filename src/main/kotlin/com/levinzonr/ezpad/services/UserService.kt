@@ -15,6 +15,8 @@ interface UserService {
 
     fun getUserById(id: Long) : User
 
+    fun getUserEmail(email: String) : User
+
     fun updateUserById(id: Long, firstName: String?,
                        lastName: String?, password: String?) : User
 

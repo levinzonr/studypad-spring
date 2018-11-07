@@ -67,4 +67,8 @@ class UserServiceImpl : UserService {
         return userRepository.findByEmail(facebookUser.email!!) ?:
         createUser(facebookUser.email, facebookUser.id!!, facebookUser.first_name, facebookUser.last_name, null, UserRole.FACEBOOK_USER)
     }
+
+    override fun getUserEmail(email: String): User {
+        return userRepository.findByEmail(email) ?: throw NotFoundException.Builder(User::class).buildWithId(email)
+    }
 }

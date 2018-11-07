@@ -17,7 +17,7 @@ object RestAuthHelper {
         map.add("username", username)
         map.add("password", password)
         map.add("grant_type", "password")
-        val request = HttpEntity<MultiValueMap<String, String>>(map, createHeaders(username, password))
+        val request = HttpEntity<MultiValueMap<String, String>>(map, createHeaders("ezpad-mobile-client", "ccUyb6vS4S8nxfbKPCrN"))
         val restTemplate = RestTemplate()
         return restTemplate.postForObject("$url/oauth/token", request, TokenResponse::class.java)!!
 
