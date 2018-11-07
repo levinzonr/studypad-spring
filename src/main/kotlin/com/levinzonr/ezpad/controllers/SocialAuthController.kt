@@ -1,9 +1,11 @@
 package com.levinzonr.ezpad.controllers
 
 import com.levinzonr.ezpad.domain.model.TokenResponse
+import com.levinzonr.ezpad.domain.payload.EmailLoginPayload
 import com.levinzonr.ezpad.domain.payload.FacebookLogin
 import com.levinzonr.ezpad.domain.payload.FacebookUser
 import com.levinzonr.ezpad.services.UserService
+import com.levinzonr.ezpad.utils.baseUrl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -52,37 +54,14 @@ class SocialAuthController {
 
         val fbTemplate = FacebookTemplate(facebookLogin.token)
         val fbUser = fbTemplate.fetchObject("me", FacebookUser::class.java, *(fields))
-        println(fbUser.toString())
-        val user = (userService.processFacebookUser(fbUser))
-        val uri = URI.create(request.requestURL.toString())
-        val url = "${uri.scheme}://${uri.authority}"
-        print(url)
-
-        val headers = createHeaders("ezpad-mobile-client", "ccUyb6vS4S8nxfbKPCrN")
-
-        val map = LinkedMultiValueMap<String, String>()
-        map.add("username", user.email)
-        map.add("password", fbUser.id )
-        map.add("grant_type", "password")
-        val request = HttpEntity<MultiValueMap<String, String>>(map, headers)
-
-
-        val restTemplate = RestTemplate()
-        return restTemplate.postForObject("$url/oauth/token", request, TokenResponse::class.java)!!
+        val user = userService.processFacebookUser(fbUser)
+        return RestAuthHelper.authRedirect("${request.baseUrl}/oauth/token", user.email, fbUser.id.toString())
     }
 
-
-    fun createHeaders(username: String, password: String): HttpHeaders {
-        return object : HttpHeaders() {
-            init {
-                val auth = "$username:$password"
-                val encodedAuth = Base64.getEncoder().encode(
-                        auth.toByteArray(Charset.forName("US-ASCII")))
-                val authHeader = "Basic " + String(encodedAuth)
-                set("Authorization", authHeader)
-                contentType = MediaType.APPLICATION_FORM_URLENCODED
-            }
-        }
+    @PostMapping("/email")
+    fun loginViaEmail(request: HttpServletRequest, @Valid @RequestBody emailLoginPayload: EmailLoginPayload) : TokenResponse {
+        return RestAuthHelper.authRedirect("${request.baseUrl}/oauth/token", emailLoginPayload.email, emailLoginPayload.password)
     }
+
 
 }
