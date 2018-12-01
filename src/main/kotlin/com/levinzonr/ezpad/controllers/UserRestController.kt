@@ -3,6 +3,7 @@ package com.levinzonr.ezpad.controllers
 import com.levinzonr.ezpad.domain.model.TokenResponse
 import com.levinzonr.ezpad.domain.responses.UserResponse
 import com.levinzonr.ezpad.domain.payload.CreateUserPayload
+import com.levinzonr.ezpad.domain.payload.FinishSignupPayload
 import com.levinzonr.ezpad.domain.payload.UpdateUserPayload
 import com.levinzonr.ezpad.security.EzpadUserDetails
 import com.levinzonr.ezpad.services.UserService
@@ -51,6 +52,16 @@ class UserRestController {
                 updateUserPayload.firstName,
                 updateUserPayload.lastName,
                 updateUserPayload.password).toResponse()
+    }
+
+    @PostMapping("/signup/finish")
+    fun updateUserUniversity(
+            @Valid @RequestBody finishSignup: FinishSignupPayload,
+            @AuthenticationPrincipal userDetails: EzpadUserDetails) : UserResponse {
+
+        println("Update $finishSignup")
+        return userService.updateUserUniversity(userDetails.userId, finishSignup.universityId!!).toResponse()
+
     }
 
 }

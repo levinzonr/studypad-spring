@@ -4,6 +4,7 @@ import com.levinzonr.ezpad.domain.ApiMessages
 import com.levinzonr.ezpad.domain.responses.ErrorResponse
 import com.levinzonr.ezpad.domain.model.Note
 import com.levinzonr.ezpad.domain.model.Notebook
+import com.levinzonr.ezpad.domain.model.University
 import com.levinzonr.ezpad.domain.model.User
 import kotlin.reflect.KClass
 
@@ -32,6 +33,11 @@ class NotFoundException(message: String) : EzpadException(message) {
             Note::class -> {
                 ApiMessages.ErrorMessages.ERROR_NOTE_NOT_FOUND
             }
+
+            University::class -> {
+                ApiMessages.ErrorMessages.ERROR_UNI_NOT_FOUND
+            }
+
             else -> {
                 ApiMessages.ErrorMessages.ERROR_NOT_FOUND
             }

@@ -1,5 +1,7 @@
 package com.levinzonr.ezpad
 
+import com.levinzonr.ezpad.services.UniversityService
+import com.levinzonr.ezpad.services.UserService
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso
@@ -8,6 +10,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore
+import org.springframework.boot.CommandLineRunner
+
+
 
 @SpringBootApplication
 class EzpadApplication {
@@ -30,6 +35,16 @@ class EzpadApplication {
         fun main(args: Array<String>) {
             SpringApplication.run(EzpadApplication::class.java, *args)
         }
+    }
+
+
+    //InMemory database int
+    @Bean
+    fun initDatabase(universityService: UniversityService, userService: UserService): CommandLineRunner {
+       return CommandLineRunner {
+           universityService.init()
+           userService.createUser("roma@mail.ru", "19961600")
+       }
     }
 
 }

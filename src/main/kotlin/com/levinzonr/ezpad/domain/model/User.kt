@@ -16,6 +16,11 @@ data class User(
 
         @OneToMany(mappedBy = "user")
         val notebooks: List<Notebook> = listOf(),
+
+        @ManyToOne
+        @JoinColumn(name = "university_id")
+        val university: University? = null,
+
         val password: String? = null,
 
         @ElementCollection(fetch = FetchType.EAGER)
@@ -30,6 +35,7 @@ data class User(
                 fistName = firstName,
                 lastName = lastName,
                 displayName = displayName,
+                university = university?.toResponse(),
                 photoUrl = photoUrl
         )
     }

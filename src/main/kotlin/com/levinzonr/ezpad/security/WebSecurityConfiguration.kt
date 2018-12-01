@@ -25,6 +25,8 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
                 ?.and()
                 ?.antMatcher("/api/**")?.authorizeRequests()
                 ?.antMatchers(HttpMethod.POST, "/api/users")?.permitAll()
+                ?.antMatchers(HttpMethod.GET, "/api/university/find")?.permitAll()
+                ?.antMatchers(HttpMethod.GET, "/api/university")?.permitAll()
                 ?.anyRequest()?.authenticated()
     }
 }

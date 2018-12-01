@@ -22,5 +22,7 @@ interface UserService {
 
     fun processFacebookUser(facebookUser: FacebookUser) : User
 
+    fun updateUserUniversity(userId: Long, universityId: Long) : User
+
 
 }

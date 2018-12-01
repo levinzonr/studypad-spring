@@ -4,6 +4,7 @@ import com.levinzonr.ezpad.domain.model.TokenResponse
 import com.levinzonr.ezpad.domain.payload.EmailLoginPayload
 import com.levinzonr.ezpad.domain.payload.FacebookLogin
 import com.levinzonr.ezpad.domain.payload.FacebookUser
+import com.levinzonr.ezpad.domain.payload.GoogleUser
 import com.levinzonr.ezpad.services.UserService
 import com.levinzonr.ezpad.utils.baseUrl
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,6 +33,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.http.HttpEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.Charset
 import java.util.*
 
@@ -65,6 +67,22 @@ class SocialAuthController {
         return RestAuthHelper.authRedirect(request.baseUrl, emailLoginPayload.email, emailLoginPayload.password).also {
             it.user = userService.getUserEmail(emailLoginPayload.email).toResponse()
         }
+    }
+
+    @PostMapping("/google")
+    fun loginViaGoogle(request: HttpServletRequest,
+                       @Valid @RequestBody facebookLogin: FacebookLogin) {
+
+        val uri = UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/oauth2/v3/tokenInfo")
+                .queryParam("id_token", facebookLogin.token)
+
+        print("${uri.toUriString()}")
+        val restTemplate = RestTemplate()
+        val user = restTemplate.getForEntity(uri.toUriString(), GoogleUser::class.java)
+        print(user)
+
+
+
     }
 
 

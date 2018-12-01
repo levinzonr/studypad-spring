@@ -18,6 +18,9 @@ class UserServiceImpl : UserService {
     private lateinit var userRepository: UserRepository
 
     @Autowired
+    private lateinit var universityService: UniversityService
+
+    @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
 
 
@@ -70,5 +73,13 @@ class UserServiceImpl : UserService {
 
     override fun getUserEmail(email: String): User {
         return userRepository.findByEmail(email) ?: throw NotFoundException.Builder(User::class).buildWithId(email)
+    }
+
+    override fun updateUserUniversity(userId: Long, universityId: Long): User {
+        println(universityService.findAll())
+        val uni =  universityService.findById(universityId)
+        val newUser = getUserById(userId).copy(university = uni)
+        userRepository.save(newUser)
+        return newUser
     }
 }
