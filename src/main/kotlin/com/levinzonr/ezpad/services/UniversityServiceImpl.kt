@@ -15,14 +15,14 @@ class UniversityServiceImpl : UniversityService {
 
     override fun findUniversities(query: String): List<University> {
         val all = universityRepository.findAll()
+        if (query.isEmpty()) return all.toList()
 
-        val byNameOrShortName = all.filter {
-            it.fullName.startsWith(query, true) || it.shortName.startsWith(query, true)
-        }
+        return listOf<List<University>>(
+                all.filter { it.fullName.startsWith(query, true) }.toList(),
+                all.filter { it.shortName.startsWith(query, true) }.toList(),
+                all.filter { it.aliases().any {it.startsWith(query, true)} }
+        ).flatten().distinctBy { it.id }
 
-        val byAliases = all.filter { it.aliasMatch(query) }
-
-        return byNameOrShortName.union(byAliases).toMutableList().distinctBy { it.id }
     }
 
     override fun createUniversity(fullName: String, shortName: String, aliases: List<String>?) : University {
