@@ -8,3 +8,4 @@ get() {
     val uri = URI.create(requestURL.toString())
     return "${uri.scheme}://${uri.authority}"
 }
+

@@ -2,6 +2,7 @@ package com.levinzonr.ezpad.domain.model
 
 import com.levinzonr.ezpad.domain.responses.NotebookResponse
 import javax.persistence.*
+import com.levinzonr.ezpad.services.toGradient
 
 @Entity
 data class Notebook(
@@ -23,7 +24,7 @@ data class Notebook(
                 return NotebookResponse(
                         id = id!!,
                         name = name,
-                        color = colour!!,
+                        color = colour.toGradient(),
                         notesCount = notes.count()
 
                 )

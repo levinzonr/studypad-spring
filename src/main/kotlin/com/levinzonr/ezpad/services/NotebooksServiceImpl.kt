@@ -13,13 +13,17 @@ class NotebooksServiceImpl : NotebookService {
     @Autowired
     private lateinit var repository: NotebooksRepository
 
+    @Autowired
+    private lateinit var colorService: ColorsService
+
 
     override fun getUserNotebooks(user: User): List<Notebook> {
         return repository.findByUser(user)
     }
 
-    override fun createNewNotebook(name: String, user: User, color: String): Notebook {
-       return repository.save(Notebook(name = name, user = user, colour = color))
+    override fun createNewNotebook(name: String, user: User): Notebook {
+        val color = colorService.getRandomColor()
+        return repository.save(Notebook(name = name, user = user, colour = color))
     }
 
     override fun getNotebookDetails(id: Long): Notebook {
@@ -30,7 +34,7 @@ class NotebooksServiceImpl : NotebookService {
         }
     }
 
-    override fun updateNotebook(id: Long, name: String?, color: String? ) : Notebook {
+    override fun updateNotebook(id: Long, name: String?, color: String?): Notebook {
         val old = getNotebookDetails(id)
         val newName = name ?: old.name
         val newColor = color ?: old.colour

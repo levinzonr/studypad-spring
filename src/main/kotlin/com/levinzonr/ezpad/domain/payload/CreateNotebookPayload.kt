@@ -7,9 +7,5 @@ data class CreateNotebookPayload(
 
         @field:NotEmpty
         @field:NotNull
-        val name: String,
-
-        @field:NotEmpty
-        @field:NotNull
-        val color: String
+        val name: String
 )
