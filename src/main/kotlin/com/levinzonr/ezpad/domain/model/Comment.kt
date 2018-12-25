@@ -1,10 +1,12 @@
 package com.levinzonr.ezpad.domain.model
 
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.OneToOne
+import javax.persistence.*
 
+@Entity
 data class Comment(
+
+        @Id
+        @GeneratedValue()
         val id: Long,
 
         @OneToOne

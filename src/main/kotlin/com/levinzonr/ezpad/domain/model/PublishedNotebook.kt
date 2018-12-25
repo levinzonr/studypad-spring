@@ -20,7 +20,8 @@ data class PublishedNotebook(
         val title: String,
 
 
-        val university: University,
+
+        // val university: University,
 
         @OneToMany(mappedBy = "notebook", cascade = [CascadeType.ALL])
         val comments: List<Comment>
