@@ -43,7 +43,7 @@ class AuthorizationServerConfiguration : AuthorizationServerConfigurerAdapter() 
     }
 
     override fun configure(clients: ClientDetailsServiceConfigurer?) {
-        clients?.jdbc(dataSource)
+        clients?.inMemory()
                 ?.withClient(AuthorizationSettings.AUTH_CLIENT_NAME)
                 ?.authorizedGrantTypes("password", "refresh_token")
                 ?.resourceIds(ResourceServerSettings.RESOURCE_ID)

@@ -31,11 +31,6 @@ class EzpadApplication {
         val insertRefreshTokenSql = "insert into oauth_refresh_token (token_id, token, authentication) values (?, ?, ?)"
 
         val jdbcTokenStore = JdbcTokenStore(dataSource)
-        jdbcTokenStore.setInsertAccessTokenSql(insertAccessTokenSql)
-        jdbcTokenStore.setSelectAccessTokensFromUserNameAndClientIdSql(selectAccessTokensFromUserNameAndClientIdSql)
-        jdbcTokenStore.setSelectAccessTokensFromUserNameSql(selectAccessTokensFromUserNameSql)
-        jdbcTokenStore.setSelectAccessTokensFromClientIdSql(selectAccessTokensFromClientIdSql)
-        jdbcTokenStore.setInsertRefreshTokenSql(insertRefreshTokenSql)
 
 
         return jdbcTokenStore
