@@ -24,7 +24,21 @@ class EzpadApplication {
 
     @Bean
     fun provideTokenStore() : TokenStore {
-        return JdbcTokenStore(dataSource)
+        val insertAccessTokenSql = "insert into oauth_access_token (token_id, token, authentication_id, email, client_id, authentication, refresh_token) values (?, ?, ?, ?, ?, ?, ?)"
+        val selectAccessTokensFromUserNameAndClientIdSql = "select token_id, token from oauth_access_token where email = ? and client_id = ?"
+        val selectAccessTokensFromUserNameSql = "select token_id, token from oauth_access_token where email = ?"
+        val selectAccessTokensFromClientIdSql = "select token_id, token from oauth_access_token where client_id = ?"
+        val insertRefreshTokenSql = "insert into oauth_refresh_token (token_id, token, authentication) values (?, ?, ?)"
+
+        val jdbcTokenStore = JdbcTokenStore(dataSource)
+        jdbcTokenStore.setInsertAccessTokenSql(insertAccessTokenSql)
+        jdbcTokenStore.setSelectAccessTokensFromUserNameAndClientIdSql(selectAccessTokensFromUserNameAndClientIdSql)
+        jdbcTokenStore.setSelectAccessTokensFromUserNameSql(selectAccessTokensFromUserNameSql)
+        jdbcTokenStore.setSelectAccessTokensFromClientIdSql(selectAccessTokensFromClientIdSql)
+        jdbcTokenStore.setInsertRefreshTokenSql(insertRefreshTokenSql)
+
+
+        return jdbcTokenStore
     }
 
     @Bean

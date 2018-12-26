@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
 import org.springframework.security.oauth2.provider.token.TokenStore
+import javax.sql.DataSource
 
 
 @Configuration
@@ -32,6 +33,8 @@ class AuthorizationServerConfiguration : AuthorizationServerConfigurerAdapter() 
     @Autowired
     private lateinit var authenticationManager: AuthenticationManager
 
+    @Autowired
+    private lateinit var dataSource: DataSource
 
     override fun configure(endpoints: AuthorizationServerEndpointsConfigurer?) {
         endpoints?.tokenStore(tokenStore)
@@ -40,12 +43,11 @@ class AuthorizationServerConfiguration : AuthorizationServerConfigurerAdapter() 
     }
 
     override fun configure(clients: ClientDetailsServiceConfigurer?) {
-        clients?.inMemory()
+        clients?.jdbc(dataSource)
                 ?.withClient(AuthorizationSettings.AUTH_CLIENT_NAME)
                 ?.authorizedGrantTypes("password", "refresh_token")
                 ?.resourceIds(ResourceServerSettings.RESOURCE_ID)
                 ?.secret(passwordEncoder.encode(AuthorizationSettings.AUTH_CLIENT_SECRET))
-
                 ?.scopes("mobile_app")
     }
 
