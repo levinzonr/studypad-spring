@@ -3,7 +3,7 @@ package com.levinzonr.ezpad.domain.model
 import com.levinzonr.ezpad.domain.responses.UserResponse
 import javax.persistence.*
 
-@Entity
+@Entity(name = "studypad_user")
 data class User(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ data class User(
         return UserResponse(
                 uuid = id!!,
                 email = email,
-                fistName = firstName,
+                firstName = firstName,
                 lastName = lastName,
                 displayName = displayName,
                 university = university?.toResponse(),

@@ -2,6 +2,7 @@ package com.levinzonr.ezpad
 
 import com.levinzonr.ezpad.services.UniversityService
 import com.levinzonr.ezpad.services.UserService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso
@@ -11,16 +12,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore
 import org.springframework.boot.CommandLineRunner
-
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
+import javax.sql.DataSource
 
 
 @SpringBootApplication
 class EzpadApplication {
 
+    @Autowired
+    private lateinit var dataSource: DataSource
 
     @Bean
     fun provideTokenStore() : TokenStore {
-        return InMemoryTokenStore()
+        return JdbcTokenStore(dataSource)
     }
 
     @Bean
@@ -43,7 +47,7 @@ class EzpadApplication {
     fun initDatabase(universityService: UniversityService, userService: UserService): CommandLineRunner {
        return CommandLineRunner {
            universityService.init()
-           userService.createUser("roma@mail.ru", "19961600")
+     //      userService.createUser("roma@mail.ru", "19961600")
        }
     }
 

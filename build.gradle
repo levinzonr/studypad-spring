@@ -57,9 +57,10 @@ dependencies {
 	implementation "org.springframework.security.oauth:spring-security-oauth2"
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	runtimeOnly('com.h2database:h2')
 
-	compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+
+
+	runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '9.4-1206-jdbc42'
 	implementation "org.springframework.boot:spring-boot-configuration-processor"
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
