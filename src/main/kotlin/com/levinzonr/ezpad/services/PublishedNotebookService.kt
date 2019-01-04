@@ -13,7 +13,7 @@ interface PublishedNotebookService {
 
     fun getMostRelevant() : List<PublishedNotebook>
 
-
+    fun getPublishedNotebookById(id: String) : PublishedNotebook
 
 
 }

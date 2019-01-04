@@ -1,5 +1,8 @@
 package com.levinzonr.ezpad.domain.model
 
+import com.levinzonr.ezpad.domain.responses.PublishedNoteResponse
+import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
+import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
 import java.util.*
 import javax.persistence.*
 
@@ -8,8 +11,7 @@ import javax.persistence.*
 data class PublishedNotebook(
 
         @Id
-        @GeneratedValue
-        val id: UUID? = null,
+        val id: String = UUID.randomUUID().toString(),
 
         @ManyToOne
         @JoinColumn(name = "user_id")
@@ -33,14 +35,45 @@ data class PublishedNotebook(
         @OneToMany(mappedBy = "notebook", cascade = [CascadeType.ALL])
         val comments: List<Comment> = listOf(),
 
-        @ManyToMany(mappedBy = "notebooks", cascade = [CascadeType.ALL])
+        @ManyToMany
+        @JoinTable(name = "shared_tags",
+                joinColumns = [JoinColumn(name = "shared_id")],
+                inverseJoinColumns = [JoinColumn(name = "tag_name")])
         val tags: Set<Tag>,
 
         @ManyToOne
         @JoinColumn(name = "topic_id")
         val topic: Topic? = null
 
-)
+) {
+
+        fun toResponse() : PublishedNotebookResponse {
+                return PublishedNotebookResponse(
+                        title = title,
+                        notesCount = notes.size.toLong(),
+                        author = author.toResponse(),
+                        description = description,
+                        tags = tags.map { it.name }.toSet(),
+                        commentCount = comments.size,
+                        id = id.toString(),
+                        topic = topic?.name
+
+                )
+        }
+
+        fun toDetailedResponse() : PublishedNotebookDetail {
+                return PublishedNotebookDetail(
+                        id = id,
+                        notes = notes.map { it.toResponse() },
+                        comments = comments.map { it.toResponse() },
+                        title = title,
+                        description = description,
+                        author = author.toResponse(),
+                        tags = tags.map { it.name }.toSet(),
+                        topic = topic?.name
+                )
+        }
+}
 
 @Entity
 data class PublishedNote(
@@ -53,4 +86,8 @@ data class PublishedNote(
         @ManyToOne
         @JoinColumn(name = "shared_id")
         val notebook: PublishedNotebook
-)
+) {
+        fun toResponse() : PublishedNoteResponse {
+                return PublishedNoteResponse(title, content)
+        }
+}

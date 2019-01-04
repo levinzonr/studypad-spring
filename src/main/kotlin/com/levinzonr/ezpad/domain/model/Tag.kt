@@ -6,13 +6,16 @@ import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 
 
-
 @Entity
 data class Tag(
         @Id
         val name: String,
 
-        @ManyToMany(fetch = FetchType.LAZY)
-        @JoinTable(name = "shared", joinColumns = [JoinColumn(name = "shared_id")], inverseJoinColumns = [JoinColumn(name = "tag_name")])
+        @ManyToMany(fetch = FetchType.LAZY,
+                cascade = [
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+                ],
+                mappedBy = "tags")
         val notebooks: List<PublishedNotebook> = listOf()
 )

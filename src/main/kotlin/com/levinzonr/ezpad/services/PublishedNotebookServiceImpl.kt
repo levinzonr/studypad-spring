@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.services
 
+import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.PublishedNote
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
 import com.levinzonr.ezpad.domain.model.Topic
@@ -36,11 +37,11 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     private lateinit var topicService: TopicService
 
     override fun publishNotebook(userId: Long, notebookId: Long, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
-
         val author = userService.getUserById(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
         val uni : University?  = universityID?.let { universityService.findById(it) }
         val topic : Topic? = topicId?.let { topicService.findById(topicId) }
+
         val domainTags = tags.map { tagService.createTag(it) }.toSet()
 
         val published = sharedNotebookRepo.save(PublishedNotebook(
@@ -65,5 +66,10 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
     override fun getMostRelevant(): List<PublishedNotebook> {
         return sharedNotebookRepo.findAll().sortedByDescending { it.lastUpdatedTimestamp }
+    }
+
+
+    override fun getPublishedNotebookById(id: String): PublishedNotebook {
+        return sharedNotebookRepo.findById(id).orElseThrow { NotFoundException.Builder(PublishedNotebook::class).buildWithId(id) }
     }
 }
