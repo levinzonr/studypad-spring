@@ -32,7 +32,7 @@ class EzpadApplication {
 
         val jdbcTokenStore = JdbcTokenStore(dataSource)
 
-
+        return InMemoryTokenStore()
         return jdbcTokenStore
     }
 

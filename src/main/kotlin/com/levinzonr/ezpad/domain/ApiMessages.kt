@@ -18,7 +18,7 @@ object ApiMessages {
         const val ERROR_USER_NOT_FOUND = "No such user exists with id [id]"
         const val ERROR_NOTEBOOK_NOT_FOUND = "No notebook by id [id] exists"
         const val ERROR_NOTE_NOT_FOUND = "No note with id [id] found"
-        const val ERROR_NOT_FOUND = "Don't have anything like that, sorry :D"
+        const val ERROR_NOT_FOUND = "Don't have [entity] like that, sorry :D"
         const val ERROR_UNI_NOT_FOUND = "No university exists by id [id]"
     }
 

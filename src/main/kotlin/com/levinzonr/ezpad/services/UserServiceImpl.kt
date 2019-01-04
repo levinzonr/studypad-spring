@@ -42,7 +42,7 @@ class UserServiceImpl : UserService {
                 roles = setOf(role)
         )
 
-        return userRepository.save(user)
+        return userRepository.save(user).apply { isNewUser = true }
     }
 
     override fun getUserById(id: Long): User {

@@ -6,6 +6,8 @@ import com.levinzonr.ezpad.domain.payload.CreateUserPayload
 import com.levinzonr.ezpad.domain.payload.FinishSignupPayload
 import com.levinzonr.ezpad.domain.payload.UpdateUserPayload
 import com.levinzonr.ezpad.security.EzpadUserDetails
+import com.levinzonr.ezpad.services.NotebookService
+import com.levinzonr.ezpad.services.NotesService
 import com.levinzonr.ezpad.services.UserService
 import com.levinzonr.ezpad.utils.baseUrl
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,6 +25,12 @@ class UserRestController {
     @Autowired
     private lateinit var userService: UserService
 
+    @Autowired
+    private lateinit var notebookService: NotebookService
+
+    @Autowired
+    private lateinit var noteService: NotesService
+
     @GetMapping("/me")
     fun getCurrentUser(@AuthenticationPrincipal userDetails: EzpadUserDetails): UserResponse {
         return userService.getUserById(userDetails.userId).toResponse()
@@ -33,6 +41,8 @@ class UserRestController {
     fun createNewUser(@Valid @RequestBody payload: CreateUserPayload,
                       req: HttpServletRequest): TokenResponse {
         val user = userService.createUser(payload.email!!, payload.password!!, payload.firstName, payload.lastName, null)
+        val nb = notebookService.createNewNotebook("Default", user)
+        noteService.createNote("Test", "Content", nb)
         return RestAuthHelper.authRedirect(req.baseUrl, user.email, payload.password).also {
             it.user = user.toResponse()
         }

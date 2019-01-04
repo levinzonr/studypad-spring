@@ -20,7 +20,8 @@ data class Note(
                 return NoteResponse(
                         id = id!!,
                         title = title ?: "",
-                        content = content ?: ""
+                        content = content ?: "",
+                        notebookId = notebook.id!!
                 )
         }
 }

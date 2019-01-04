@@ -27,6 +27,8 @@ data class User(
         @Enumerated(EnumType.STRING)
         val roles: Set<UserRole> = setOf(UserRole.USER)) {
 
+        @Transient
+        var isNewUser: Boolean = false
 
     fun toResponse(): UserResponse {
         return UserResponse(
@@ -36,7 +38,8 @@ data class User(
                 lastName = lastName,
                 displayName = displayName,
                 university = university?.toResponse(),
-                photoUrl = photoUrl
+                photoUrl = photoUrl,
+                isNewUser = isNewUser
         )
     }
 }

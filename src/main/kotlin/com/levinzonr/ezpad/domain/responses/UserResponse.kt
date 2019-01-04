@@ -9,5 +9,6 @@ data class UserResponse(
         val lastName: String?,
         val displayName: String?,
         val university: UniversityResponse?,
-        val photoUrl: String?
+        val photoUrl: String?,
+        val isNewUser: Boolean = false
 )
