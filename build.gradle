@@ -58,6 +58,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+	compile 'com.google.firebase:firebase-admin:6.6.0'
 
 
 	runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '9.4-1206-jdbc42'

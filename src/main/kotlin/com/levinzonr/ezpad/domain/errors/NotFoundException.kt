@@ -39,7 +39,7 @@ class NotFoundException(message: String) : EzpadException(message) {
             }
 
             else -> {
-                ApiMessages.ErrorMessages.ERROR_NOT_FOUND
+                ApiMessages.ErrorMessages.ERROR_NOT_FOUND.replace("[entity]", classValue.simpleName.toString())
             }
         }
 
