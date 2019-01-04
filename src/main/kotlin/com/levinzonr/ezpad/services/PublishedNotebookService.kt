@@ -15,5 +15,10 @@ interface PublishedNotebookService {
 
     fun getPublishedNotebookById(id: String) : PublishedNotebook
 
+    fun filterByTag(tag: String) : List<PublishedNotebook>
+
+    fun filterByTopic(topic: String) : List<PublishedNotebook>
+
+    fun findNotebooks(tags: Set<String>, topic: String) : List<PublishedNotebook>
 
 }

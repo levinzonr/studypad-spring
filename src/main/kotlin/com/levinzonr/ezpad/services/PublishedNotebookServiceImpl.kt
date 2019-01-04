@@ -64,10 +64,28 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     }
 
 
+    override fun filterByTag(tag: String): List<PublishedNotebook> {
+        return sharedNotebookRepo.findAll().filter {
+            it.tags.any { it.name.contains(tag, true) }
+        }
+    }
+
+    override fun filterByTopic(topic: String) : List<PublishedNotebook> {
+        return sharedNotebookRepo.findAll().filter { it.topic?.name.toString().contains(topic, true) }
+    }
+
     override fun getMostRelevant(): List<PublishedNotebook> {
         return sharedNotebookRepo.findAll().sortedByDescending { it.lastUpdatedTimestamp }
     }
 
+
+    override fun findNotebooks(tags: Set<String>, topic: String): List<PublishedNotebook> {
+        return tags.flatMap { filterByTag(it) }
+                .union(filterByTopic(topic))
+                .toList()
+                .distinctBy { it.id }
+
+    }
 
     override fun getPublishedNotebookById(id: String): PublishedNotebook {
         return sharedNotebookRepo.findById(id).orElseThrow { NotFoundException.Builder(PublishedNotebook::class).buildWithId(id) }

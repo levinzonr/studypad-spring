@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.controllers
 
+import com.levinzonr.ezpad.domain.model.PublishedNotebook
 import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
 import com.levinzonr.ezpad.domain.responses.CommentResponse
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
@@ -8,6 +9,7 @@ import com.levinzonr.ezpad.security.EzpadUserDetails
 import com.levinzonr.ezpad.services.CommentService
 import com.levinzonr.ezpad.services.PublishedNotebookService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.jpa.repository.Query
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -63,5 +65,9 @@ class PublishedNotebooksController {
         return commentService.updateComment(id, comment).toResponse()
     }
 
+    @GetMapping("/find")
+    fun findNotebooks(@RequestParam(value = "topic") topic: String, @RequestParam("tags") tags: Set<String>) : List<PublishedNotebookResponse> {
+        return service.findNotebooks(tags, topic).map { it.toResponse() }
+    }
 
 }
