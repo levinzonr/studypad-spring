@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.domain.model
 
+import com.levinzonr.ezpad.domain.responses.AuthorResponse
 import com.levinzonr.ezpad.domain.responses.UserResponse
 import javax.persistence.*
 
@@ -41,5 +42,9 @@ data class User(
                 photoUrl = photoUrl,
                 isNewUser = isNewUser
         )
+    }
+
+    fun toAuthorResponse() : AuthorResponse {
+        return AuthorResponse(id!!, displayName, photoUrl, university?.toResponse())
     }
 }

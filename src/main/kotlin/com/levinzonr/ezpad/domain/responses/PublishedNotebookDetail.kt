@@ -5,7 +5,7 @@ import com.levinzonr.ezpad.domain.model.Topic
 
 data class PublishedNotebookDetail(
         val id: String,
-        val author: UserResponse,
+        val author: AuthorResponse,
         val comments: List<CommentResponse>,
         val title: String,
         val description: String?,

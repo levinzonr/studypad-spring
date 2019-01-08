@@ -40,7 +40,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/auth")
-class SocialAuthController {
+class AuthenticationController {
 
     companion object {
         var fields = arrayOf("id", "email", "first_name", "last_name")

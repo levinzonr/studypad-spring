@@ -54,7 +54,7 @@ data class PublishedNotebook(
                 return PublishedNotebookResponse(
                         title = title,
                         notesCount = notes.size.toLong(),
-                        author = author.toResponse(),
+                        author = author.toAuthorResponse(),
                         description = description,
                         tags = tags.map { it.name }.toSet(),
                         commentCount = comments.size,
@@ -71,7 +71,7 @@ data class PublishedNotebook(
                         comments = comments.map { it.toResponse() },
                         title = title,
                         description = description,
-                        author = author.toResponse(),
+                        author = author.toAuthorResponse(),
                         tags = tags.map { it.name }.toSet(),
                         topic = topic?.name
                 )
