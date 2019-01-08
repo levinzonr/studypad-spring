@@ -17,7 +17,10 @@ data class Notebook(
         val user: User,
 
         @OneToMany(mappedBy = "notebook", cascade = [CascadeType.ALL])
-        val notes: List<Note> = listOf()
+        val notes: List<Note> = listOf(),
+
+        // Source of the notebook ( i.e id of the Published one if exported, null otherwise )
+        val sourceId: String? = null
 ) {
 
         fun toResponse() : NotebookResponse {

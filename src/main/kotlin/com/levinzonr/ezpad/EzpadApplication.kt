@@ -56,7 +56,7 @@ class EzpadApplication {
     fun initDatabase(universityService: UniversityService, userService: UserService): CommandLineRunner {
        return CommandLineRunner {
            universityService.init()
-     //      userService.createUser("roma@mail.ru", "19961600")
+           userService.createUser("roma@mail.ru", "19961600")
        }
     }
 

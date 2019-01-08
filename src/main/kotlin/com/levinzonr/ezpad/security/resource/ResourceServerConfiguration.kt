@@ -23,6 +23,7 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
                 ?.antMatchers(HttpMethod.POST, "/oauth/**")?.permitAll()
                 ?.antMatchers("/auth/**")?.permitAll()
                 ?.antMatchers(HttpMethod.OPTIONS, "/api/**")?.permitAll()
+                ?.antMatchers(HttpMethod.GET, "/api/shared/**")?.permitAll()
                 ?.and()
                 ?.antMatcher("/api/**")?.authorizeRequests()
                 ?.antMatchers(HttpMethod.POST, "/api/users")?.permitAll()

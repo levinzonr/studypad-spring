@@ -43,7 +43,10 @@ data class PublishedNotebook(
 
         @ManyToOne
         @JoinColumn(name = "topic_id")
-        val topic: Topic? = null
+        val topic: Topic? = null,
+
+        @OneToOne
+        val source: Notebook
 
 ) {
 

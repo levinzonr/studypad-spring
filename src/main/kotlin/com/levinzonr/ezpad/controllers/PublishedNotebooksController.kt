@@ -8,6 +8,8 @@ import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
 import com.levinzonr.ezpad.security.EzpadUserDetails
 import com.levinzonr.ezpad.services.CommentService
 import com.levinzonr.ezpad.services.PublishedNotebookService
+import com.levinzonr.ezpad.services.TagService
+import com.levinzonr.ezpad.services.TopicService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.jpa.repository.Query
 import org.springframework.http.HttpStatus
@@ -25,6 +27,12 @@ class PublishedNotebooksController {
 
     @Autowired
     private lateinit var commentService: CommentService
+
+    @Autowired
+    private lateinit var tagService: TagService
+
+    @Autowired
+    private lateinit var topicService: TopicService
 
 
     @GetMapping
@@ -70,4 +78,13 @@ class PublishedNotebooksController {
         return service.findNotebooks(tags, topic).map { it.toResponse() }
     }
 
+    @GetMapping("/tags")
+    fun getTags() : List<String> {
+        return tagService.findTagsByName("").map { it.name }
+    }
+
+    @GetMapping("/topics")
+    fun getTopics() : List<String> {
+        return topicService.getTopics().map { it.name }
+    }
 }
