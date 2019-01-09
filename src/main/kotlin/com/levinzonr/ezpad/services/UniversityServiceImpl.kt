@@ -18,9 +18,9 @@ class UniversityServiceImpl : UniversityService {
         if (query.isEmpty()) return all.toList()
 
         return listOf<List<University>>(
-                all.filter { it.fullName.startsWith(query, true) }.toList(),
-                all.filter { it.shortName.startsWith(query, true) }.toList(),
-                all.filter { it.aliases().any {it.startsWith(query, true)} }
+                all.filter { it.fullName.contains(query, true) }.toList(),
+                all.filter { it.shortName.contains(query, true) }.toList(),
+                all.filter { it.aliases().any {it.contains(query, true)} }
         ).flatten().distinctBy { it.id }
 
     }
@@ -28,6 +28,19 @@ class UniversityServiceImpl : UniversityService {
     override fun createUniversity(fullName: String, shortName: String, aliases: List<String>?) : University {
         val university = University(fullName = fullName, shortName = shortName, aliases = aliases?.toAliases() ?: "")
         return universityRepository.save(university)
+    }
+
+    override fun deleteUniversity(id: Long) {
+        universityRepository.delete(findById(id))
+    }
+
+    override fun updateUniversity(id: Long, newFullName: String?, newShortName: String?): University {
+        val uni = findById(id)
+        val newUni = uni.copy(
+                fullName = newFullName ?: uni.fullName,
+                shortName = newShortName ?: uni.shortName
+        )
+        return universityRepository.save(newUni)
     }
 
     override fun getStudentsFromUniversity(uniId: Long): List<User> {

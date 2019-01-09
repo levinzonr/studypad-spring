@@ -33,8 +33,8 @@ class AuthorizationServerConfiguration : AuthorizationServerConfigurerAdapter() 
     @Autowired
     private lateinit var authenticationManager: AuthenticationManager
 
-    @Autowired
-    private lateinit var dataSource: DataSource
+   // @Autowired
+   // private lateinit var dataSource: DataSource
 
     override fun configure(endpoints: AuthorizationServerEndpointsConfigurer?) {
         endpoints?.tokenStore(tokenStore)

@@ -13,10 +13,12 @@ import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore
 import org.springframework.boot.CommandLineRunner
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
+import org.springframework.web.bind.annotation.CrossOrigin
 import javax.sql.DataSource
 
 
 @SpringBootApplication
+@CrossOrigin(origins = ["http://localhost:3000"])
 class EzpadApplication {
 
     @Autowired
@@ -32,7 +34,7 @@ class EzpadApplication {
 
         val jdbcTokenStore = JdbcTokenStore(dataSource)
 
-
+        return InMemoryTokenStore()
         return jdbcTokenStore
     }
 
@@ -56,7 +58,7 @@ class EzpadApplication {
     fun initDatabase(universityService: UniversityService, userService: UserService): CommandLineRunner {
        return CommandLineRunner {
            universityService.init()
-     //      userService.createUser("roma@mail.ru", "19961600")
+           userService.createUser("roma@mail.ru", "19961600")
        }
     }
 

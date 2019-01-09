@@ -1,6 +1,5 @@
 package com.levinzonr.ezpad.domain.responses
 
-import com.levinzonr.ezpad.domain.model.University
 
 data class UserResponse(
         val uuid: Long,
@@ -11,4 +10,11 @@ data class UserResponse(
         val university: UniversityResponse?,
         val photoUrl: String?,
         val isNewUser: Boolean = false
+)
+
+data class AuthorResponse(
+        val uuid: Long,
+        val displayName: String?,
+        val photoUrl: String?,
+        val university: UniversityResponse?
 )

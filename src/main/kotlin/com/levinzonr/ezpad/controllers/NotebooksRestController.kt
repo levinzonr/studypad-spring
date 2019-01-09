@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.controllers
 
+import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.payload.ChangeNotebookPayload
 import com.levinzonr.ezpad.domain.payload.CreateNotebookPayload
 import com.levinzonr.ezpad.domain.responses.GradientColorResponse
@@ -70,5 +71,10 @@ class NotebooksRestController {
     @GetMapping("/colors")
     fun getColors() : List<GradientColorResponse> {
         return colorsService.getColors()
+    }
+
+    @PostMapping("/import")
+    fun importNotebook(@AuthenticationPrincipal userDetails: EzpadUserDetails, @RequestParam("id") id: String) : NotebookResponse {
+        return notebooksService.createFromPublished(id, userDetails.userId).toResponse()
     }
 }

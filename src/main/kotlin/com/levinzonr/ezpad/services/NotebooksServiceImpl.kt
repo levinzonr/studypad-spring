@@ -14,7 +14,16 @@ class NotebooksServiceImpl : NotebookService {
     private lateinit var repository: NotebooksRepository
 
     @Autowired
+    private lateinit var publishedRepo: PublishedNotebookService
+
+    @Autowired
+    private lateinit var userService: UserService
+
+    @Autowired
     private lateinit var colorService: ColorsService
+
+    @Autowired
+    private lateinit var notesService: NotesService
 
 
     override fun getUserNotebooks(user: User): List<Notebook> {
@@ -43,5 +52,34 @@ class NotebooksServiceImpl : NotebookService {
 
     override fun deleteNotebook(id: Long) {
         repository.deleteById(id)
+    }
+
+
+    override fun createFromPublished(publishedId: String, userId: Long): Notebook {
+        val user = userService.getUserById(userId)
+        val published = publishedRepo.getPublishedNotebookById(publishedId)
+
+        val previouslyImported = getUserNotebooks(user).firstOrNull { it.sourceId == publishedId }
+
+        // User is not an author and didn't import it previously
+        if (user.id != published.author.id && previouslyImported == null) {
+            val notebook = createNewNotebook(published.title, user)
+            published.notes.forEach { notesService.createNote(it.title ?: "Unknown title", it.content ?: "", notebook) }
+            repository.save(notebook.copy(sourceId = publishedId))
+            return notebook
+            // User did import this notebook previously, all notes will be overriden
+        } else if (previouslyImported != null) {
+            val notes = published.notes.map {
+                notesService.createNote(it.title ?: "Unknown title", it.content ?: "", previouslyImported)
+            }
+            return repository.save(previouslyImported.copy(notes = notes))
+
+            // TODO User is the author
+        } else {
+            val notebook = createNewNotebook(published.title, user)
+            published.notes.forEach { notesService.createNote(it.title ?: "", it.content ?: "", notebook) }
+            return notebook
+        }
+
     }
 }
