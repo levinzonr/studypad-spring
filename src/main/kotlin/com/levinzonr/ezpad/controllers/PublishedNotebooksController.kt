@@ -1,6 +1,7 @@
 package com.levinzonr.ezpad.controllers
 
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
+import com.levinzonr.ezpad.domain.model.Topic
 import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
 import com.levinzonr.ezpad.domain.responses.CommentResponse
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
@@ -84,7 +85,7 @@ class PublishedNotebooksController {
     }
 
     @GetMapping("/topics")
-    fun getTopics() : List<String> {
-        return topicService.getTopics().map { it.name }
+    fun getTopics() : List<Topic> {
+        return topicService.getTopics()
     }
 }
