@@ -60,18 +60,13 @@ class AuthenticationController {
         }
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000"])
     @PostMapping("/email")
     fun loginViaEmail(request: HttpServletRequest, @Valid @RequestBody emailLoginPayload: EmailLoginPayload) : TokenResponse {
         return RestAuthHelper.authRedirect(request.baseUrl, emailLoginPayload.email, emailLoginPayload.password).also {
             it.user = userService.getUserEmail(emailLoginPayload.email).toResponse()
         }
     }
-    @ResponseStatus(HttpStatus.OK)
-    @RequestMapping("/email")
-    fun test() {
-        println("tsts")
-    }
+
 
     @PostMapping("/google")
     fun loginViaGoogle(request: HttpServletRequest,

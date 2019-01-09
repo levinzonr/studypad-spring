@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.security
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -17,9 +18,11 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
         return authenticationManager()
     }
 
+    @Autowired
+    private lateinit var filter: SimpleCORSFilter
 
     override fun configure(http: HttpSecurity?) {
-        http?.cors()?.and()?.authorizeRequests()
+        http?.cors()?.disable()?.authorizeRequests()
                 ?.antMatchers(HttpMethod.POST, "/oauth/**")?.permitAll()
                 ?.antMatchers(HttpMethod.OPTIONS, "/api/**")?.permitAll()
                 ?.antMatchers(HttpMethod.GET, "/api/shared/**")?.permitAll()
