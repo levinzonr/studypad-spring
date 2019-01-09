@@ -51,7 +51,7 @@ class UniversityRestController {
         if (createUniversityPayload.fullName == null || createUniversityPayload.shortName == null) {
             throw InvalidPayloadException()
         } else {
-            universityService.createUniversity(createUniversityPayload.fullName, createUniversityPayload.shortName, createUniversityPayload.aliases.toList())
+            return universityService.createUniversity(createUniversityPayload.fullName, createUniversityPayload.shortName, createUniversityPayload.aliases.toList()).toResponse()
         }
     }
 }

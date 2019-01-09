@@ -23,4 +23,16 @@ class TopicServiceImpl : TopicService {
     override fun findById(id: Long): Topic {
         return repo.findById(id).orElseThrow { NotFoundException.Builder(Topic::class).buildWithId(id.toString()) }
     }
+
+    override fun editTopic(id: Long, name: String?): Topic {
+        val topic = findById(id)
+        val newTopic = topic.copy(
+                name = name ?: topic.name
+        )
+        return repo.save(newTopic)
+    }
+
+    override fun deleteTopic(id: Long) {
+        repo.delete(findById(id))
+    }
 }
