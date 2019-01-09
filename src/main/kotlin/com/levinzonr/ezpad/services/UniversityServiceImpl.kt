@@ -30,6 +30,19 @@ class UniversityServiceImpl : UniversityService {
         return universityRepository.save(university)
     }
 
+    override fun deleteUniversity(id: Long) {
+        universityRepository.delete(findById(id))
+    }
+
+    override fun updateUniversity(id: Long, newFullName: String?, newShortName: String?): University {
+        val uni = findById(id)
+        val newUni = uni.copy(
+                fullName = newFullName ?: uni.fullName,
+                shortName = newShortName ?: uni.shortName
+        )
+        return universityRepository.save(newUni)
+    }
+
     override fun getStudentsFromUniversity(uniId: Long): List<User> {
         return findById(uniId).students.toList()
     }
