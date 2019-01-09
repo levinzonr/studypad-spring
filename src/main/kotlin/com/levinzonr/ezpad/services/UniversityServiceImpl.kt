@@ -18,9 +18,9 @@ class UniversityServiceImpl : UniversityService {
         if (query.isEmpty()) return all.toList()
 
         return listOf<List<University>>(
-                all.filter { it.fullName.startsWith(query, true) }.toList(),
-                all.filter { it.shortName.startsWith(query, true) }.toList(),
-                all.filter { it.aliases().any {it.startsWith(query, true)} }
+                all.filter { it.fullName.contains(query, true) }.toList(),
+                all.filter { it.shortName.contains(query, true) }.toList(),
+                all.filter { it.aliases().any {it.contains(query, true)} }
         ).flatten().distinctBy { it.id }
 
     }

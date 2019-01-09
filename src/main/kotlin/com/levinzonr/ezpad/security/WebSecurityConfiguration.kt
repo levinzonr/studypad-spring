@@ -19,7 +19,7 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
 
 
     override fun configure(http: HttpSecurity?) {
-        http?.authorizeRequests()
+        http?.cors()?.and()?.authorizeRequests()
                 ?.antMatchers(HttpMethod.POST, "/oauth/**")?.permitAll()
                 ?.antMatchers(HttpMethod.OPTIONS, "/api/**")?.permitAll()
                 ?.antMatchers(HttpMethod.GET, "/api/shared/**")?.permitAll()
