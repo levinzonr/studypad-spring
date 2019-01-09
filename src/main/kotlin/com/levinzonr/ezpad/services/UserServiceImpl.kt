@@ -32,12 +32,14 @@ class UserServiceImpl : UserService {
         }
 
 
+        val displayName = "${firstName ?: ""} ${lastName ?: ""}"
+
         val user = User(
                 email = email,
                 password = passwordEncoder.encode(password),
                 firstName = firstName,
                 lastName = lastName,
-                displayName = "$firstName $lastName",
+                displayName = if (firstName == null && lastName == null) "Unknown user" else displayName,
                 photoUrl = photoUrl,
                 roles = setOf(role)
         )

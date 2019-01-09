@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.services
 
+import com.levinzonr.ezpad.domain.errors.InvalidPayloadException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.PublishedNote
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
@@ -39,30 +40,44 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     override fun publishNotebook(userId: Long, notebookId: Long, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
         val author = userService.getUserById(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
-        val uni : University?  = universityID?.let { universityService.findById(it) }
-        val topic : Topic? = topicId?.let { topicService.findById(topicId) }
 
-        val domainTags = tags.map { tagService.createTag(it) }.toSet()
+        // Check if notebook has been already published
+        if (notebook.exportedId != null) {
+            throw InvalidPayloadException()
+        } else {
 
-        val published = sharedNotebookRepo.save(PublishedNotebook(
-                author = author,
-                lastUpdatedTimestamp = Date().time,
-                createdTimestamp = Date().time,
-                description = description,
-                title = title ?: notebook.name,
-                university = uni,
-                topic = topic,
-                tags = domainTags,
-                source = notebook
-        ))
 
-        notebook.notes.forEach { sharedNotesRepo.save(
-                PublishedNote(title = it.title,
-                        content = it.content,
-                        notebook = published)
-        ) }
+            val uni: University? = universityID?.let { universityService.findById(it) }
+            val topic: Topic? = topicId?.let { topicService.findById(topicId) }
 
-        return published
+            val domainTags = tags.map { tagService.createTag(it) }.toSet()
+
+            val published = sharedNotebookRepo.save(PublishedNotebook(
+                    author = author,
+                    lastUpdatedTimestamp = Date().time,
+                    createdTimestamp = Date().time,
+                    description = description,
+                    title = title ?: notebook.name,
+                    university = uni,
+                    topic = topic,
+                    tags = domainTags,
+                    source = notebook
+            ))
+
+            // Update 1 to 1 association
+            notebookService.updateNotebook(notebook.copy(exportedId = published.id))
+
+            notebook.notes.forEach {
+                sharedNotesRepo.save(
+                        PublishedNote(title = it.title,
+                                content = it.content,
+                                notebook = published)
+                )
+            }
+
+
+            return published
+        }
     }
 
 

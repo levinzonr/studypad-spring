@@ -13,6 +13,8 @@ interface NotebookService {
 
     fun updateNotebook(id: Long, name: String?, color: String?) : Notebook
 
+    fun updateNotebook(notebook: Notebook) : Notebook
+
     fun deleteNotebook(id: Long)
 
     fun createFromPublished(publishedId: String, userId: Long) : Notebook

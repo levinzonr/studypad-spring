@@ -10,5 +10,4 @@ class PublishedNotebookResponse(
         val commentCount: Int,
         val topic: String?
 
-
 )

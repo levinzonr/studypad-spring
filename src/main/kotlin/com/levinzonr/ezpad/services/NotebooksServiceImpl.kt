@@ -54,6 +54,9 @@ class NotebooksServiceImpl : NotebookService {
         repository.deleteById(id)
     }
 
+    override fun updateNotebook(notebook: Notebook): Notebook {
+        return repository.save(notebook)
+    }
 
     override fun createFromPublished(publishedId: String, userId: Long): Notebook {
         val user = userService.getUserById(userId)

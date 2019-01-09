@@ -20,7 +20,11 @@ data class Notebook(
         val notes: List<Note> = listOf(),
 
         // Source of the notebook ( i.e id of the Published one if exported, null otherwise )
-        val sourceId: String? = null
+        val sourceId: String? = null,
+
+
+        // This one will be set once user will publish this notebook
+        val exportedId: String? = null
 ) {
 
         fun toResponse() : NotebookResponse {
@@ -28,7 +32,9 @@ data class Notebook(
                         id = id!!,
                         name = name,
                         color = colour.toGradient(),
-                        notesCount = notes.count()
+                        notesCount = notes.count(),
+                        sourceId = sourceId,
+                        exportedId = exportedId
 
                 )
         }
