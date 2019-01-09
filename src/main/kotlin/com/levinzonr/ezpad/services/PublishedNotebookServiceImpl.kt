@@ -48,6 +48,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                 author = author,
                 lastUpdatedTimestamp = Date().time,
                 createdTimestamp = Date().time,
+                description = description,
                 title = title ?: notebook.name,
                 university = uni,
                 topic = topic,
