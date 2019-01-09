@@ -15,6 +15,10 @@ interface UniversityService {
 
     fun findById(uniId: Long) : University
 
+    fun deleteUniversity(id: Long)
+
+    fun updateUniversity(id: Long, newFullName: String? = null, newShortName: String? = null) : University
+
     fun updateAliases(id: Long, aliases: List<String>) : University
 
     fun findAll() : List<University>

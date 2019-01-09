@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.services
 
+import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
 
 interface PublishedNotebookService {

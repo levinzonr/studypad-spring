@@ -10,4 +10,8 @@ interface TopicService {
 
     fun findById(id: Long): Topic
 
+    fun editTopic(id: Long, name: String?) : Topic
+
+    fun deleteTopic(id: Long)
+
 }

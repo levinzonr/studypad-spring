@@ -5,7 +5,7 @@ class PublishedNotebookResponse(
         val notesCount: Long,
         val id: String,
         val description: String?,
-        val author: UserResponse,
+        val author: AuthorResponse,
         val tags: Set<String>,
         val commentCount: Int,
         val topic: String?

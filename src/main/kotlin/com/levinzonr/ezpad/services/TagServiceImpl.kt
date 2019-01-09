@@ -12,7 +12,7 @@ class TagServiceImpl : TagService {
     private lateinit var repo: TagRepository
 
     override fun createTag(name: String): Tag {
-        return repo.save(Tag(name.toLowerCase()))
+        return repo.save(Tag(name.toLowerCase().trim()))
     }
 
     override fun findTagsByName(query: String): List<Tag> {

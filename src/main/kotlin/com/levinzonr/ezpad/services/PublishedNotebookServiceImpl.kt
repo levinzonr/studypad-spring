@@ -51,7 +51,8 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                 title = title ?: notebook.name,
                 university = uni,
                 topic = topic,
-                tags = domainTags
+                tags = domainTags,
+                source = notebook
         ))
 
         notebook.notes.forEach { sharedNotesRepo.save(
@@ -62,6 +63,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
         return published
     }
+
 
 
     override fun filterByTag(tag: String): List<PublishedNotebook> {
