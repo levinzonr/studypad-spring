@@ -3,14 +3,13 @@ package com.levinzonr.ezpad.security
 import com.levinzonr.ezpad.domain.model.UserRole
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
-import java.util.*
-import javax.management.relation.Role
 
 
-class EzpadUserDetails(user: com.levinzonr.ezpad.domain.model.User)
-    : User(user.email, user.password, createAuthorities(user.roles)) {
+class StudyPadUserDetails(val id: String, val email: String)
+    : User(email, null, createAuthorities(setOf(UserRole.USER))) {
 
-    val userId: Long = user.id ?: throw RuntimeException("User id can't be null")
+    val userId: String
+        get() = id
 
 
 

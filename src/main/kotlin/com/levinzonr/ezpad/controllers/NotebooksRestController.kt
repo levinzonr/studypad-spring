@@ -6,7 +6,7 @@ import com.levinzonr.ezpad.domain.payload.CreateNotebookPayload
 import com.levinzonr.ezpad.domain.responses.GradientColorResponse
 import com.levinzonr.ezpad.domain.responses.NoteResponse
 import com.levinzonr.ezpad.domain.responses.NotebookResponse
-import com.levinzonr.ezpad.security.EzpadUserDetails
+import com.levinzonr.ezpad.security.StudyPadUserDetails
 import com.levinzonr.ezpad.services.ColorsService
 import com.levinzonr.ezpad.services.NotebookService
 import com.levinzonr.ezpad.services.UserService
@@ -32,14 +32,14 @@ class NotebooksRestController {
     private lateinit var colorsService: ColorsService
 
     @GetMapping
-    fun getCurrentUserNotebooks(@AuthenticationPrincipal details: EzpadUserDetails): List<NotebookResponse> {
+    fun getCurrentUserNotebooks(@AuthenticationPrincipal details: StudyPadUserDetails): List<NotebookResponse> {
         val user = userService.getUserById(details.userId)
         return notebooksService.getUserNotebooks(user).map { it.toResponse() }
     }
 
 
     @PostMapping
-    fun postNewNotebook(@AuthenticationPrincipal details: EzpadUserDetails,
+    fun postNewNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                         @Valid @RequestBody createNotebookPayload: CreateNotebookPayload) : NotebookResponse {
         val user = userService.getUserById(details.userId)
         return notebooksService.createNewNotebook(createNotebookPayload.name, user).toResponse()
@@ -48,7 +48,7 @@ class NotebooksRestController {
 
     @ResponseStatus(code = HttpStatus.OK)
     @DeleteMapping("/{id}")
-    fun deleteNotebook(@AuthenticationPrincipal details: EzpadUserDetails,
+    fun deleteNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                        @PathVariable("id") id: Long) {
         val user = userService.getUserById(details.userId)
         notebooksService.deleteNotebook(id)
@@ -56,7 +56,7 @@ class NotebooksRestController {
 
 
     @PatchMapping("/{id}")
-    fun updateNotebook(@AuthenticationPrincipal details: EzpadUserDetails,
+    fun updateNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                        @PathVariable("id") id: Long,
                        @RequestBody @Valid createNotebookPayload: ChangeNotebookPayload) : NotebookResponse {
         return notebooksService.updateNotebook(id, createNotebookPayload.name, createNotebookPayload.gradientColorResponse.asString()).toResponse()
@@ -74,7 +74,7 @@ class NotebooksRestController {
     }
 
     @PostMapping("/import")
-    fun importNotebook(@AuthenticationPrincipal userDetails: EzpadUserDetails, @RequestParam("id") id: String) : NotebookResponse {
+    fun importNotebook(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") id: String) : NotebookResponse {
         return notebooksService.createFromPublished(id, userDetails.userId).toResponse()
     }
 }

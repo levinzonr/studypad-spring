@@ -6,7 +6,7 @@ import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
 import com.levinzonr.ezpad.domain.responses.CommentResponse
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
-import com.levinzonr.ezpad.security.EzpadUserDetails
+import com.levinzonr.ezpad.security.StudyPadUserDetails
 import com.levinzonr.ezpad.services.CommentService
 import com.levinzonr.ezpad.services.PublishedNotebookService
 import com.levinzonr.ezpad.services.TagService
@@ -42,7 +42,7 @@ class PublishedNotebooksController {
     }
 
     @PostMapping
-    fun publishNotebook(@AuthenticationPrincipal userDetails: EzpadUserDetails, @RequestBody notebook: PublishedNotebookPayload) : PublishedNotebookResponse {
+    fun publishNotebook(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestBody notebook: PublishedNotebookPayload) : PublishedNotebookResponse {
         return service.publishNotebook(
                 userDetails.userId, notebook.notebookId, notebook.title,
                 notebook.description, notebook.topic, notebook.tags ?: setOf(), notebook.universityId).toResponse()
@@ -55,7 +55,7 @@ class PublishedNotebooksController {
 
 
     @PostMapping("/{id}/comment")
-    fun postNotebookComment(@AuthenticationPrincipal user: EzpadUserDetails,
+    fun postNotebookComment(@AuthenticationPrincipal user: StudyPadUserDetails,
                             @RequestParam comment: String,
                             @PathVariable("id") id: String) : CommentResponse {
         return commentService.postNotebookComment(user.userId, id, comment).toResponse()

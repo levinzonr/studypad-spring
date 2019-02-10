@@ -58,7 +58,7 @@ class NotebooksServiceImpl : NotebookService {
         return repository.save(notebook)
     }
 
-    override fun createFromPublished(publishedId: String, userId: Long): Notebook {
+    override fun createFromPublished(publishedId: String, userId: String): Notebook {
         val user = userService.getUserById(userId)
         val published = publishedRepo.getPublishedNotebookById(publishedId)
 

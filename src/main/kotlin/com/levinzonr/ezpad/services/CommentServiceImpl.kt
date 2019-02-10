@@ -19,7 +19,7 @@ class CommentServiceImpl : CommentService {
     private lateinit var notebookService: PublishedNotebookService
 
 
-    override fun postNotebookComment(userId: Long, notebookId: String, comment: String): Comment {
+    override fun postNotebookComment(userId: String, notebookId: String, comment: String): Comment {
         val user = userService.getUserById(userId)
         val notebook = notebookService.getPublishedNotebookById(notebookId)
         return repo.save(Comment(

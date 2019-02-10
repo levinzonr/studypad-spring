@@ -37,7 +37,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     @Autowired
     private lateinit var topicService: TopicService
 
-    override fun publishNotebook(userId: Long, notebookId: Long, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
+    override fun publishNotebook(userId: String, notebookId: Long, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
         val author = userService.getUserById(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
 

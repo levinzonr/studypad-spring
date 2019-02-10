@@ -24,7 +24,6 @@ import org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED
 import org.apache.catalina.manager.StatusTransformer.setContentType
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import org.springframework.security.jwt.JwtHelper.headers
 import org.springframework.util.MultiValueMap
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus

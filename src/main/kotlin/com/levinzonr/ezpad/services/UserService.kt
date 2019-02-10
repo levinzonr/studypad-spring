@@ -13,16 +13,16 @@ interface UserService {
             photoUrl: String? = null, role: UserRole = UserRole.USER) : User
 
 
-    fun getUserById(id: Long) : User
+    fun getUserById(id: String) : User
 
     fun getUserEmail(email: String) : User
 
-    fun updateUserById(id: Long, firstName: String?,
+    fun updateUserById(id: String, firstName: String?,
                        lastName: String?, password: String?) : User
 
     fun processFacebookUser(facebookUser: FacebookUser) : User
 
-    fun updateUserUniversity(userId: Long, universityId: Long) : User
+    fun updateUserUniversity(userId: String, universityId: Long) : User
 
 
 }
