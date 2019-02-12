@@ -10,6 +10,8 @@ data class Note(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
         val title: String? = null,
+
+        @Column(columnDefinition = "TEXT")
         val content: String? = null,
 
         @ManyToOne
