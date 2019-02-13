@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.services
 
+import com.google.firebase.auth.UserRecord
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.model.UserRole
 import com.levinzonr.ezpad.domain.payload.FacebookUser
@@ -7,22 +8,17 @@ import java.util.*
 
 interface UserService {
 
-    fun createUser(
-            email: String, password: String,
-            firstName: String? = null, lastName: String? = null,
-            photoUrl: String? = null, role: UserRole = UserRole.USER) : User
+    /**
+     * Creates firebase user, saves him to the database
+     */
+    fun createUser(email: String, password: String, firstName: String?, lastName: String?) : User
 
+    fun createUser(firebaseId: String) : User
 
-    fun getUserById(id: String) : User
-
-    fun getUserEmail(email: String) : User
-
-    fun updateUserById(id: String, firstName: String?,
-                       lastName: String?, password: String?) : User
-
-    fun processFacebookUser(facebookUser: FacebookUser) : User
-
-    fun updateUserUniversity(userId: String, universityId: Long) : User
+    /**
+     * Returns a user from the database
+     */
+    fun findUserById(id: String) : User?
 
 
 }

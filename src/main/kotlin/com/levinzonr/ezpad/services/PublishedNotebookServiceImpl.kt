@@ -2,10 +2,7 @@ package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.errors.InvalidPayloadException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
-import com.levinzonr.ezpad.domain.model.PublishedNote
-import com.levinzonr.ezpad.domain.model.PublishedNotebook
-import com.levinzonr.ezpad.domain.model.Topic
-import com.levinzonr.ezpad.domain.model.University
+import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.repositories.PublishedNoteRepository
 import com.levinzonr.ezpad.domain.repositories.PublishedNotebookRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,7 +35,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     private lateinit var topicService: TopicService
 
     override fun publishNotebook(userId: String, notebookId: Long, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
-        val author = userService.getUserById(userId)
+        val author = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
 
         // Check if notebook has been already published

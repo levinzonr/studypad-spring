@@ -1,6 +1,8 @@
 package com.levinzonr.ezpad.controllers
 
+import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.Notebook
+import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.payload.ChangeNotebookPayload
 import com.levinzonr.ezpad.domain.payload.CreateNotebookPayload
 import com.levinzonr.ezpad.domain.responses.GradientColorResponse
@@ -33,7 +35,7 @@ class NotebooksRestController {
 
     @GetMapping
     fun getCurrentUserNotebooks(@AuthenticationPrincipal details: StudyPadUserDetails): List<NotebookResponse> {
-        val user = userService.getUserById(details.userId)
+        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         return notebooksService.getUserNotebooks(user).map { it.toResponse() }
     }
 
@@ -41,7 +43,7 @@ class NotebooksRestController {
     @PostMapping
     fun postNewNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                         @Valid @RequestBody createNotebookPayload: CreateNotebookPayload) : NotebookResponse {
-        val user = userService.getUserById(details.userId)
+        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         return notebooksService.createNewNotebook(createNotebookPayload.name, user).toResponse()
     }
 
@@ -50,7 +52,7 @@ class NotebooksRestController {
     @DeleteMapping("/{id}")
     fun deleteNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                        @PathVariable("id") id: Long) {
-        val user = userService.getUserById(details.userId)
+        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         notebooksService.deleteNotebook(id)
     }
 

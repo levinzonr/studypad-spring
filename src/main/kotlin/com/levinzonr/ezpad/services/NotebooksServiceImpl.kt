@@ -59,7 +59,7 @@ class NotebooksServiceImpl : NotebookService {
     }
 
     override fun createFromPublished(publishedId: String, userId: String): Notebook {
-        val user = userService.getUserById(userId)
+        val user = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         val published = publishedRepo.getPublishedNotebookById(publishedId)
 
         val previouslyImported = getUserNotebooks(user).firstOrNull { it.sourceId == publishedId }

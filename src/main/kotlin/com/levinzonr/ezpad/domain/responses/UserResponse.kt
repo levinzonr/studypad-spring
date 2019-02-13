@@ -18,3 +18,9 @@ data class AuthorResponse(
         val photoUrl: String?,
         val university: UniversityResponse?
 )
+
+
+data class FirebaseLoginResponse(
+        val userResponse: UserResponse,
+        val isNewUser: Boolean
+)

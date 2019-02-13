@@ -28,54 +28,22 @@ class UserRestController {
     @Autowired
     private lateinit var userService: UserService
 
-    @Autowired
-    private lateinit var notebookService: NotebookService
 
-    @Autowired
-    private lateinit var noteService: NotesService
 
     @GetMapping("/me")
     fun getCurrentUser(@AuthenticationPrincipal userDetails: StudyPadUserDetails): UserResponse {
         val auth = SecurityContextHolder.getContext().authentication
         (auth.principal as FirebaseAuthToken).token
-        return userService.getUserById(userDetails.userId).toResponse()
+        return userService.findUserById(userDetails.userId)!!.toResponse()
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    fun createNewUser(@Valid @RequestBody payload: CreateUserPayload,
-                      req: HttpServletRequest): TokenResponse {
-        val user = userService.createUser(payload.email!!, payload.password!!, payload.firstName, payload.lastName, null)
-        val nb = notebookService.createNewNotebook("Default", user)
-        noteService.createNote("Test", "Content", nb)
-        val token = FirebaseAuth.getInstance().createCustomToken(user.id)
-        return TokenResponse(access_token = token, user = user.toResponse())
-    }
+
 
 
     @GetMapping("/{userId}")
     fun getUserById(@PathVariable("userId") userId: String): UserResponse {
-        return userService.getUserById(userId).toResponse()
+        return userService.findUserById(userId)!!.toResponse()
     }
 
-
-    @PostMapping("/me")
-    fun updateCurrentUserProfile(@AuthenticationPrincipal userDetails: StudyPadUserDetails,
-                                 @Valid @RequestBody updateUserPayload: UpdateUserPayload): UserResponse {
-        return userService.updateUserById(userDetails.userId,
-                updateUserPayload.firstName,
-                updateUserPayload.lastName,
-                updateUserPayload.password).toResponse()
-    }
-
-    @PostMapping("/signup/finish")
-    fun updateUserUniversity(
-            @Valid @RequestBody finishSignup: FinishSignupPayload,
-            @AuthenticationPrincipal userDetails: StudyPadUserDetails) : UserResponse {
-
-        println("Update $finishSignup")
-        return userService.updateUserUniversity(userDetails.userId, finishSignup.universityId!!).toResponse()
-
-    }
 
 }
