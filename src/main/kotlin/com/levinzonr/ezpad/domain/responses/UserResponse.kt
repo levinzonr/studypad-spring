@@ -24,3 +24,9 @@ data class FirebaseLoginResponse(
         val userResponse: UserResponse,
         val isNewUser: Boolean
 )
+
+
+data class FirebaseTokenResponse(
+        val token: String,
+        val user: UserResponse
+)

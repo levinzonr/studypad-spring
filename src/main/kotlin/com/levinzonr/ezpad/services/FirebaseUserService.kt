@@ -2,9 +2,11 @@ package com.levinzonr.ezpad.services
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserRecord
+import com.levinzonr.ezpad.domain.errors.BadRequestException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.repositories.UserRepository
+import com.levinzonr.ezpad.utils.tryGet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -21,6 +23,13 @@ class FirebaseUserService : UserService {
     override fun createUser(email: String, password: String, firstName: String?, lastName: String?): User {
         val displayName = if ("${firstName ?: ""} ${lastName
                         ?: ""}".isBlank()) "Unknown user" else "$firstName $lastName"
+        println("Create from firebase reqyest")
+
+        val existedUser : UserRecord? = try { auth.getUserByEmail(email) } catch (e: Exception) { null }
+        if (existedUser != null) {
+            throw BadRequestException("User already exist")
+        }
+
 
         val request = UserRecord.CreateRequest()
                 .setEmail(email)
@@ -29,7 +38,8 @@ class FirebaseUserService : UserService {
                 .setEmailVerified(false)
 
 
-        val userRecord = auth.createUser(request)
+
+        val userRecord = auth.createUserAsync(request).get()
 
         val user = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl)
         return repository.save(user)
@@ -37,12 +47,19 @@ class FirebaseUserService : UserService {
 
     override fun createUser(firebaseId: String): User {
         val userRecord = auth.getUser(firebaseId)
-        val dbUser = User(userRecord.uid, userRecord.email, null, null, userRecord.displayName, userRecord.photoUrl)
+        println("Create from firebase recoed")
+        val names = userRecord.displayName.split(" ")
+        val firstName = names.getOrNull(0)
+        val lastName = names.getOrNull(1)
+
+        val dbUser = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl)
         return repository.save(dbUser)
     }
 
     override fun findUserById(id: String): User? {
-        return repository.findById(id).get()
+        val user = repository.findById(id).tryGet()
+        println("Found user: ${user?.id}")
+        return user
     }
 
 }

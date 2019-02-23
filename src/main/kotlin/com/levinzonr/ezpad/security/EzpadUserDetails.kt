@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.User
 
 
 class StudyPadUserDetails(val id: String, val email: String)
-    : User(email, null, createAuthorities(setOf(UserRole.USER))) {
+    : User(email, "password", createAuthorities(setOf(UserRole.USER))) {
 
     val userId: String
         get() = id

@@ -34,7 +34,9 @@ class FirebaseAuthProvider : AbstractUserDetailsAuthenticationProvider() {
 
     @Throws(AuthenticationException::class)
     override fun retrieveUser(username: String, authentication: UsernamePasswordAuthenticationToken): UserDetails {
+
         val authenticationToken = authentication as FirebaseAuthToken
+
         print("retrieve user: $username, ${authentication.token}")
         try {
             val firebaseToken = auth.verifyIdToken(authenticationToken.token)
