@@ -33,7 +33,7 @@ class AuthenticationController {
                 createUserPayload.firstName,
                 createUserPayload.lastName)
 
-        return FirebaseTokenResponse(authenticationService.createCustomToken(user.id!!), user.toResponse()1)
+        return FirebaseTokenResponse(authenticationService.createCustomToken(user.id!!), user.toResponse())
     }
 
     @PostMapping("/login")
