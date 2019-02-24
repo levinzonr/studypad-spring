@@ -16,6 +16,9 @@ import org.springframework.core.io.ClassPathResource
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
+import java.io.FileInputStream
+
+
 
 
 @SpringBootApplication
@@ -41,11 +44,14 @@ class EzpadApplication {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
+            val serviceAccount = FileInputStream("src/main/resources/firebase-adminsdk.json")
+
             val options = FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(ClassPathResource("/firebase-adminsdk.json").inputStream))
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build()
+
             FirebaseApp.initializeApp(options)
-            SpringApplication.run(EzpadApplication::class.java, *args)
+            runApplication<EzpadApplication>(*args)
         }
     }
 

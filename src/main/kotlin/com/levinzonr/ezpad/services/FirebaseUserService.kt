@@ -20,6 +20,9 @@ class FirebaseUserService : UserService {
     @Autowired
     private lateinit var repository: UserRepository
 
+    @Autowired
+    private lateinit var universityService: UniversityService
+
     override fun createUser(email: String, password: String, firstName: String?, lastName: String?): User {
         val displayName = if ("${firstName ?: ""} ${lastName
                         ?: ""}".isBlank()) "Unknown user" else "$firstName $lastName"
@@ -53,7 +56,7 @@ class FirebaseUserService : UserService {
         val lastName = names.getOrNull(1)
 
         val dbUser = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl)
-        return repository.save(dbUser)
+        return repository.save(dbUser).apply { isNewUser = true }
     }
 
     override fun findUserById(id: String): User? {
@@ -62,4 +65,13 @@ class FirebaseUserService : UserService {
         return user
     }
 
+    override fun updateUser(userId: String, universityId: Long?) : User {
+        var user = findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
+        universityId?.let { id ->
+            val uni = universityService.findById(id)
+            user = repository.save(user.copy(university = uni))
+        }
+
+        return user
+    }
 }

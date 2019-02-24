@@ -6,6 +6,9 @@ import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.repositories.UniversityRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.io.File
+import java.io.FileInputStream
+import java.nio.charset.Charset
 
 @Service
 class UniversityServiceImpl : UniversityService {
@@ -68,31 +71,8 @@ class UniversityServiceImpl : UniversityService {
     }
 
     override fun init() {
-
-        // CVUT
-        val cvut = University(
-                fullName = "Czech Technical University in Prague",
-                shortName = "ČVUT",
-                aliases = listOf("České vysoké učení technické v Praze", "ČVUT", "CVUT", "Ceske vysoke uceni technicke").toAliases()
-        )
-
-        val vse = University(
-                fullName = "University of Economics, Prague",
-                shortName = "VŠE",
-                aliases = listOf("Vysoká škola ekonomická v Praze", "VSE", "Vysoka skola ekonomicka v praze").toAliases()
-        )
-
-
-        val czu = University(
-                fullName = "Czech University of Life Sciences Prague",
-                shortName = "ČZU",
-                aliases = listOf("Česká zemědělská univerzita v Praze", "CZU", "Ceska zemedelska univerzita").toAliases()
-        )
-
-        val a = universityRepository.save(cvut)
-        println("Saved cvut: $a")
-        universityRepository.save(vse)
-        universityRepository.save(czu)
+        universityRepository.deleteAll()
+        val json = File("src/main/resources/source_unis.json").inputStream().readBytes().toString(Charsets.UTF_8)
     }
 
 

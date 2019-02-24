@@ -68,7 +68,7 @@ data class PublishedNotebook(
                 return PublishedNotebookDetail(
                         id = id,
                         notes = notes.map { it.toResponse() },
-                        comments = comments.map { it.toResponse() },
+                        comments = comments.sortedByDescending { it.dateCreated }.map { it.toResponse() },
                         title = title,
                         description = description,
                         author = author.toAuthorResponse(),

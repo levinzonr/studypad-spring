@@ -1,6 +1,7 @@
 package com.levinzonr.ezpad.services
 
 import com.google.firebase.auth.UserRecord
+import com.levinzonr.ezpad.domain.model.University
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.model.UserRole
 import com.levinzonr.ezpad.domain.payload.FacebookUser
@@ -21,4 +22,5 @@ interface UserService {
     fun findUserById(id: String) : User?
 
 
+    fun updateUser(userId: String, universityId: Long? = null) : User
 }

@@ -31,3 +31,15 @@ data class University(
     }
 
 }
+
+
+
+
+data class ExportedUniversity(
+        val web_pages: List<String>,
+        val name: String,
+        val alpha_two_code: String,
+        val state_province: String,
+        val domains: List<String>,
+        val country: String
+)
