@@ -25,14 +25,13 @@ class UniversityServiceImpl : UniversityService {
 
         return listOf<List<University>>(
                 all.filter { it.fullName.contains(query, true) }.toList(),
-                all.filter { it.shortName.contains(query, true) }.toList(),
                 all.filter { it.aliases().any {it.contains(query, true)} }
         ).flatten().distinctBy { it.id }
 
     }
 
     override fun createUniversity(fullName: String, shortName: String, aliases: List<String>?) : University {
-        val university = University(fullName = fullName, shortName = shortName, aliases = aliases?.toAliases() ?: "")
+        val university = University(fullName = fullName, country = shortName, aliases = aliases?.toAliases() ?: "", countryCode = "")
         return universityRepository.save(university)
     }
 
@@ -43,8 +42,7 @@ class UniversityServiceImpl : UniversityService {
     override fun updateUniversity(id: Long, newFullName: String?, newShortName: String?): University {
         val uni = findById(id)
         val newUni = uni.copy(
-                fullName = newFullName ?: uni.fullName,
-                shortName = newShortName ?: uni.shortName
+                fullName = newFullName ?: uni.fullName
         )
         return universityRepository.save(newUni)
     }
@@ -76,6 +74,8 @@ class UniversityServiceImpl : UniversityService {
     override fun init() {
         universityRepository.deleteAll()
         val unis = Gson().fromJsonFile<List<ExportedUniversity>>("source_unis.json")
+        val saveUnist = unis.map { it.toDomain() }
+        universityRepository.saveAll(saveUnist)
     }
 
 
