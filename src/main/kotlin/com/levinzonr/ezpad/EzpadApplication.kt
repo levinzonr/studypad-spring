@@ -16,6 +16,7 @@ import org.springframework.core.io.ClassPathResource
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.levinzonr.ezpad.services.TopicService
 import java.io.FileInputStream
 
 
@@ -58,9 +59,10 @@ class EzpadApplication {
 
     //InMemory database int
     @Bean
-    fun initDatabase(universityService: UniversityService, userService: UserService): CommandLineRunner {
+    fun initDatabase(universityService: UniversityService, userService: UserService, topicService: TopicService): CommandLineRunner {
        return CommandLineRunner {
            universityService.init()
+           topicService.init()
        }
     }
 

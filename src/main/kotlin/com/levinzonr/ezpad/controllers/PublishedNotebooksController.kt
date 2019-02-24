@@ -84,8 +84,5 @@ class PublishedNotebooksController {
         return tagService.findTagsByName("").map { it.name }
     }
 
-    @GetMapping("/topics")
-    fun getTopics() : List<Topic> {
-        return topicService.getTopics()
-    }
+
 }

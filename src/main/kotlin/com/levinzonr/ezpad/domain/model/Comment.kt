@@ -15,6 +15,7 @@ data class Comment(
         @JoinColumn(name ="user_id")
         val author: User,
 
+        @Column(columnDefinition = "TEXT")
         val content: String,
 
         val dateCreated: Long = Date().time,

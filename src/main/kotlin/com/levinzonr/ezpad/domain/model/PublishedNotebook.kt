@@ -84,6 +84,8 @@ data class PublishedNote(
         @GeneratedValue
         val id: Long? = null,
         val title: String?,
+
+        @Column(columnDefinition = "TEXT")
         val content: String?,
 
         @ManyToOne

@@ -1,8 +1,10 @@
 package com.levinzonr.ezpad.services
 
+import com.google.gson.Gson
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.Topic
 import com.levinzonr.ezpad.domain.repositories.TopicRepository
+import com.levinzonr.ezpad.utils.fromJsonFile
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -34,5 +36,10 @@ class TopicServiceImpl : TopicService {
 
     override fun deleteTopic(id: Long) {
         repo.delete(findById(id))
+    }
+
+    override fun init() {
+        val topics = Gson().fromJsonFile<List<Topic>>("source_topics.json")
+        repo.saveAll(topics)
     }
 }
