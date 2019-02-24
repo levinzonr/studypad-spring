@@ -4,7 +4,7 @@ import com.levinzonr.ezpad.domain.model.Comment
 
 interface CommentService  {
 
-    fun postNotebookComment(userId: Long, notebookId: String, comment: String) : Comment
+    fun postNotebookComment(userId: String, notebookId: String, comment: String) : Comment
 
     fun deleteComment(commentId: Long)
 

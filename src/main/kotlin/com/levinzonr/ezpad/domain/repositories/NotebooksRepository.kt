@@ -7,6 +7,6 @@ import org.springframework.data.repository.CrudRepository
 
 interface NotebooksRepository : CrudRepository<Notebook, Long> {
 
-    fun findByUserId(id: Long) : List<Notebook>
+    fun findByUserId(id: String) : List<Notebook>
     fun findByUser(user: User) : List<Notebook>
 }
