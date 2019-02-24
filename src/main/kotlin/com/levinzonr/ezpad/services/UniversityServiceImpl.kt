@@ -1,9 +1,12 @@
 package com.levinzonr.ezpad.services
 
+import com.google.gson.Gson
 import com.levinzonr.ezpad.domain.errors.NotFoundException
+import com.levinzonr.ezpad.domain.model.ExportedUniversity
 import com.levinzonr.ezpad.domain.model.University
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.repositories.UniversityRepository
+import com.levinzonr.ezpad.utils.fromJsonFile
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.File
@@ -72,7 +75,7 @@ class UniversityServiceImpl : UniversityService {
 
     override fun init() {
         universityRepository.deleteAll()
-        val json = File("src/main/resources/source_unis.json").inputStream().readBytes().toString(Charsets.UTF_8)
+        val unis = Gson().fromJsonFile<List<ExportedUniversity>>("source_unis.json")
     }
 
 
