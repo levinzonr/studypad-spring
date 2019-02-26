@@ -1,11 +1,17 @@
 package com.levinzonr.ezpad.services
 
+import com.google.gson.Gson
 import com.levinzonr.ezpad.domain.errors.NotFoundException
+import com.levinzonr.ezpad.domain.model.ExportedUniversity
 import com.levinzonr.ezpad.domain.model.University
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.repositories.UniversityRepository
+import com.levinzonr.ezpad.utils.fromJsonFile
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.io.File
+import java.io.FileInputStream
+import java.nio.charset.Charset
 
 @Service
 class UniversityServiceImpl : UniversityService {
@@ -19,14 +25,13 @@ class UniversityServiceImpl : UniversityService {
 
         return listOf<List<University>>(
                 all.filter { it.fullName.contains(query, true) }.toList(),
-                all.filter { it.shortName.contains(query, true) }.toList(),
                 all.filter { it.aliases().any {it.contains(query, true)} }
         ).flatten().distinctBy { it.id }
 
     }
 
     override fun createUniversity(fullName: String, shortName: String, aliases: List<String>?) : University {
-        val university = University(fullName = fullName, shortName = shortName, aliases = aliases?.toAliases() ?: "")
+        val university = University(fullName = fullName, country = shortName, aliases = aliases?.toAliases() ?: "", countryCode = "")
         return universityRepository.save(university)
     }
 
@@ -37,8 +42,7 @@ class UniversityServiceImpl : UniversityService {
     override fun updateUniversity(id: Long, newFullName: String?, newShortName: String?): University {
         val uni = findById(id)
         val newUni = uni.copy(
-                fullName = newFullName ?: uni.fullName,
-                shortName = newShortName ?: uni.shortName
+                fullName = newFullName ?: uni.fullName
         )
         return universityRepository.save(newUni)
     }
@@ -68,31 +72,10 @@ class UniversityServiceImpl : UniversityService {
     }
 
     override fun init() {
-
-        // CVUT
-        val cvut = University(
-                fullName = "Czech Technical University in Prague",
-                shortName = "ČVUT",
-                aliases = listOf("České vysoké učení technické v Praze", "ČVUT", "CVUT", "Ceske vysoke uceni technicke").toAliases()
-        )
-
-        val vse = University(
-                fullName = "University of Economics, Prague",
-                shortName = "VŠE",
-                aliases = listOf("Vysoká škola ekonomická v Praze", "VSE", "Vysoka skola ekonomicka v praze").toAliases()
-        )
-
-
-        val czu = University(
-                fullName = "Czech University of Life Sciences Prague",
-                shortName = "ČZU",
-                aliases = listOf("Česká zemědělská univerzita v Praze", "CZU", "Ceska zemedelska univerzita").toAliases()
-        )
-
-        val a = universityRepository.save(cvut)
-        println("Saved cvut: $a")
-        universityRepository.save(vse)
-        universityRepository.save(czu)
+        universityRepository.deleteAll()
+        val unis = Gson().fromJsonFile<List<ExportedUniversity>>("source_unis.json")
+        val saveUnist = unis.map { it.toDomain() }
+        universityRepository.saveAll(saveUnist)
     }
 
 

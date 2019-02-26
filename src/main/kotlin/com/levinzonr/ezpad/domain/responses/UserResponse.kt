@@ -2,7 +2,7 @@ package com.levinzonr.ezpad.domain.responses
 
 
 data class UserResponse(
-        val uuid: Long,
+        val uuid: String,
         val email: String,
         val firstName: String?,
         val lastName: String?,
@@ -13,8 +13,20 @@ data class UserResponse(
 )
 
 data class AuthorResponse(
-        val uuid: Long,
+        val uuid: String,
         val displayName: String?,
         val photoUrl: String?,
         val university: UniversityResponse?
+)
+
+
+data class FirebaseLoginResponse(
+        val userResponse: UserResponse,
+        val isNewUser: Boolean
+)
+
+
+data class FirebaseTokenResponse(
+        val token: String,
+        val user: UserResponse
 )

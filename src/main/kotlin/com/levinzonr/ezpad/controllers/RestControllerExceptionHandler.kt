@@ -41,6 +41,12 @@ class RestControllerExceptionHandler {
         return notFoundException.toResponse()
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    fun handleTokenExpired(authException: FirebaseAuthException) : ErrorResponse {
+        return ErrorResponse(type = "auth_error", message = "Token expired")
+    }
 
     @ExceptionHandler
     @ResponseBody

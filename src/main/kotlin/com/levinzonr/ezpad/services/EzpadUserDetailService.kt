@@ -1,7 +1,7 @@
 package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.repositories.UserRepository
-import com.levinzonr.ezpad.security.EzpadUserDetails
+import com.levinzonr.ezpad.security.StudyPadUserDetails
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -17,7 +17,7 @@ class EzpadUserDetailService : UserDetailsService {
     override fun loadUserByUsername(username: String?): UserDetails {
        username?.let {
            val user = userRepository.findByEmail(it) ?: throw UsernameNotFoundException("No such user ($it)")
-           return EzpadUserDetails(user)
+           return StudyPadUserDetails(user.id!!, user.email)
        }
         throw UsernameNotFoundException("Name can't be null")
     }

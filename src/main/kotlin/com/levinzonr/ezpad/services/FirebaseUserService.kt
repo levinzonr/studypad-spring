@@ -1,36 +1,35 @@
 package com.levinzonr.ezpad.services
 
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserRecord
 import com.google.gson.Gson
-import com.levinzonr.ezpad.domain.ApiMessages
 import com.levinzonr.ezpad.domain.errors.BadRequestException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.User
-import com.levinzonr.ezpad.domain.model.UserRole
-import com.levinzonr.ezpad.domain.payload.FacebookUser
 import com.levinzonr.ezpad.domain.repositories.UserRepository
 import com.levinzonr.ezpad.utils.fromJson
+import com.levinzonr.ezpad.utils.tryGet
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class UserServiceImpl : UserService {
+class FirebaseUserService : UserService {
+
 
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var auth: FirebaseAuth
+
+    @Autowired
+    private lateinit var repository: UserRepository
 
     @Autowired
     private lateinit var universityService: UniversityService
-
 
     @Autowired
     private lateinit var notebookService: NotebookService
 
     @Autowired
     private lateinit var notesService: NotesService
-
-    @Autowired
-    private lateinit var passwordEncoder: PasswordEncoder
 
     data class ExportedNotebook(val name: String, val notes: Map<String, ExportedNote>)
 
@@ -108,70 +107,63 @@ class UserServiceImpl : UserService {
             "    }\n" +
             "  }\n"
 
-    override fun createUser(email: String, password: String,
-                            firstName: String?, lastName: String?, photoUrl: String?, role: UserRole): User {
 
-        userRepository.findByEmail(email)?.let {
-            throw BadRequestException(ApiMessages.ErrorMessages.ERROR_USER_EXISTS)
+    override fun createUser(email: String, password: String, firstName: String?, lastName: String?): User {
+        val displayName = if ("${firstName ?: ""} ${lastName
+                        ?: ""}".isBlank()) "Unknown user" else "$firstName $lastName"
+        println("Create from firebase reqyest")
+
+        val existedUser : UserRecord? = try { auth.getUserByEmail(email) } catch (e: Exception) { null }
+        if (existedUser != null) {
+            throw BadRequestException("User already exist")
         }
+
+
+        val request = UserRecord.CreateRequest()
+                .setEmail(email)
+                .setPassword(password)
+                .setDisplayName(displayName)
+                .setEmailVerified(false)
+
+
+
+        val userRecord = auth.createUserAsync(request).get()
+
+        val user = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl)
+        return repository.save(user)
+    }
+
+    override fun createUser(firebaseId: String): User {
+        val userRecord = auth.getUser(firebaseId)
+        println("Create from firebase recoed")
+        val names = userRecord.displayName.split(" ")
+        val firstName = names.getOrNull(0)
+        val lastName = names.getOrNull(1)
 
         val nb = Gson().fromJson<ExportedNotebook>(firstNotebookString)
 
 
-        val displayName = "${firstName ?: ""} ${lastName ?: ""}"
-
-        val user = User(
-                email = email,
-                password = passwordEncoder.encode(password),
-                firstName = firstName,
-                lastName = lastName,
-                displayName = if (firstName == null && lastName == null) "Unknown user" else displayName,
-                photoUrl = photoUrl,
-                roles = setOf(role)
-        )
-
-        return userRepository.save(user).apply { isNewUser = true }.also {
+        val dbUser = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl)
+        return repository.save(dbUser).apply { isNewUser = true }.also {
 
             val created = notebookService.createNewNotebook(nb.name, it)
             nb.notes.entries.map { it.value }.forEach { notesService.createNote(it.title, it.content, created) }
         }
     }
 
-    override fun getUserById(id: Long): User {
-        return userRepository.findById(id)
-                .orElseThrow {
-                    NotFoundException.Builder(User::class)
-                            .buildWithId(id.toString())
-                }
+    override fun findUserById(id: String): User? {
+        val user = repository.findById(id).tryGet()
+        println("Found user: ${user?.id}")
+        return user
     }
 
-    override fun updateUserById(uuid: Long, firstName: String?, lastName: String?, password: String?): User {
-        val user = getUserById(uuid)
-        val updated = user.copy(
-                firstName = firstName ?: user.firstName,
-                lastName = lastName ?: user.lastName,
-                displayName = "$firstName $lastName",
-                password = password
-        )
-        return userRepository.save(updated)
-    }
+    override fun updateUser(userId: String, universityId: Long?) : User {
+        var user = findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
+        universityId?.let { id ->
+            val uni = universityService.findById(id)
+            user = repository.save(user.copy(university = uni))
+        }
 
-    // TODO BBetter password handling
-    override fun processFacebookUser(facebookUser: FacebookUser): User {
-        // Facebook User doesn't exist
-        return userRepository.findByEmail(facebookUser.email!!) ?:
-        createUser(facebookUser.email, facebookUser.id!!, facebookUser.first_name, facebookUser.last_name, null, UserRole.FACEBOOK_USER)
-    }
-
-    override fun getUserEmail(email: String): User {
-        return userRepository.findByEmail(email) ?: throw NotFoundException.Builder(User::class).buildWithId(email)
-    }
-
-    override fun updateUserUniversity(userId: Long, universityId: Long): User {
-        println(universityService.findAll())
-        val uni =  universityService.findById(universityId)
-        val newUser = getUserById(userId).copy(university = uni)
-        userRepository.save(newUser)
-        return newUser
+        return user
     }
 }
