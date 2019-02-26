@@ -27,12 +27,7 @@ class RestControllerExceptionHandler {
         )
     }
 
-    @ExceptionHandler
-    @ResponseBody
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    fun handleFireaseAuthException(exception: FirebaseAuthException) : ErrorResponse {
-        return ErrorResponse(type = "auth", message = "${exception.message}")
-    }
+
 
     @ExceptionHandler
     @ResponseBody
