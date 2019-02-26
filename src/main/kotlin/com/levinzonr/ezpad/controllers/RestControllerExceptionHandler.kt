@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.controllers
 
+import com.google.firebase.auth.FirebaseAuthException
 import com.levinzonr.ezpad.domain.ApiMessages
 import com.levinzonr.ezpad.domain.responses.ErrorResponse
 import com.levinzonr.ezpad.domain.responses.FieldError
@@ -26,6 +27,12 @@ class RestControllerExceptionHandler {
         )
     }
 
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleFireaseAuthException(exception: FirebaseAuthException) : ErrorResponse {
+        return ErrorResponse(type = "auth", message = "${exception.message}")
+    }
 
     @ExceptionHandler
     @ResponseBody
