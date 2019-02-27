@@ -27,6 +27,8 @@ data class PublishedNotebook(
 
         val languageCode: String? = null,
 
+        val excludeFromSearch: Boolean = false,
+
         @OneToMany(mappedBy = "notebook")
         val notes: List<PublishedNote> = listOf(),
 

@@ -14,6 +14,8 @@ interface PublishedNotebookService {
                         universityID: Long? = null): PublishedNotebook
 
 
+    fun quickPublish(userId: String, notebookId: Long) : PublishedNotebook
+
     fun getMostRelevant() : List<PublishedNotebook>
 
     fun getPublishedNotebookById(id: String) : PublishedNotebook

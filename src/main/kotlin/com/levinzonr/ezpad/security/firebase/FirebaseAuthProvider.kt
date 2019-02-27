@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.security.web.authentication.session.SessionAuthenticationException
 import java.util.concurrent.ExecutionException
 import com.google.firebase.auth.FirebaseToken
+import com.levinzonr.ezpad.domain.errors.AuthException
 import com.levinzonr.ezpad.security.StudyPadUserDetails
 import com.levinzonr.ezpad.services.AuthenticationService
 import com.levinzonr.ezpad.services.FirebaseAuthService
@@ -42,17 +43,8 @@ class FirebaseAuthProvider : AbstractUserDetailsAuthenticationProvider() {
         val authenticationToken = authentication as FirebaseAuthToken
 
         print("retrieve user: $username, ${authentication.token}")
-        try {
             val firebaseToken = auth.verifyIdToken(authenticationToken.token)
-
             return StudyPadUserDetails(firebaseToken.uid, firebaseToken.email)
-        } catch (e: FirebaseAuthException) {
-            throw e
-        } catch (e: InterruptedException) {
-            throw SessionAuthenticationException(e.message)
-        } catch (e: ExecutionException) {
-            throw SessionAuthenticationException(e.message)
-        }
 
     }
 }

@@ -53,6 +53,11 @@ class PublishedNotebooksController {
         return service.getPublishedNotebookById(id).toDetailedResponse()
     }
 
+    @PostMapping("/quick")
+    fun quickShare(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") notebookId: Long) : PublishedNotebookResponse {
+        return service.quickPublish(userId = userDetails.userId, notebookId = notebookId).toResponse()
+    }
+
 
     @PostMapping("/{id}/comment")
     fun postNotebookComment(@AuthenticationPrincipal user: StudyPadUserDetails,

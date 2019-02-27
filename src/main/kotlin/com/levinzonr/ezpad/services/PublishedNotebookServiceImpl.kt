@@ -79,6 +79,37 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     }
 
 
+    override fun quickPublish(userId: String, notebookId: Long) : PublishedNotebook {
+        val author = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
+        val notebook = notebookService.getNotebookDetails(notebookId)
+
+        // Check if notebook has been already published
+        if (notebook.exportedId != null) {
+            throw InvalidPayloadException()
+        } else {
+
+
+            val published = sharedNotebookRepo.save(PublishedNotebook(
+                    author = author,
+                    excludeFromSearch = true,
+                    source = notebook,
+                    title = notebook.name,
+                    lastUpdatedTimestamp = Date().time,
+                    createdTimestamp = Date().time,
+                    university = null,
+                    tags = setOf()
+            ))
+
+            notebook.notes.forEach {
+                sharedNotesRepo.save(
+                        PublishedNote(title = it.title,
+                                content = it.content,
+                                notebook = published)
+                )
+            }
+            return published
+        }
+    }
 
     override fun filterByTag(tag: String): List<PublishedNotebook> {
         return sharedNotebookRepo.findAll().filter {
