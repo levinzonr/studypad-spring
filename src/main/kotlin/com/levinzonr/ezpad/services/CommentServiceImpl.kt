@@ -39,6 +39,6 @@ class CommentServiceImpl : CommentService {
 
     override fun updateComment(commentId: Long, comment: String): Comment {
         val oldComment = findComment(commentId)
-        return repo.save(oldComment.copy(content = comment))
+        return repo.save(oldComment.copy(content = comment, edited = true))
     }
 }
