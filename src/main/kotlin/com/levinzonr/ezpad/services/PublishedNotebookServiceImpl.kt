@@ -100,6 +100,10 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                     tags = setOf()
             ))
 
+            // Update 1 to 1 association
+            notebookService.updateNotebook(notebook.copy(exportedId = published.id))
+
+
             notebook.notes.forEach {
                 sharedNotesRepo.save(
                         PublishedNote(title = it.title,

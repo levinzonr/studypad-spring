@@ -16,7 +16,11 @@ import org.springframework.core.io.ClassPathResource
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.levinzonr.ezpad.security.AuthEntryPoint
+import com.levinzonr.ezpad.security.AuthHandler
 import com.levinzonr.ezpad.services.TopicService
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import java.io.FileInputStream
 
 
@@ -40,6 +44,15 @@ class EzpadApplication {
         return FirebaseAuth.getInstance()
     }
 
+    @Bean
+    fun provideAuthEntryPoint() : AuthenticationEntryPoint{
+        return AuthEntryPoint()
+    }
+
+    @Bean
+    fun provideHandler() : AuthenticationFailureHandler {
+        return AuthHandler()
+    }
 
     //Using generated security password: d571634d-2999-4b80-a80d-022b0600e511
     companion object {

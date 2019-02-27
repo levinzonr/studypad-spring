@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
 
 
 @Configuration
@@ -33,6 +34,12 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
 
     @Autowired
     private lateinit var userDetails: EzpadUserDetailService
+
+    @Autowired
+    private lateinit var authEntryPoint: AuthEntryPoint
+
+    @Autowired
+    private lateinit var authHandler: AuthenticationFailureHandler
 
     fun provideFirebaseAuthTokenFilter(): FirebaseAuthTokenFilter {
         val filter = FirebaseAuthTokenFilter()
@@ -56,6 +63,8 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
             httpSecurity
                     .cors()
                     .and()
+                    .exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
+                    .formLogin().failureHandler(authHandler).and()
                     // we don't need CSRF because our token is invulnerable
                     .csrf().disable()
                     // All urls must be authenticated (filter for token always fires (/**)
@@ -63,6 +72,7 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
                     .antMatchers(HttpMethod.OPTIONS).permitAll()
                     .antMatchers( "/api/**").authenticated()
                     .and()
+
                     // don't create session
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //.and()
             // Custom JWT based security filter
