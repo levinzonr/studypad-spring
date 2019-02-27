@@ -25,6 +25,8 @@ data class PublishedNotebook(
 
         val description: String? = null,
 
+        val languageCode: String? = null,
+
         @OneToMany(mappedBy = "notebook")
         val notes: List<PublishedNote> = listOf(),
 
@@ -59,7 +61,9 @@ data class PublishedNotebook(
                         tags = tags.map { it.name }.toSet(),
                         commentCount = comments.size,
                         id = id.toString(),
-                        topic = topic?.name
+                        topic = topic?.name,
+                        lastUpdated = lastUpdatedTimestamp,
+                        languageCode = languageCode
 
                 )
         }
@@ -73,7 +77,9 @@ data class PublishedNotebook(
                         description = description,
                         author = author.toAuthorResponse(),
                         tags = tags.map { it.name }.toSet(),
-                        topic = topic?.name
+                        topic = topic?.name,
+                        lastUpdate = lastUpdatedTimestamp,
+                        languageCode = languageCode
                 )
         }
 }

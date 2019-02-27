@@ -11,5 +11,7 @@ data class PublishedNotebookDetail(
         val description: String?,
         val notes: List<PublishedNoteResponse>,
         val tags: Set<String>,
-        val topic: String?
+        val topic: String?,
+        val lastUpdate: Long,
+        val languageCode: String?
 )

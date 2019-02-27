@@ -34,7 +34,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     @Autowired
     private lateinit var topicService: TopicService
 
-    override fun publishNotebook(userId: String, notebookId: Long, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
+    override fun publishNotebook(userId: String, notebookId: Long, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
         val author = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
 
@@ -56,6 +56,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                     description = description,
                     title = title ?: notebook.name,
                     university = uni,
+                    languageCode = languageCode,
                     topic = topic,
                     tags = domainTags,
                     source = notebook

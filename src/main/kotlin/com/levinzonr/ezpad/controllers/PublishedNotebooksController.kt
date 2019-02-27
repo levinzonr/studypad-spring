@@ -44,7 +44,7 @@ class PublishedNotebooksController {
     @PostMapping
     fun publishNotebook(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestBody notebook: PublishedNotebookPayload) : PublishedNotebookResponse {
         return service.publishNotebook(
-                userDetails.userId, notebook.notebookId, notebook.title,
+                userDetails.userId, notebook.notebookId, notebook.languageCode, notebook.title,
                 notebook.description, notebook.topic, notebook.tags ?: setOf(), notebook.universityId).toResponse()
     }
 

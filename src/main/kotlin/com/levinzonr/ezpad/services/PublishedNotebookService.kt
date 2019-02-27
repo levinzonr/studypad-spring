@@ -8,8 +8,10 @@ interface PublishedNotebookService {
 
     fun publishNotebook(userId: String,
                         notebookId: Long,
+                        languageCode: String? = null,
                         title: String? = null, description: String? = null,
-                        topicId: Long?, tags: Set<String> = setOf(), universityID: Long? = null): PublishedNotebook
+                        topicId: Long?, tags: Set<String> = setOf(),
+                        universityID: Long? = null): PublishedNotebook
 
 
     fun getMostRelevant() : List<PublishedNotebook>
