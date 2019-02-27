@@ -1,6 +1,7 @@
 package com.levinzonr.ezpad.services
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -11,6 +12,7 @@ class FirebaseAuthService : AuthenticationService {
     private lateinit var auth: FirebaseAuth
 
     override fun userIdFromToken(token: String): String {
+        throw FirebaseAuthException("code", "mesg")
         return auth.verifyIdToken(token).uid
     }
 
