@@ -1,16 +1,15 @@
 package com.levinzonr.ezpad.controllers
 
+import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
 import com.levinzonr.ezpad.domain.model.Topic
+import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
 import com.levinzonr.ezpad.domain.responses.CommentResponse
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
 import com.levinzonr.ezpad.security.StudyPadUserDetails
-import com.levinzonr.ezpad.services.CommentService
-import com.levinzonr.ezpad.services.PublishedNotebookService
-import com.levinzonr.ezpad.services.TagService
-import com.levinzonr.ezpad.services.TopicService
+import com.levinzonr.ezpad.services.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.jpa.repository.Query
 import org.springframework.http.HttpStatus
@@ -27,13 +26,16 @@ class PublishedNotebooksController {
     private lateinit var service: PublishedNotebookService
 
     @Autowired
+    private lateinit var notebookService: NotebookService
+
+    @Autowired
     private lateinit var commentService: CommentService
 
     @Autowired
     private lateinit var tagService: TagService
 
     @Autowired
-    private lateinit var topicService: TopicService
+    private lateinit var userService: UserService
 
 
     @GetMapping
@@ -49,8 +51,13 @@ class PublishedNotebooksController {
     }
 
     @GetMapping("/{id}")
-    fun getPublishedNotebookDetails(@PathVariable("id") id: String) : PublishedNotebookDetail {
-        return service.getPublishedNotebookById(id).toDetailedResponse()
+    fun getPublishedNotebookDetails(@AuthenticationPrincipal details: StudyPadUserDetails, @PathVariable("id") id: String) : PublishedNotebookDetail {
+        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.userId)
+        val notebooks = notebookService.getUserNotebooks(user)
+        val alreadySaved = notebooks.any { it.sourceId == id || it.exportedId == id }
+        return service.getPublishedNotebookById(id).toDetailedResponse().apply {
+            status = if (alreadySaved) PublishedNotebookDetail.STATE_SAVED else PublishedNotebookDetail.STATE_NEW
+        }
     }
 
     @PostMapping("/quick")

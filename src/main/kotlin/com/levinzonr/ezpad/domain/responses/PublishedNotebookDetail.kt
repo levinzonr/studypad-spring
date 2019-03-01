@@ -13,5 +13,13 @@ data class PublishedNotebookDetail(
         val tags: Set<String>,
         val topic: String?,
         val lastUpdate: Long,
-        val languageCode: String?
-)
+        val languageCode: String?,
+        var status: String = STATE_NEW // save, update
+
+) {
+    companion object {
+        const val STATE_SAVED = "update"
+        const val STATE_NEW = "save"
+    }
+}
+
