@@ -72,6 +72,7 @@ class NotebooksServiceImpl : NotebookService {
             return notebook
             // User did import this notebook previously, all notes will be overriden
         } else if (previouslyImported != null) {
+            previouslyImported.notes.map { notesService.deleteNote(it.id!!) }
             val notes = published.notes.map {
                 notesService.createNote(it.title ?: "Unknown title", it.content ?: "", previouslyImported)
             }
