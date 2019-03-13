@@ -4,7 +4,7 @@ import javax.validation.constraints.NotNull
 
 data class CreateNotePayload(
         @NotNull
-        val notebookId: Long,
+        val notebookId: String,
         val title: String?,
         val content: String?
 

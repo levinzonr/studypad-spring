@@ -25,9 +25,12 @@ class NotebooksServiceImpl : NotebookService {
     @Autowired
     private lateinit var notesService: NotesService
 
+    @Autowired
+    private lateinit var versioningService: VersioningService
+
 
     override fun getUserNotebooks(user: User): List<Notebook> {
-        return repository.findByUser(user)
+        return repository.findByAuthor(user)
     }
 
     override fun createNewNotebook(name: String, user: User): Notebook {
@@ -35,22 +38,22 @@ class NotebooksServiceImpl : NotebookService {
         return repository.save(Notebook(name = name, user = user, colour = color))
     }
 
-    override fun getNotebookDetails(id: Long): Notebook {
+    override fun getNotebookDetails(id: String): Notebook {
         return repository.findById(id).orElseThrow {
             NotFoundException
                     .Builder(Notebook::class)
-                    .buildWithId(id.toString())
+                    .buildWithId(id)
         }
     }
 
-    override fun updateNotebook(id: Long, name: String?, color: String?): Notebook {
+    override fun updateNotebook(id: String, name: String?, color: String?): Notebook {
         val old = getNotebookDetails(id)
         val newName = name ?: old.name
         val newColor = color ?: old.colour
         return repository.save(old.copy(name = newName, colour = newColor))
     }
 
-    override fun deleteNotebook(id: Long) {
+    override fun deleteNotebook(id: String) {
         repository.deleteById(id)
     }
 
@@ -59,26 +62,19 @@ class NotebooksServiceImpl : NotebookService {
         val user = userService.getUserById(userId)
         val published = publishedRepo.getPublishedNotebookById(publishedId)
 
-        val previouslyImported = getUserNotebooks(user).firstOrNull { it.sourceId == publishedId }
+        val previouslyImported = getUserNotebooks(user).firstOrNull { it.publishedVersionId == publishedId  }
 
-        // User is not an author and didn't import it previously
-        if (user.id != published.author.id && previouslyImported == null) {
-            val notebook = createNewNotebook(published.title, user)
-            published.notes.forEach { notesService.createNote(it.title ?: "Unknown title", it.content ?: "", notebook) }
-            repository.save(notebook.copy(sourceId = publishedId))
-            return notebook
-            // User did import this notebook previously, all notes will be overriden
-        } else if (previouslyImported != null) {
-            val notes = published.notes.map {
-                notesService.createNote(it.title ?: "Unknown title", it.content ?: "", previouslyImported)
-            }
-            return repository.save(previouslyImported.copy(notes = notes))
-
-            // TODO User is the author
+        if (previouslyImported == null) {
+            val notebook = createNewNotebook(published.title, user).copy(publishedVersionId = publishedId)
+            repository.save(notebook)
+            versioningService.initLocalVersion(published, notebook)
+            notesService.copyAndReplace(published.notes, notebook)
+            return getNotebookDetails(notebook.id)
         } else {
-            val notebook = createNewNotebook(published.title, user)
-            published.notes.forEach { notesService.createNote(it.title ?: "", it.content ?: "", notebook) }
-            return notebook
+            // Already improted, replace all notes and reset state
+            versioningService.initLocalVersion(published, previouslyImported)
+            notesService.copyAndReplace(published.notes, previouslyImported)
+            return getNotebookDetails(previouslyImported.id)
         }
 
     }

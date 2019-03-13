@@ -13,5 +13,7 @@ interface NotesService {
 
     fun deleteNote(id: Long)
 
+    fun copyAndReplace(notes: List<Note>, notebook: Notebook) : List<Note>
+
 
 }

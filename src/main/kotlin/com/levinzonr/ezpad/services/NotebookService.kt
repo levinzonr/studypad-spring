@@ -9,11 +9,12 @@ interface NotebookService {
 
     fun createNewNotebook(name: String, user: User) : Notebook
 
-    fun getNotebookDetails(id: Long) : Notebook
+    fun getNotebookDetails(id: String) : Notebook
 
-    fun updateNotebook(id: Long, name: String?, color: String?) : Notebook
+    fun updateNotebook(id: String, name: String?, color: String?) : Notebook
 
-    fun deleteNotebook(id: Long)
+    fun deleteNotebook(id: String)
 
     fun createFromPublished(publishedId: String, userId: Long) : Notebook
+
 }

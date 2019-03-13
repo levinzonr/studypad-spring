@@ -15,8 +15,6 @@ data class User(
         val displayName: String? = null,
         val photoUrl: String? = null,
 
-        @OneToMany(mappedBy = "user")
-        val notebooks: List<Notebook> = listOf(),
 
         @ManyToOne
         @JoinColumn(name = "university_id")

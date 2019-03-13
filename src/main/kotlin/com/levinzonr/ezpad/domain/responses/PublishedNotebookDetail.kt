@@ -9,7 +9,7 @@ data class PublishedNotebookDetail(
         val comments: List<CommentResponse>,
         val title: String,
         val description: String?,
-        val notes: List<PublishedNoteResponse>,
+        val notes: List<NoteResponse>,
         val tags: Set<String>,
         val topic: String?
 )

@@ -36,7 +36,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     @Autowired
     private lateinit var topicService: TopicService
 
-    override fun publishNotebook(userId: Long, notebookId: Long, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
+    override fun publishNotebook(userId: Long, notebookId: String, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
         val author = userService.getUserById(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
         val uni : University?  = universityID?.let { universityService.findById(it) }
@@ -51,8 +51,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                 title = title ?: notebook.name,
                 university = uni,
                 topic = topic,
-                tags = domainTags,
-                source = notebook
+                tags = domainTags
         ))
 
         notebook.notes.forEach { sharedNotesRepo.save(

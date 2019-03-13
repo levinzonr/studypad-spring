@@ -7,7 +7,7 @@ interface PublishedNotebookService {
 
 
     fun publishNotebook(userId: Long,
-                        notebookId: Long,
+                        notebookId: String,
                         title: String? = null, description: String? = null,
                         topicId: Long?, tags: Set<String> = setOf(), universityID: Long? = null): PublishedNotebook
 

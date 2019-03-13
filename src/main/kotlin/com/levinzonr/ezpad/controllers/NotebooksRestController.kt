@@ -49,7 +49,7 @@ class NotebooksRestController {
     @ResponseStatus(code = HttpStatus.OK)
     @DeleteMapping("/{id}")
     fun deleteNotebook(@AuthenticationPrincipal details: EzpadUserDetails,
-                       @PathVariable("id") id: Long) {
+                       @PathVariable("id") id: String) {
         val user = userService.getUserById(details.userId)
         notebooksService.deleteNotebook(id)
     }
@@ -57,14 +57,14 @@ class NotebooksRestController {
 
     @PatchMapping("/{id}")
     fun updateNotebook(@AuthenticationPrincipal details: EzpadUserDetails,
-                       @PathVariable("id") id: Long,
+                       @PathVariable("id") id: String,
                        @RequestBody @Valid createNotebookPayload: ChangeNotebookPayload) : NotebookResponse {
         return notebooksService.updateNotebook(id, createNotebookPayload.name, createNotebookPayload.gradientColorResponse.asString()).toResponse()
 
     }
 
     @GetMapping("/{id}/notes")
-    fun getNotesFromNotebook(@PathVariable("id") id : Long) : List<NoteResponse> {
+    fun getNotesFromNotebook(@PathVariable("id") id : String) : List<NoteResponse> {
         return notebooksService.getNotebookDetails(id).notes.map { it.toResponse() }
     }
 

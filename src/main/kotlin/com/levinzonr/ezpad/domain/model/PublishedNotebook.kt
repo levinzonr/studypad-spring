@@ -8,14 +8,9 @@ import javax.persistence.*
 
 
 @Entity(name = "shared")
-data class PublishedNotebook(
+class PublishedNotebook(
 
-        @Id
-        val id: String = UUID.randomUUID().toString(),
-
-        @ManyToOne
-        @JoinColumn(name = "user_id")
-        val author: User,
+        author: User,
 
         val lastUpdatedTimestamp: Long,
 
@@ -25,8 +20,7 @@ data class PublishedNotebook(
 
         val description: String? = null,
 
-        @OneToMany(mappedBy = "notebook")
-        val notes: List<PublishedNote> = listOf(),
+        notes: List<Note> = listOf(),
 
         @ManyToOne
         @JoinColumn(name = "university_id")
@@ -43,12 +37,9 @@ data class PublishedNotebook(
 
         @ManyToOne
         @JoinColumn(name = "topic_id")
-        val topic: Topic? = null,
+        val topic: Topic? = null
 
-        @OneToOne
-        val source: Notebook
-
-) {
+) : BaseNotebook(author = author, notes = notes) {
 
         fun toResponse() : PublishedNotebookResponse {
                 return PublishedNotebookResponse(
