@@ -9,3 +9,8 @@ data class CreateNotePayload(
         val content: String?
 
 )
+
+data class UpdateNotePayload(
+        val title: String?,
+        val content: String?
+)

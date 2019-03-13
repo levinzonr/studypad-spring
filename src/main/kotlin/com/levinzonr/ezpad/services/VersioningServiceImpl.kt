@@ -3,7 +3,6 @@ package com.levinzonr.ezpad.services
 import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.repositories.ModificationRepository
 import com.levinzonr.ezpad.domain.repositories.VersionStateRepository
-import org.bouncycastle.math.raw.Mod
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -16,7 +15,7 @@ class VersioningServiceImpl : VersioningService {
     @Autowired
     private lateinit var versionStateRepository: VersionStateRepository
 
-    override fun initLocalVersion(source: PublishedNotebook, notebook: Notebook) {
+    override fun initLocalVersion(source: PublishedNotebook, notebook: Notebook) : VersionState {
 
         // Reset previuouse state
         notebook.state?.let {
@@ -25,7 +24,7 @@ class VersioningServiceImpl : VersioningService {
         }
 
         val state = VersionState(notebook = notebook, version = source.state?.version ?: 1)
-        versionStateRepository.save(state)
+        return versionStateRepository.save(state)
     }
 
     override fun initPublishedVersion(publishedNotebook: PublishedNotebook) {

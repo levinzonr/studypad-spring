@@ -15,6 +15,7 @@ interface NotebookService {
 
     fun deleteNotebook(id: String)
 
-    fun createFromPublished(publishedId: String, userId: Long) : Notebook
+    fun updateNotebook(notebook: Notebook) : Notebook
 
+    fun createFromPublished(publishedId: String, userId: String) : Notebook
 }

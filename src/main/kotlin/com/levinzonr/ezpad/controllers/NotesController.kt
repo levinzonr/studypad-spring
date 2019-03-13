@@ -2,6 +2,7 @@ package com.levinzonr.ezpad.controllers
 
 import com.levinzonr.ezpad.domain.model.Note
 import com.levinzonr.ezpad.domain.payload.CreateNotePayload
+import com.levinzonr.ezpad.domain.payload.UpdateNotePayload
 import com.levinzonr.ezpad.domain.responses.NoteResponse
 import com.levinzonr.ezpad.services.NotebookService
 import com.levinzonr.ezpad.services.NotesService
@@ -33,7 +34,7 @@ class NotesController {
     }
 
     @PatchMapping("/{id}")
-    fun updateNote(@PathVariable("id") id: Long, @Valid @RequestBody createNotePayload: CreateNotePayload) : NoteResponse {
+    fun updateNote(@PathVariable("id") id: Long, @Valid @RequestBody createNotePayload: UpdateNotePayload) : NoteResponse {
         return noteService.updateNote(id, createNotePayload.title, createNotePayload.content).toResponse()
     }
 

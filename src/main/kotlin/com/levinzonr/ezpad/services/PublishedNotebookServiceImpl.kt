@@ -1,10 +1,8 @@
 package com.levinzonr.ezpad.services
 
+import com.levinzonr.ezpad.domain.errors.InvalidPayloadException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
-import com.levinzonr.ezpad.domain.model.PublishedNote
-import com.levinzonr.ezpad.domain.model.PublishedNotebook
-import com.levinzonr.ezpad.domain.model.Topic
-import com.levinzonr.ezpad.domain.model.University
+import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.repositories.PublishedNoteRepository
 import com.levinzonr.ezpad.domain.repositories.PublishedNotebookRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,34 +34,75 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     @Autowired
     private lateinit var topicService: TopicService
 
-    override fun publishNotebook(userId: Long, notebookId: String, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
-        val author = userService.getUserById(userId)
+    @Autowired
+    private lateinit var notesService: NotesService
+
+    override fun publishNotebook(userId: String, notebookId: String, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
+        val author = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
-        val uni : University?  = universityID?.let { universityService.findById(it) }
-        val topic : Topic? = topicId?.let { topicService.findById(topicId) }
 
-        val domainTags = tags.map { tagService.createTag(it) }.toSet()
+        // Check if notebook has been already published
+        if (notebook.publishedVersionId != null) {
+            throw InvalidPayloadException()
+        } else {
 
-        val published = sharedNotebookRepo.save(PublishedNotebook(
-                author = author,
-                lastUpdatedTimestamp = Date().time,
-                createdTimestamp = Date().time,
-                title = title ?: notebook.name,
-                university = uni,
-                topic = topic,
-                tags = domainTags
-        ))
 
-        notebook.notes.forEach { sharedNotesRepo.save(
-                PublishedNote(title = it.title,
-                        content = it.content,
-                        notebook = published)
-        ) }
+            val uni: University? = universityID?.let { universityService.findById(it) }
+            val topic: Topic? = topicId?.let { topicService.findById(topicId) }
 
-        return published
+            val domainTags = tags.map { tagService.createTag(it) }.toSet()
+
+            val published = sharedNotebookRepo.save(PublishedNotebook(
+                    author = author,
+                    lastUpdatedTimestamp = Date().time,
+                    createdTimestamp = Date().time,
+                    description = description,
+                    title = title ?: notebook.name,
+                    university = uni,
+                    languageCode = languageCode,
+                    topic = topic,
+                    tags = domainTags
+            ))
+
+            // Update 1 to 1 association
+            notebookService.updateNotebook(notebook.copy(publishedVersionId = published.id))
+
+            notesService.copyAndReplace(notebook.notes, published)
+
+
+            return published
+        }
     }
 
 
+    override fun quickPublish(userId: String, notebookId: String) : PublishedNotebook {
+        val author = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
+        val notebook = notebookService.getNotebookDetails(notebookId)
+
+        // Check if notebook has been already published
+        if (notebook.publishedVersionId != null) {
+            throw InvalidPayloadException()
+        } else {
+
+
+            val published = sharedNotebookRepo.save(PublishedNotebook(
+                    author = author,
+                    excludeFromSearch = true,
+                    title = notebook.name,
+                    lastUpdatedTimestamp = Date().time,
+                    createdTimestamp = Date().time,
+                    university = null,
+                    tags = setOf()
+            ))
+
+            // Update 1 to 1 association
+            notebookService.updateNotebook(notebook.copy(publishedVersionId = published.id))
+
+
+            notesService.copyAndReplace(notebook.notes, published)
+            return published
+        }
+    }
 
     override fun filterByTag(tag: String): List<PublishedNotebook> {
         return sharedNotebookRepo.findAll().filter {

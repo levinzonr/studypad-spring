@@ -29,7 +29,9 @@ class Notebook(
                         id = id,
                         name = name,
                         color = colour.toGradient(),
-                        notesCount = notes.count()
+                        notesCount = notes.count(),
+                        publishedNotebookId = publishedVersionId,
+                        state = state?.toResponse()
 
                 )
         }

@@ -1,6 +1,7 @@
 package com.levinzonr.ezpad.domain.model
 
 import com.levinzonr.ezpad.domain.model.Note
+import com.levinzonr.ezpad.domain.responses.ModificationResponse
 import javax.persistence.*
 
 @Entity
@@ -22,6 +23,10 @@ sealed class Modification(
 
     @Entity
     class Added(val noteId: Long, val title: String, val content: String, state: VersionState) : Modification(state = state, id = noteId )
+
+    fun toResponse() : ModificationResponse {
+        return ModificationResponse(this.javaClass.simpleName)
+    }
 }
 
 

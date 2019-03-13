@@ -1,12 +1,15 @@
 package com.levinzonr.ezpad.controllers
 
+import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.Notebook
+import com.levinzonr.ezpad.domain.model.User
+import com.levinzonr.ezpad.domain.model.VersionState
 import com.levinzonr.ezpad.domain.payload.ChangeNotebookPayload
 import com.levinzonr.ezpad.domain.payload.CreateNotebookPayload
 import com.levinzonr.ezpad.domain.responses.GradientColorResponse
 import com.levinzonr.ezpad.domain.responses.NoteResponse
 import com.levinzonr.ezpad.domain.responses.NotebookResponse
-import com.levinzonr.ezpad.security.EzpadUserDetails
+import com.levinzonr.ezpad.security.StudyPadUserDetails
 import com.levinzonr.ezpad.services.ColorsService
 import com.levinzonr.ezpad.services.NotebookService
 import com.levinzonr.ezpad.services.UserService
@@ -32,31 +35,31 @@ class NotebooksRestController {
     private lateinit var colorsService: ColorsService
 
     @GetMapping
-    fun getCurrentUserNotebooks(@AuthenticationPrincipal details: EzpadUserDetails): List<NotebookResponse> {
-        val user = userService.getUserById(details.userId)
+    fun getCurrentUserNotebooks(@AuthenticationPrincipal details: StudyPadUserDetails): List<NotebookResponse> {
+        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         return notebooksService.getUserNotebooks(user).map { it.toResponse() }
     }
 
 
     @PostMapping
-    fun postNewNotebook(@AuthenticationPrincipal details: EzpadUserDetails,
+    fun postNewNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                         @Valid @RequestBody createNotebookPayload: CreateNotebookPayload) : NotebookResponse {
-        val user = userService.getUserById(details.userId)
+        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         return notebooksService.createNewNotebook(createNotebookPayload.name, user).toResponse()
     }
 
 
     @ResponseStatus(code = HttpStatus.OK)
     @DeleteMapping("/{id}")
-    fun deleteNotebook(@AuthenticationPrincipal details: EzpadUserDetails,
+    fun deleteNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                        @PathVariable("id") id: String) {
-        val user = userService.getUserById(details.userId)
+        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         notebooksService.deleteNotebook(id)
     }
 
 
     @PatchMapping("/{id}")
-    fun updateNotebook(@AuthenticationPrincipal details: EzpadUserDetails,
+    fun updateNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                        @PathVariable("id") id: String,
                        @RequestBody @Valid createNotebookPayload: ChangeNotebookPayload) : NotebookResponse {
         return notebooksService.updateNotebook(id, createNotebookPayload.name, createNotebookPayload.gradientColorResponse.asString()).toResponse()
@@ -74,7 +77,12 @@ class NotebooksRestController {
     }
 
     @PostMapping("/import")
-    fun importNotebook(@AuthenticationPrincipal userDetails: EzpadUserDetails, @RequestParam("id") id: String) : NotebookResponse {
+    fun importNotebook(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") id: String) : NotebookResponse {
         return notebooksService.createFromPublished(id, userDetails.userId).toResponse()
+    }
+
+    @GetMapping("/{id}/version")
+    fun getVersionState(@PathVariable("id") id: String) : VersionState? {
+        return notebooksService.getNotebookDetails(id).state
     }
 }

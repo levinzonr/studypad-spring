@@ -57,24 +57,27 @@ class NotebooksServiceImpl : NotebookService {
         repository.deleteById(id)
     }
 
+    override fun updateNotebook(notebook: Notebook): Notebook {
+        return repository.save(notebook)
+    }
 
-    override fun createFromPublished(publishedId: String, userId: Long): Notebook {
-        val user = userService.getUserById(userId)
+    override fun createFromPublished(publishedId: String, userId: String): Notebook {
+        val user = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         val published = publishedRepo.getPublishedNotebookById(publishedId)
 
         val previouslyImported = getUserNotebooks(user).firstOrNull { it.publishedVersionId == publishedId  }
 
         if (previouslyImported == null) {
-            val notebook = createNewNotebook(published.title, user).copy(publishedVersionId = publishedId)
-            repository.save(notebook)
-            versioningService.initLocalVersion(published, notebook)
-            notesService.copyAndReplace(published.notes, notebook)
-            return getNotebookDetails(notebook.id)
+            val notebook = createNewNotebook(published.title, user)
+            val state = versioningService.initLocalVersion(published, notebook)
+            val notes = notesService.copyAndReplace(published.notes, notebook)
+            return repository.save(notebook.copy(state = state, publishedVersionId = publishedId, notes = notes))
+
         } else {
             // Already improted, replace all notes and reset state
-            versioningService.initLocalVersion(published, previouslyImported)
-            notesService.copyAndReplace(published.notes, previouslyImported)
-            return getNotebookDetails(previouslyImported.id)
+            val state = versioningService.initLocalVersion(published, previouslyImported)
+            val notes = notesService.copyAndReplace(published.notes, previouslyImported)
+            return repository.save(previouslyImported.copy(state = state, notes = notes))
         }
 
     }

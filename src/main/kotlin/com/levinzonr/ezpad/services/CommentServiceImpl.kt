@@ -2,6 +2,7 @@ package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.Comment
+import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.repositories.CommentRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -19,8 +20,8 @@ class CommentServiceImpl : CommentService {
     private lateinit var notebookService: PublishedNotebookService
 
 
-    override fun postNotebookComment(userId: Long, notebookId: String, comment: String): Comment {
-        val user = userService.getUserById(userId)
+    override fun postNotebookComment(userId: String, notebookId: String, comment: String): Comment {
+        val user = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         val notebook = notebookService.getPublishedNotebookById(notebookId)
         return repo.save(Comment(
                 author = user,
@@ -38,6 +39,6 @@ class CommentServiceImpl : CommentService {
 
     override fun updateComment(commentId: Long, comment: String): Comment {
         val oldComment = findComment(commentId)
-        return repo.save(oldComment.copy(content = comment))
+        return repo.save(oldComment.copy(content = comment, edited = true))
     }
 }

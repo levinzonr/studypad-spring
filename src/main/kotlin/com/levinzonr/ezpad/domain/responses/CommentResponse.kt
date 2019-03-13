@@ -4,5 +4,6 @@ class CommentResponse(
         val author: UserResponse,
         val content: String,
         val id: Long,
-        val dateCreated: Long
+        val dateCreated: Long,
+        val edited: Boolean
 )

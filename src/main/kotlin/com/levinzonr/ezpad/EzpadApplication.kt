@@ -5,16 +5,25 @@ import com.levinzonr.ezpad.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.oauth2.provider.token.TokenStore
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore
 import org.springframework.boot.CommandLineRunner
-import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
 import org.springframework.web.bind.annotation.CrossOrigin
 import javax.sql.DataSource
+import com.google.firebase.FirebaseApp
+import org.springframework.core.io.ClassPathResource
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.firebase.FirebaseOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.levinzonr.ezpad.security.AuthEntryPoint
+import com.levinzonr.ezpad.security.AuthHandler
+import com.levinzonr.ezpad.services.TopicService
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
+import java.io.FileInputStream
+
+
 
 
 @SpringBootApplication
@@ -24,41 +33,49 @@ class EzpadApplication {
     @Autowired
     private lateinit var dataSource: DataSource
 
-    @Bean
-    fun provideTokenStore() : TokenStore {
-        val insertAccessTokenSql = "insert into oauth_access_token (token_id, token, authentication_id, email, client_id, authentication, refresh_token) values (?, ?, ?, ?, ?, ?, ?)"
-        val selectAccessTokensFromUserNameAndClientIdSql = "select token_id, token from oauth_access_token where email = ? and client_id = ?"
-        val selectAccessTokensFromUserNameSql = "select token_id, token from oauth_access_token where email = ?"
-        val selectAccessTokensFromClientIdSql = "select token_id, token from oauth_access_token where client_id = ?"
-        val insertRefreshTokenSql = "insert into oauth_refresh_token (token_id, token, authentication) values (?, ?, ?)"
-
-        val jdbcTokenStore = JdbcTokenStore(dataSource)
-
-        return InMemoryTokenStore()
-        return jdbcTokenStore
-    }
 
     @Bean
     fun providePasswordEncoder() : BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
     }
 
+    @Bean
+    fun provideFirebaseAuthentication() : FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
+
+    @Bean
+    fun provideAuthEntryPoint() : AuthenticationEntryPoint{
+        return AuthEntryPoint()
+    }
+
+    @Bean
+    fun provideHandler() : AuthenticationFailureHandler {
+        return AuthHandler()
+    }
 
     //Using generated security password: d571634d-2999-4b80-a80d-022b0600e511
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            SpringApplication.run(EzpadApplication::class.java, *args)
+            val serviceAccount = FileInputStream("src/main/resources/firebase-adminsdk.json")
+
+            val options = FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build()
+
+            FirebaseApp.initializeApp(options)
+            runApplication<EzpadApplication>(*args)
         }
     }
 
 
     //InMemory database int
     @Bean
-    fun initDatabase(universityService: UniversityService, userService: UserService): CommandLineRunner {
+    fun initDatabase(universityService: UniversityService, userService: UserService, topicService: TopicService): CommandLineRunner {
        return CommandLineRunner {
            universityService.init()
-           userService.createUser("roma@mail.ru", "19961600")
+           topicService.init()
        }
     }
 

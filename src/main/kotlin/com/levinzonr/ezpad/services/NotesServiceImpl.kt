@@ -1,6 +1,7 @@
 package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.errors.NotFoundException
+import com.levinzonr.ezpad.domain.model.BaseNotebook
 import com.levinzonr.ezpad.domain.model.ModificationType
 import com.levinzonr.ezpad.domain.model.Note
 import com.levinzonr.ezpad.domain.model.Notebook
@@ -33,16 +34,19 @@ class NotesServiceImpl : NotesService {
         val old = getNote(id)
         val newTitle = title ?: old.title
         val newContents = content ?: old.content
-
-        return notesRepository.save(old.copy(title = newTitle, content = newContents))
+        val note = notesRepository.save(old.copy(title = newTitle, content = newContents))
+        versioningService.modify(old.notebook.state, note, ModificationType.UPDATED)
+        return note
     }
 
     override fun deleteNote(id: Long) {
+        val note = getNote(id)
+        versioningService.modify(note.notebook.state, note, ModificationType.DELETED)
         return notesRepository.deleteById(id)
     }
 
-    override fun copyAndReplace(notes: List<Note>, notebook: Notebook): List<Note> {
-        notebook.notes.forEach { notesRepository.deleteById(it.id!!) }
+    override fun copyAndReplace(notes: List<Note>, notebook: BaseNotebook): List<Note> {
+        notesRepository.findAll().filter { it.notebook.id == notebook.id }.forEach { notesRepository.deleteById(it.id!!) }
         return notes.map { notesRepository.save(Note(title = it.title, content = it.content, notebook = notebook)) }
     }
 }

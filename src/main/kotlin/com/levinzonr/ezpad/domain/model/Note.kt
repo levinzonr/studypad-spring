@@ -10,11 +10,13 @@ data class Note(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
         val title: String? = null,
+
+        @Column(columnDefinition = "TEXT")
         val content: String? = null,
 
         @ManyToOne
         @JoinColumn(name = "notebook_id")
-        val notebook: Notebook
+        val notebook: BaseNotebook
 ) {
         fun toResponse() : NoteResponse {
                 return NoteResponse(

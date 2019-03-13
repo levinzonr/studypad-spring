@@ -17,6 +17,6 @@ abstract class BaseNotebook(
         @OneToMany(mappedBy = "notebook", cascade = [CascadeType.ALL])
         val notes: List<Note> = listOf(),
 
-        @OneToOne
+        @OneToOne(cascade = [CascadeType.ALL])
         val state: VersionState? = null
 )

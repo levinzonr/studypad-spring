@@ -21,6 +21,11 @@ class PublishedNotebook(
         val description: String? = null,
 
         notes: List<Note> = listOf(),
+        val languageCode: String? = null,
+
+        val excludeFromSearch: Boolean = false,
+
+
 
         @ManyToOne
         @JoinColumn(name = "university_id")
@@ -50,7 +55,9 @@ class PublishedNotebook(
                         tags = tags.map { it.name }.toSet(),
                         commentCount = comments.size,
                         id = id.toString(),
-                        topic = topic?.name
+                        topic = topic?.name,
+                        lastUpdated = lastUpdatedTimestamp,
+                        languageCode = languageCode
 
                 )
         }
@@ -59,12 +66,14 @@ class PublishedNotebook(
                 return PublishedNotebookDetail(
                         id = id,
                         notes = notes.map { it.toResponse() },
-                        comments = comments.map { it.toResponse() },
+                        comments = comments.sortedByDescending { it.dateCreated }.map { it.toResponse() },
                         title = title,
                         description = description,
                         author = author.toAuthorResponse(),
                         tags = tags.map { it.name }.toSet(),
-                        topic = topic?.name
+                        topic = topic?.name,
+                        lastUpdate = lastUpdatedTimestamp,
+                        languageCode = languageCode
                 )
         }
 }
@@ -75,6 +84,8 @@ data class PublishedNote(
         @GeneratedValue
         val id: Long? = null,
         val title: String?,
+
+        @Column(columnDefinition = "TEXT")
         val content: String?,
 
         @ManyToOne

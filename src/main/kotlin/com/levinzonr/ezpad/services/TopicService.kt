@@ -14,4 +14,6 @@ interface TopicService {
 
     fun deleteTopic(id: Long)
 
+    fun init()
+
 }

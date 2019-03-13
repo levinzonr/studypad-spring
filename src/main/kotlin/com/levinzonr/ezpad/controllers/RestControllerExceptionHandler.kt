@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.controllers
 
+import com.google.firebase.auth.FirebaseAuthException
 import com.levinzonr.ezpad.domain.ApiMessages
 import com.levinzonr.ezpad.domain.responses.ErrorResponse
 import com.levinzonr.ezpad.domain.responses.FieldError
@@ -27,6 +28,7 @@ class RestControllerExceptionHandler {
     }
 
 
+
     @ExceptionHandler
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -34,6 +36,12 @@ class RestControllerExceptionHandler {
         return notFoundException.toResponse()
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    fun handleTokenExpired(authException: FirebaseAuthException) : ErrorResponse {
+        return ErrorResponse(type = "auth_error", message = "Token expired")
+    }
 
     @ExceptionHandler
     @ResponseBody

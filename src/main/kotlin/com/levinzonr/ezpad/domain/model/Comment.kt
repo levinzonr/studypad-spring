@@ -15,13 +15,16 @@ data class Comment(
         @JoinColumn(name ="user_id")
         val author: User,
 
+        @Column(columnDefinition = "TEXT")
         val content: String,
 
         val dateCreated: Long = Date().time,
 
         @ManyToOne
         @JoinColumn(name = "shared_id")
-        val notebook: PublishedNotebook
+        val notebook: PublishedNotebook,
+
+        val edited: Boolean = false
 ) {
 
         fun toResponse() : CommentResponse {
@@ -29,7 +32,8 @@ data class Comment(
                         author = author.toResponse(),
                         content = content,
                         dateCreated = dateCreated,
-                        id = id!!
+                        id = id!!,
+                        edited = edited
                 )
         }
 }

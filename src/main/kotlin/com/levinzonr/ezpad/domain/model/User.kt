@@ -7,8 +7,7 @@ import javax.persistence.*
 @Entity(name = "studypad_user")
 data class User(
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        val id: Long? = null,
+        val id: String? = null,
         val email: String,
         val firstName: String? = null,
         val lastName: String? = null,

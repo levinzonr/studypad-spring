@@ -4,7 +4,7 @@ import com.levinzonr.ezpad.domain.model.*
 
 interface VersioningService {
 
-    fun initLocalVersion(source: PublishedNotebook, notebook: Notebook)
+    fun initLocalVersion(source: PublishedNotebook, notebook: Notebook) : VersionState
     fun initPublishedVersion(publishedNotebook: PublishedNotebook)
 
     fun modify(state: VersionState?, note: Note, type: ModificationType)

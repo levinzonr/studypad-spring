@@ -6,11 +6,15 @@ import com.levinzonr.ezpad.domain.model.PublishedNotebook
 interface PublishedNotebookService {
 
 
-    fun publishNotebook(userId: Long,
+    fun publishNotebook(userId: String,
                         notebookId: String,
+                        languageCode: String? = null,
                         title: String? = null, description: String? = null,
-                        topicId: Long?, tags: Set<String> = setOf(), universityID: Long? = null): PublishedNotebook
+                        topicId: Long?, tags: Set<String> = setOf(),
+                        universityID: Long? = null): PublishedNotebook
 
+
+    fun quickPublish(userId: String, notebookId: String) : PublishedNotebook
 
     fun getMostRelevant() : List<PublishedNotebook>
 

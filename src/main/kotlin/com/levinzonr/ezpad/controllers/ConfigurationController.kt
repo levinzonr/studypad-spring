@@ -33,4 +33,8 @@ class ConfigurationController {
         return topicService.editTopic(id, topicPayload.name)
     }
 
+    @GetMapping("/topics")
+    fun getTopics() : List<Topic> {
+        return topicService.getTopics()
+    }
 }

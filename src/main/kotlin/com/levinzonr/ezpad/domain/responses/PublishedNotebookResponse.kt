@@ -8,7 +8,8 @@ class PublishedNotebookResponse(
         val author: AuthorResponse,
         val tags: Set<String>,
         val commentCount: Int,
-        val topic: String?
-
+        val topic: String?,
+        val lastUpdated: Long,
+        val languageCode: String?
 
 )
