@@ -2,6 +2,8 @@ package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
+import com.levinzonr.ezpad.domain.model.User
+import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 
 interface PublishedNotebookService {
 
@@ -19,6 +21,8 @@ interface PublishedNotebookService {
     fun getMostRelevant() : List<PublishedNotebook>
 
     fun getPublishedNotebookById(id: String) : PublishedNotebook
+
+    fun createSuggestion(user: User, postSuggestionPayload: PostSuggestionPayload, notebookId: String)
 
     fun filterByTag(tag: String) : List<PublishedNotebook>
 

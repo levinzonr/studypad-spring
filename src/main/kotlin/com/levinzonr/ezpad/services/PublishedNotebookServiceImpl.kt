@@ -3,6 +3,7 @@ package com.levinzonr.ezpad.services
 import com.levinzonr.ezpad.domain.errors.InvalidPayloadException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.*
+import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.repositories.PublishedNoteRepository
 import com.levinzonr.ezpad.domain.repositories.PublishedNotebookRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,6 +37,9 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
     @Autowired
     private lateinit var notesService: NotesService
+
+    @Autowired
+    private lateinit var versioningService: VersioningService
 
     override fun publishNotebook(userId: String, notebookId: String, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
         val author = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
@@ -101,6 +105,20 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
             notesService.copyAndReplace(notebook.notes, published)
             return published
+        }
+    }
+
+    override fun createSuggestion(user: User, postSuggestionPayload: PostSuggestionPayload, notebookId: String) {
+        val notebook = getPublishedNotebookById(notebookId)
+        if (postSuggestionPayload.noteId == null) {
+            versioningService.modify(notebook.state, Note(title = postSuggestionPayload.newTitle, content = postSuggestionPayload.newContent, notebook = notebook), ModificationType.ADDED)
+        } else {
+            val note = notesService.getNote(postSuggestionPayload.noteId)
+            if (postSuggestionPayload.newContent == null && postSuggestionPayload.newTitle == null) {
+                versioningService.modify(notebook.state, note, ModificationType.DELETED)
+            } else {
+                versioningService.modify(notebook.state, note.copy(title = postSuggestionPayload.newTitle, content = postSuggestionPayload.newContent), ModificationType.DELETED)
+            }
         }
     }
 

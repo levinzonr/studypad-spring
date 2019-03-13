@@ -4,8 +4,10 @@ import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
 import com.levinzonr.ezpad.domain.model.Topic
 import com.levinzonr.ezpad.domain.model.User
+import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
 import com.levinzonr.ezpad.domain.responses.CommentResponse
+import com.levinzonr.ezpad.domain.responses.ModificationResponse
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
 import com.levinzonr.ezpad.security.StudyPadUserDetails
@@ -97,5 +99,16 @@ class PublishedNotebooksController {
     }
 
 
+    @PostMapping("/{id}/suggestions")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun createSuggestion(@AuthenticationPrincipal user: StudyPadUserDetails, @PathVariable("id") notebookId: String, @RequestBody postSuggestionPayload: PostSuggestionPayload) {
+        val user = userService.findUserById(user.id) ?: throw NotFoundException.Builder(User::class).buildWithId(user.id)
+        service.createSuggestion(user, postSuggestionPayload, notebookId)
+    }
+
+    @GetMapping("/{id}/suggestions")
+    fun getSuggestions(@PathVariable("id") notebookId: String) : List<ModificationResponse> {
+        return service.getPublishedNotebookById(notebookId).state?.modifications?.map { it.toResponse() } ?: listOf()
+    }
 
 }
