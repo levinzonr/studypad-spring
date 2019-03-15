@@ -14,12 +14,7 @@ data class PublishedNotebookDetail(
         val topic: String?,
         val lastUpdate: Long,
         val languageCode: String?,
-        var status: String = STATE_NEW // save, update
+        var versionState: VersionStateResponse
 
-) {
-    companion object {
-        const val STATE_SAVED = "update"
-        const val STATE_NEW = "save"
-    }
-}
+)
 

@@ -27,15 +27,15 @@ class VersioningServiceImpl : VersioningService {
         return versionStateRepository.save(state)
     }
 
-    override fun initPublishedVersion(publishedNotebook: PublishedNotebook) {
+    override fun initPublishedVersion(publishedNotebook: PublishedNotebook) : VersionState {
         val state = VersionState(notebook = publishedNotebook, version = 1)
-        versionStateRepository.save(state)
+        return versionStateRepository.save(state)
     }
 
 
-    override fun modify(state: VersionState?, note: Note, type: ModificationType) {
+    override fun modify(state: VersionState?, note: Note, type: ModificationType, user: User?) {
         state?.let { currrentVersionState ->
-
+            val author = user ?: state.notebook.author
             val existedModification = modificationRepository.findAll().firstOrNull { it.id == note.id }
 
 
@@ -43,9 +43,9 @@ class VersioningServiceImpl : VersioningService {
             if (existedModification == null) {
                 val modification = when (type) {
                     ModificationType.ADDED -> Modification.Added(noteId = note.id!!, title = note.title
-                            ?: "", content = note.content ?: "", state = state)
-                    ModificationType.DELETED -> Modification.Deleted(noteId = note.id!!, state = state)
-                    ModificationType.UPDATED -> Modification.Updated(note.id!!, note.title ?: "", note.content
+                            ?: "", content = note.content ?: "", state = state, user = author)
+                    ModificationType.DELETED -> Modification.Deleted(noteId = note.id!!, state = state, user = author)
+                    ModificationType.UPDATED -> Modification.Updated(note.id!!, note.title ?: "", author, note.content
                             ?: "", state)
                 }
 
@@ -58,13 +58,13 @@ class VersioningServiceImpl : VersioningService {
                     if (type == ModificationType.DELETED) {
                         modificationRepository.deleteById(existedModification.id)
                     } else {
-                        val newModification = Modification.Added(existedModification.id, existedModification.title, existedModification.content, state)
+                        val newModification = Modification.Added(existedModification.id, existedModification.title, author, existedModification.content, state)
                         modificationRepository.save(newModification)
                     }
 
 
                 } else if (existedModification is Modification.Updated && type == ModificationType.DELETED) {
-                    val nextModification = Modification.Deleted(existedModification.noteId, state)
+                    val nextModification = Modification.Deleted(existedModification.noteId, author, state)
                     modificationRepository.save(nextModification)
                 } else {
 

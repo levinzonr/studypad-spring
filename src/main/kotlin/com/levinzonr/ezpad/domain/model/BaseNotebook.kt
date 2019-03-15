@@ -18,5 +18,5 @@ abstract class BaseNotebook(
         val notes: List<Note> = listOf(),
 
         @OneToOne(cascade = [CascadeType.ALL])
-        val state: VersionState? = null
+        var state: VersionState? = null
 )

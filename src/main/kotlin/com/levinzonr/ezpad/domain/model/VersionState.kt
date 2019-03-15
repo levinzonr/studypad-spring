@@ -10,7 +10,7 @@ data class VersionState(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
 
-        @OneToOne
+        @OneToOne(mappedBy = "state")
         val notebook: BaseNotebook,
 
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "state")

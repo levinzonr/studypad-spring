@@ -11,18 +11,21 @@ sealed class Modification(
         val id: Long,
 
         @ManyToOne
-        val state: VersionState
+        val state: VersionState,
+
+        @ManyToOne
+        val author: User
 
         ) {
 
     @Entity
-    class Deleted(val noteId: Long, state: VersionState) : Modification(state = state, id = noteId)
+    class Deleted(val noteId: Long, user: User, state: VersionState) : Modification(state = state, id = noteId, author = user)
 
     @Entity
-    class Updated(val noteId: Long, val title: String, val content: String, state: VersionState) : Modification(state = state, id = noteId)
+    class Updated(val noteId: Long, val title: String, user: User, val content: String, state: VersionState) : Modification(state = state, id = noteId, author = user)
 
     @Entity
-    class Added(val noteId: Long, val title: String, val content: String, state: VersionState) : Modification(state = state, id = noteId )
+    class Added(val noteId: Long, val title: String, user: User, val content: String, state: VersionState) : Modification(state = state, id = noteId, author = user)
 
     fun toResponse() : ModificationResponse {
         return ModificationResponse(this.javaClass.simpleName)

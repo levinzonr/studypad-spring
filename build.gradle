@@ -57,7 +57,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	compile 'com.google.guava:guava:27.0.1-jre'
 
-	compile 'com.google.firebase:firebase-admin:6.6.0'
+	implementation 'com.google.firebase:firebase-admin:6.6.0'
+
 
 	runtimeOnly('com.h2database:h2')
 

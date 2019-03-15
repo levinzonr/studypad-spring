@@ -37,6 +37,11 @@ class Notebook(
         }
 
         fun copy(name: String? = null, colour: String? = null, notes: List<Note>? = null, state: VersionState? = null, publishedVersionId: String? = null) : Notebook {
-                return Notebook(name ?: this.name, colour, notes = notes ?: this.notes, user = this.author, id = id, state = state, publishedVersionId = publishedVersionId ?: this.publishedVersionId)
+                return Notebook(name ?: this.name,
+                        colour ?: this.colour,
+                        notes = notes ?: this.notes,
+                        user = this.author, id = id,
+                        state = state,
+                        publishedVersionId = publishedVersionId ?: this.publishedVersionId)
         }
 }

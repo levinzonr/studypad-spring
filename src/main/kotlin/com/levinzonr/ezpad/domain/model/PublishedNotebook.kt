@@ -73,7 +73,8 @@ class PublishedNotebook(
                         tags = tags.map { it.name }.toSet(),
                         topic = topic?.name,
                         lastUpdate = lastUpdatedTimestamp,
-                        languageCode = languageCode
+                        languageCode = languageCode,
+                        versionState = state?.toResponse()!!
                 )
         }
 }

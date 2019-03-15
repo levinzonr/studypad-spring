@@ -54,12 +54,7 @@ class PublishedNotebooksController {
 
     @GetMapping("/{id}")
     fun getPublishedNotebookDetails(@AuthenticationPrincipal details: StudyPadUserDetails, @PathVariable("id") id: String) : PublishedNotebookDetail {
-        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.userId)
-        val notebooks = notebookService.getUserNotebooks(user)
-        val alreadySaved = notebooks.any { it.publishedVersionId == id}
-        return service.getPublishedNotebookById(id).toDetailedResponse().apply {
-            status = if (alreadySaved) PublishedNotebookDetail.STATE_SAVED else PublishedNotebookDetail.STATE_NEW
-        }
+        return service.getPublishedNotebookById(id).toDetailedResponse()
     }
 
     @PostMapping("/quick")
