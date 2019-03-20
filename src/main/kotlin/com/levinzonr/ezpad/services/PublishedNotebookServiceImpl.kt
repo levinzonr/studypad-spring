@@ -72,6 +72,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
             notebookService.updateNotebook(notebook.copy(publishedVersionId = published.id))
 
             val state = versioningService.initPublishedVersion(published)
+            notebookService.updateState(notebook, versioningService.initLocalVersion(published, notebook))
             published.state = state
 
             notesService.copyAndReplace(notebook.notes, published)
@@ -105,11 +106,13 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
             // Update 1 to 1 association
             notebookService.updateNotebook(notebook.copy(publishedVersionId = published.id))
 
-            versioningService.initPublishedVersion(published)
+            published.state = versioningService.initPublishedVersion(published)
 
+
+            notebookService.updateState(notebook, versioningService.initLocalVersion(published, notebook))
 
             notesService.copyAndReplace(notebook.notes, published)
-            return published
+            return sharedNotebookRepo.save(published)
         }
     }
 

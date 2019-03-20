@@ -3,6 +3,7 @@ package com.levinzonr.ezpad.services
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.model.User
+import com.levinzonr.ezpad.domain.model.VersionState
 import com.levinzonr.ezpad.domain.repositories.NotebooksRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -80,5 +81,9 @@ class NotebooksServiceImpl : NotebookService {
             return repository.save(previouslyImported.copy(state = state, notes = notes))
         }
 
+    }
+
+    override fun updateState(notebook: Notebook, versionState: VersionState) {
+        repository.save(notebook.copy(state = versionState))
     }
 }

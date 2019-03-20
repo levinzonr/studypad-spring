@@ -10,6 +10,7 @@ class PublishedNotebookResponse(
         val commentCount: Int,
         val topic: String?,
         val lastUpdated: Long,
-        val languageCode: String?
+        val languageCode: String?,
+        val authoredByMe: Boolean
 
 )

@@ -41,25 +41,25 @@ class PublishedNotebooksController {
 
 
     @GetMapping
-    fun getRelevant() : List<PublishedNotebookResponse> {
-        return service.getMostRelevant().map { it.toResponse() }
+    fun getRelevant(@AuthenticationPrincipal user: StudyPadUserDetails) : List<PublishedNotebookResponse> {
+        return service.getMostRelevant().map { it.toResponse(user) }
     }
 
     @PostMapping
     fun publishNotebook(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestBody notebook: PublishedNotebookPayload) : PublishedNotebookResponse {
         return service.publishNotebook(
                 userDetails.userId, notebook.notebookId, notebook.languageCode, notebook.title,
-                notebook.description, notebook.topic, notebook.tags ?: setOf(), notebook.universityId).toResponse()
+                notebook.description, notebook.topic, notebook.tags ?: setOf(), notebook.universityId).toResponse(userDetails)
     }
 
     @GetMapping("/{id}")
     fun getPublishedNotebookDetails(@AuthenticationPrincipal details: StudyPadUserDetails, @PathVariable("id") id: String) : PublishedNotebookDetail {
-        return service.getPublishedNotebookById(id).toDetailedResponse()
+        return service.getPublishedNotebookById(id).toDetailedResponse(details)
     }
 
     @PostMapping("/quick")
     fun quickShare(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") notebookId: String) : PublishedNotebookResponse {
-        return service.quickPublish(userId = userDetails.userId, notebookId = notebookId).toResponse()
+        return service.quickPublish(userId = userDetails.userId, notebookId = notebookId).toResponse(userDetails)
     }
 
 
@@ -84,13 +84,13 @@ class PublishedNotebooksController {
     }
 
     @GetMapping("/find")
-    fun findNotebooks(@RequestParam(value = "topic") topic: String, @RequestParam("tags") tags: Set<String>) : List<PublishedNotebookResponse> {
-        return service.findNotebooks(tags, topic).map { it.toResponse() }
+    fun findNotebooks(@AuthenticationPrincipal user: StudyPadUserDetails, @RequestParam(value = "topic") topic: String, @RequestParam("tags") tags: Set<String>) : List<PublishedNotebookResponse> {
+        return service.findNotebooks(tags, topic).map { it.toResponse(user) }
     }
 
     @GetMapping("/tags")
-    fun getTags() : List<String> {
-        return tagService.findTagsByName("").map { it.name }
+    fun getTags(@RequestParam("name") name: String) : List<String> {
+        return tagService.findTagsByName(query = name).map { it.name }
     }
 
 

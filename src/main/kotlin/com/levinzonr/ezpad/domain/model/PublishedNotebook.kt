@@ -3,6 +3,7 @@ package com.levinzonr.ezpad.domain.model
 import com.levinzonr.ezpad.domain.responses.PublishedNoteResponse
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
+import com.levinzonr.ezpad.security.StudyPadUserDetails
 import java.util.*
 import javax.persistence.*
 
@@ -46,7 +47,7 @@ class PublishedNotebook(
 
 ) : BaseNotebook(author = author, notes = notes) {
 
-        fun toResponse() : PublishedNotebookResponse {
+        fun toResponse(user: StudyPadUserDetails) : PublishedNotebookResponse {
                 return PublishedNotebookResponse(
                         title = title,
                         notesCount = notes.size.toLong(),
@@ -57,12 +58,12 @@ class PublishedNotebook(
                         id = id.toString(),
                         topic = topic?.name,
                         lastUpdated = lastUpdatedTimestamp,
-                        languageCode = languageCode
-
+                        languageCode = languageCode,
+                        authoredByMe = user.id == author.id
                 )
         }
 
-        fun toDetailedResponse() : PublishedNotebookDetail {
+        fun toDetailedResponse(user: StudyPadUserDetails) : PublishedNotebookDetail {
                 return PublishedNotebookDetail(
                         id = id,
                         notes = notes.map { it.toResponse() },
@@ -74,7 +75,8 @@ class PublishedNotebook(
                         topic = topic?.name,
                         lastUpdate = lastUpdatedTimestamp,
                         languageCode = languageCode,
-                        versionState = state?.toResponse()!!
+                        versionState = state?.toResponse()!!,
+                        authoredByMe = author.id == user.id
                 )
         }
 }

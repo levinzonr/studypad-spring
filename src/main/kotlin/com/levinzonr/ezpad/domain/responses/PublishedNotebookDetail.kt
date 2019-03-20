@@ -14,7 +14,8 @@ data class PublishedNotebookDetail(
         val topic: String?,
         val lastUpdate: Long,
         val languageCode: String?,
-        var versionState: VersionStateResponse
+        var versionState: VersionStateResponse,
+        val authoredByMe: Boolean
 
 )
 

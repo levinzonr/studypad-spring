@@ -8,6 +8,6 @@ interface TagService {
 
     fun findTagsByName(query: String) : List<Tag>
 
-
+    fun init()
 
 }
