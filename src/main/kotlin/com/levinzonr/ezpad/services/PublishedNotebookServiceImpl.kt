@@ -6,16 +6,13 @@ import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.repositories.PublishedNoteRepository
 import com.levinzonr.ezpad.domain.repositories.PublishedNotebookRepository
+import com.sun.org.apache.xpath.internal.operations.Mod
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class PublishedNotebookServiceImpl : PublishedNotebookService {
-
-
-    @Autowired
-    private lateinit var sharedNotesRepo : PublishedNoteRepository
 
     @Autowired
     private lateinit var sharedNotebookRepo: PublishedNotebookRepository
@@ -155,5 +152,21 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
     override fun getPublishedNotebookById(id: String): PublishedNotebook {
         return sharedNotebookRepo.findById(id).orElseThrow { NotFoundException.Builder(PublishedNotebook::class).buildWithId(id) }
+    }
+
+    override fun approveModifications(id: String, modificationIds: List<Long>) {
+        val shared = getPublishedNotebookById(id)
+
+        versioningService.getModifications(id).filter { modificationIds.contains(it.id) }.forEach { mod ->
+            when (mod) {
+                is Modification.Deleted -> { notesService.deleteNote(mod.noteId) }
+                is Modification.Updated -> { notesService.updateNote(mod.noteId, mod.title, mod.content)}
+                is Modification.Added -> {notesService.createNote(mod.title, mod.content, shared)}
+            }
+        }
+
+        val newState = versioningService.updateModifications(shared.state, modificationIds)
+        shared.state = newState
+        sharedNotebookRepo.save(shared)
     }
 }

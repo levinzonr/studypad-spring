@@ -1,5 +1,6 @@
 package com.levinzonr.ezpad.services
 
+import com.levinzonr.ezpad.domain.model.Modification
 import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
 import com.levinzonr.ezpad.domain.model.User
@@ -27,6 +28,8 @@ interface PublishedNotebookService {
     fun filterByTag(tag: String) : List<PublishedNotebook>
 
     fun filterByTopic(topic: String) : List<PublishedNotebook>
+
+    fun approveModifications(id: String, modificationId: List<Long>)
 
     fun findNotebooks(tags: Set<String>, topic: String) : List<PublishedNotebook>
 

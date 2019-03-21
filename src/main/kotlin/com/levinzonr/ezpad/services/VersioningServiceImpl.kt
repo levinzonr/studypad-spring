@@ -5,6 +5,7 @@ import com.levinzonr.ezpad.domain.repositories.ModificationRepository
 import com.levinzonr.ezpad.domain.repositories.VersionStateRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.lang.Exception
 
 @Service
 class VersioningServiceImpl : VersioningService {
@@ -73,6 +74,14 @@ class VersioningServiceImpl : VersioningService {
             }
 
         }
+    }
+
+    override fun updateModifications(state: VersionState?, list: List<Long>) : VersionState {
+        val oldState = state ?: throw Exception()
+        val newState = oldState.copy(
+                version = oldState.version + 1,
+                modifications = oldState.modifications.filterNot { list.contains(it.id) })
+        return versionStateRepository.save(newState)
     }
 
     override fun getModifications(notebookId: String): List<Modification> {

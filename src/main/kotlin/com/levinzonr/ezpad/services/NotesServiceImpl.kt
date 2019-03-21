@@ -18,7 +18,7 @@ class NotesServiceImpl : NotesService {
     @Autowired
     private lateinit var versioningService: VersioningService
 
-    override fun createNote(title: String, content: String, notebook: Notebook): Note {
+    override fun createNote(title: String, content: String, notebook: BaseNotebook): Note {
         val note =  notesRepository.save(Note(title = title, content = content, notebook = notebook))
         versioningService.modify(notebook.state, note, ModificationType.ADDED)
         return note

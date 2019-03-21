@@ -6,7 +6,7 @@ import com.levinzonr.ezpad.domain.model.Notebook
 
 interface NotesService {
 
-    fun createNote(title: String, content: String, notebook: Notebook) : Note
+    fun createNote(title: String, content: String, notebook: BaseNotebook) : Note
 
     fun getNote(id: Long) : Note
 

@@ -106,4 +106,11 @@ class PublishedNotebooksController {
         return service.getPublishedNotebookById(notebookId).state?.modifications?.map { it.toResponse() } ?: listOf()
     }
 
+    @PostMapping("{id}/suggestions/apporve")
+    fun approveSuggestions(@AuthenticationPrincipal user: StudyPadUserDetails, @PathVariable("id") notebookId: String, @RequestParam("ids") ids: List<Long>) : PublishedNotebookResponse {
+        service.approveModifications(notebookId, ids)
+        return service.getPublishedNotebookById(notebookId).toResponse(user)
+    }
+
+
 }
