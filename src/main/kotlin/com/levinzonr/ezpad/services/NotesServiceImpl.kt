@@ -2,9 +2,7 @@ package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.BaseNotebook
-import com.levinzonr.ezpad.domain.model.ModificationType
 import com.levinzonr.ezpad.domain.model.Note
-import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.repositories.NotesRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -19,9 +17,7 @@ class NotesServiceImpl : NotesService {
     private lateinit var versioningService: VersioningService
 
     override fun createNote(title: String, content: String, notebook: BaseNotebook): Note {
-        val note =  notesRepository.save(Note(title = title, content = content, notebook = notebook))
-        versioningService.modify(notebook.state, note, ModificationType.ADDED)
-        return note
+        return notesRepository.save(Note(title = title, content = content, notebook = notebook))
     }
 
     override fun getNote(id: Long): Note {
@@ -34,14 +30,10 @@ class NotesServiceImpl : NotesService {
         val old = getNote(id)
         val newTitle = title ?: old.title
         val newContents = content ?: old.content
-        val note = notesRepository.save(old.copy(title = newTitle, content = newContents))
-        versioningService.modify(old.notebook.state, note, ModificationType.UPDATED)
-        return note
+        return notesRepository.save(old.copy(title = newTitle, content = newContents))
     }
 
     override fun deleteNote(id: Long) {
-        val note = getNote(id)
-        versioningService.modify(note.notebook.state, note, ModificationType.DELETED)
         return notesRepository.deleteById(id)
     }
 
