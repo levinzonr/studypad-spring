@@ -9,17 +9,13 @@ data class PublishedNotebookDetail(
         val comments: List<CommentResponse>,
         val title: String,
         val description: String?,
-        val notes: List<PublishedNoteResponse>,
+        val notes: List<NoteResponse>,
         val tags: Set<String>,
         val topic: String?,
         val lastUpdate: Long,
         val languageCode: String?,
-        var status: String = STATE_NEW // save, update
+        var versionState: VersionStateResponse,
+        val authoredByMe: Boolean
 
-) {
-    companion object {
-        const val STATE_SAVED = "update"
-        const val STATE_NEW = "save"
-    }
-}
+)
 

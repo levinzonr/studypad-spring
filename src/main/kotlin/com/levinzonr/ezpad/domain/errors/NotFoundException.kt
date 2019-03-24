@@ -19,9 +19,12 @@ class NotFoundException(message: String) : EzpadException(message) {
     }
 
     companion object {
+        inline fun <reified T: Any> buildWithId(id: String) : NotFoundException {
+            return Builder(T::class).buildWithId(id)
+        }
     }
 
-    class Builder<T : Any>(classValue: KClass<T>) {
+    class  Builder<T : Any>(classValue: KClass<T>) {
 
         private val message = when (classValue) {
             User::class -> {
@@ -48,6 +51,5 @@ class NotFoundException(message: String) : EzpadException(message) {
         }
 
     }
-
 
 }

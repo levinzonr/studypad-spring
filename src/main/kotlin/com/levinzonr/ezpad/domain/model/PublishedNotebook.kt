@@ -3,19 +3,15 @@ package com.levinzonr.ezpad.domain.model
 import com.levinzonr.ezpad.domain.responses.PublishedNoteResponse
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
+import com.levinzonr.ezpad.security.StudyPadUserDetails
 import java.util.*
 import javax.persistence.*
 
 
 @Entity(name = "shared")
-data class PublishedNotebook(
+class PublishedNotebook(
 
-        @Id
-        val id: String = UUID.randomUUID().toString(),
-
-        @ManyToOne
-        @JoinColumn(name = "user_id")
-        val author: User,
+        author: User,
 
         val lastUpdatedTimestamp: Long,
 
@@ -25,12 +21,12 @@ data class PublishedNotebook(
 
         val description: String? = null,
 
+        notes: List<Note> = listOf(),
         val languageCode: String? = null,
 
         val excludeFromSearch: Boolean = false,
 
-        @OneToMany(mappedBy = "notebook")
-        val notes: List<PublishedNote> = listOf(),
+
 
         @ManyToOne
         @JoinColumn(name = "university_id")
@@ -47,14 +43,11 @@ data class PublishedNotebook(
 
         @ManyToOne
         @JoinColumn(name = "topic_id")
-        val topic: Topic? = null,
+        val topic: Topic? = null
 
-        @OneToOne
-        val source: Notebook
+) : BaseNotebook(author = author, notes = notes) {
 
-) {
-
-        fun toResponse() : PublishedNotebookResponse {
+        fun toResponse(user: StudyPadUserDetails) : PublishedNotebookResponse {
                 return PublishedNotebookResponse(
                         title = title,
                         notesCount = notes.size.toLong(),
@@ -65,12 +58,12 @@ data class PublishedNotebook(
                         id = id.toString(),
                         topic = topic?.name,
                         lastUpdated = lastUpdatedTimestamp,
-                        languageCode = languageCode
-
+                        languageCode = languageCode,
+                        authoredByMe = user.id == author.id
                 )
         }
 
-        fun toDetailedResponse() : PublishedNotebookDetail {
+        fun toDetailedResponse(user: StudyPadUserDetails) : PublishedNotebookDetail {
                 return PublishedNotebookDetail(
                         id = id,
                         notes = notes.map { it.toResponse() },
@@ -81,7 +74,9 @@ data class PublishedNotebook(
                         tags = tags.map { it.name }.toSet(),
                         topic = topic?.name,
                         lastUpdate = lastUpdatedTimestamp,
-                        languageCode = languageCode
+                        languageCode = languageCode,
+                        versionState = state?.toResponse()!!,
+                        authoredByMe = author.id == user.id
                 )
         }
 }

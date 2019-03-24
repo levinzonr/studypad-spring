@@ -18,6 +18,7 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.levinzonr.ezpad.security.AuthEntryPoint
 import com.levinzonr.ezpad.security.AuthHandler
+import com.levinzonr.ezpad.services.TagService
 import com.levinzonr.ezpad.services.TopicService
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
@@ -72,10 +73,11 @@ class EzpadApplication {
 
     //InMemory database int
     @Bean
-    fun initDatabase(universityService: UniversityService, userService: UserService, topicService: TopicService): CommandLineRunner {
+    fun initDatabase(universityService: UniversityService, userService: UserService, topicService: TopicService, tagService: TagService): CommandLineRunner {
        return CommandLineRunner {
            universityService.init()
            topicService.init()
+           tagService.init()
        }
     }
 

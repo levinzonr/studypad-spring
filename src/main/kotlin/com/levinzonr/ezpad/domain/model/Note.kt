@@ -16,7 +16,9 @@ data class Note(
 
         @ManyToOne
         @JoinColumn(name = "notebook_id")
-        val notebook: Notebook
+        val notebook: BaseNotebook,
+
+        val sourceId: Long? = null
 ) {
         fun toResponse() : NoteResponse {
                 return NoteResponse(

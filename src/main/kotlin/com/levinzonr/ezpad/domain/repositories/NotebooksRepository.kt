@@ -5,8 +5,7 @@ import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.model.User
 import org.springframework.data.repository.CrudRepository
 
-interface NotebooksRepository : CrudRepository<Notebook, Long> {
+interface NotebooksRepository : CrudRepository<Notebook, String> {
 
-    fun findByUserId(id: String) : List<Notebook>
-    fun findByUser(user: User) : List<Notebook>
+    fun findByAuthor(author: User) : List<Notebook>
 }

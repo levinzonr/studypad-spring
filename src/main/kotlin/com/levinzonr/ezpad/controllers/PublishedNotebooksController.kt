@@ -4,8 +4,10 @@ import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.PublishedNotebook
 import com.levinzonr.ezpad.domain.model.Topic
 import com.levinzonr.ezpad.domain.model.User
+import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
 import com.levinzonr.ezpad.domain.responses.CommentResponse
+import com.levinzonr.ezpad.domain.responses.ModificationResponse
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
 import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
 import com.levinzonr.ezpad.security.StudyPadUserDetails
@@ -39,30 +41,25 @@ class PublishedNotebooksController {
 
 
     @GetMapping
-    fun getRelevant() : List<PublishedNotebookResponse> {
-        return service.getMostRelevant().map { it.toResponse() }
+    fun getRelevant(@AuthenticationPrincipal user: StudyPadUserDetails) : List<PublishedNotebookResponse> {
+        return service.getMostRelevant().map { it.toResponse(user) }
     }
 
     @PostMapping
     fun publishNotebook(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestBody notebook: PublishedNotebookPayload) : PublishedNotebookResponse {
         return service.publishNotebook(
                 userDetails.userId, notebook.notebookId, notebook.languageCode, notebook.title,
-                notebook.description, notebook.topic, notebook.tags ?: setOf(), notebook.universityId).toResponse()
+                notebook.description, notebook.topic, notebook.tags ?: setOf(), notebook.universityId).toResponse(userDetails)
     }
 
     @GetMapping("/{id}")
     fun getPublishedNotebookDetails(@AuthenticationPrincipal details: StudyPadUserDetails, @PathVariable("id") id: String) : PublishedNotebookDetail {
-        val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.userId)
-        val notebooks = notebookService.getUserNotebooks(user)
-        val alreadySaved = notebooks.any { it.sourceId == id || it.exportedId == id }
-        return service.getPublishedNotebookById(id).toDetailedResponse().apply {
-            status = if (alreadySaved) PublishedNotebookDetail.STATE_SAVED else PublishedNotebookDetail.STATE_NEW
-        }
+        return service.getPublishedNotebookById(id).toDetailedResponse(details)
     }
 
     @PostMapping("/quick")
-    fun quickShare(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") notebookId: Long) : PublishedNotebookResponse {
-        return service.quickPublish(userId = userDetails.userId, notebookId = notebookId).toResponse()
+    fun quickShare(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") notebookId: String) : PublishedNotebookResponse {
+        return service.quickPublish(userId = userDetails.userId, notebookId = notebookId).toResponse(userDetails)
     }
 
 
@@ -87,13 +84,43 @@ class PublishedNotebooksController {
     }
 
     @GetMapping("/find")
-    fun findNotebooks(@RequestParam(value = "topic") topic: String, @RequestParam("tags") tags: Set<String>) : List<PublishedNotebookResponse> {
-        return service.findNotebooks(tags, topic).map { it.toResponse() }
+    fun findNotebooks(@AuthenticationPrincipal user: StudyPadUserDetails, @RequestParam(value = "topic") topic: String, @RequestParam("tags") tags: Set<String>) : List<PublishedNotebookResponse> {
+        return service.findNotebooks(tags, topic).map { it.toResponse(user) }
     }
 
     @GetMapping("/tags")
-    fun getTags() : List<String> {
-        return tagService.findTagsByName("").map { it.name }
+    fun getTags(@RequestParam("name") name: String) : List<String> {
+        return tagService.findTagsByName(query = name).map { it.name }
+    }
+
+
+    @PostMapping("/{id}/suggestions")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun createSuggestion(@AuthenticationPrincipal user: StudyPadUserDetails, @PathVariable("id") notebookId: String, @RequestBody postSuggestionPayload: PostSuggestionPayload) {
+        val user = userService.findUserById(user.id) ?: throw NotFoundException.Builder(User::class).buildWithId(user.id)
+        service.createSuggestion(user, postSuggestionPayload, notebookId)
+    }
+
+    @GetMapping("/{id}/suggestions")
+    fun getSuggestions(@PathVariable("id") notebookId: String) : List<ModificationResponse> {
+        return service.getPublishedNotebookById(notebookId).state?.modifications?.map { it.toResponse() } ?: listOf()
+    }
+
+    @PostMapping("{id}/suggestions/approve")
+    fun approveSuggestions(
+            @AuthenticationPrincipal user: StudyPadUserDetails,
+            @PathVariable("id") notebookId: String,
+            @RequestParam("ids") ids: List<Long>) : PublishedNotebookDetail {
+
+        service.approveModifications(notebookId, notebookId, ids)
+        return service.getPublishedNotebookById(notebookId).toDetailedResponse(user)
+    }
+
+    @PatchMapping("{id}/suggestions/local")
+    fun applyLocalChanges(
+            @AuthenticationPrincipal user: StudyPadUserDetails,
+            @PathVariable("id") notebookId: String) : PublishedNotebookDetail {
+        return service.applyLocalAuthorChanges(user.userId, notebookId).toDetailedResponse(user)
     }
 
 

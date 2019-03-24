@@ -3,39 +3,45 @@ package com.levinzonr.ezpad.domain.model
 import com.levinzonr.ezpad.domain.responses.NotebookResponse
 import javax.persistence.*
 import com.levinzonr.ezpad.services.toGradient
+import java.util.*
 
 @Entity
-data class Notebook(
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        val id: Long? = null,
+class Notebook(
+
         val name: String,
         val colour: String? = null,
 
-        @ManyToOne
-        @JoinColumn(name = "user_id")
-        val user: User,
+        id: String = UUID.randomUUID().toString(),
 
-        @OneToMany(mappedBy = "notebook", cascade = [CascadeType.ALL])
-        val notes: List<Note> = listOf(),
+        state: VersionState? = null,
 
-        // Source of the notebook ( i.e id of the Published one if exported, null otherwise )
-        val sourceId: String? = null,
+        user: User,
+
+        notes: List<Note> = listOf(),
 
 
-        // This one will be set once user will publish this notebook
-        val exportedId: String? = null
-) {
+
+        val publishedVersionId: String? = null
+) : BaseNotebook(id = id, author = user, notes = notes, state = state) {
 
         fun toResponse() : NotebookResponse {
                 return NotebookResponse(
-                        id = id!!,
+                        id = id,
                         name = name,
                         color = colour.toGradient(),
                         notesCount = notes.count(),
-                        sourceId = sourceId,
-                        exportedId = exportedId
+                        publishedNotebookId = publishedVersionId,
+                        state = state?.toResponse()
 
                 )
+        }
+
+        fun copy(name: String? = null, colour: String? = null, notes: List<Note>? = null, state: VersionState? = null, publishedVersionId: String? = null) : Notebook {
+                return Notebook(name ?: this.name,
+                        colour ?: this.colour,
+                        notes = notes ?: this.notes,
+                        user = this.author, id = id,
+                        state = state,
+                        publishedVersionId = publishedVersionId ?: this.publishedVersionId)
         }
 }

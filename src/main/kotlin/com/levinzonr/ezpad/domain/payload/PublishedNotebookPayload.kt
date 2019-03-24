@@ -6,7 +6,7 @@ class PublishedNotebookPayload(
         val tags: Set<String>?,
         val topic: Long?,
         val description: String?,
-        val notebookId: Long,
+        val notebookId: String,
         val languageCode: String?
 
 )

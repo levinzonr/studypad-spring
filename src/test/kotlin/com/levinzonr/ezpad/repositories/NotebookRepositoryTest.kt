@@ -56,16 +56,16 @@ class NotebookRepositoryTest {
             users.add(user)
         }
 
-        val empty = notebookRepository.findByUser(users.first())
+        val empty = notebookRepository.findByAuthor(users.first())
         assert(empty.isEmpty())
 
         val notebookOfFirstUser = notebookRepository.save( Notebook(user = users.first(), name =  "Notebook"))
 
-        val one = notebookRepository.findByUser(users.first())
+        val one = notebookRepository.findByAuthor(users.first())
         assert(!one.isEmpty())
         assert(one.contains(notebookOfFirstUser))
 
-        assert(notebookRepository.findByUser(users.last()).isEmpty())
+        assert(notebookRepository.findByAuthor(users.last()).isEmpty())
 
 
         val oneById = notebookRepository.findByUserId(users.first().id!!)

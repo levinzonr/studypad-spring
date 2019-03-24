@@ -55,9 +55,10 @@ dependencies {
 	compile 'org.springframework.social:spring-social-facebook:2.0.3.RELEASE'
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	compile 'com.google.guava:guava:27.0.1-jre'
+	implementation 'com.google.guava:guava:27.0.1-jre'
 
-	compile 'com.google.firebase:firebase-admin:6.6.0'
+	implementation 'com.google.firebase:firebase-admin:6.6.0'
+
 
 	runtimeOnly('com.h2database:h2')
 

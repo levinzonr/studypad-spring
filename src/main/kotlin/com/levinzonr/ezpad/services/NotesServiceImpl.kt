@@ -1,8 +1,10 @@
 package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.errors.NotFoundException
+import com.levinzonr.ezpad.domain.model.BaseNotebook
 import com.levinzonr.ezpad.domain.model.Note
 import com.levinzonr.ezpad.domain.model.Notebook
+import com.levinzonr.ezpad.domain.model.PublishedNotebook
 import com.levinzonr.ezpad.domain.repositories.NotesRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -13,7 +15,7 @@ class NotesServiceImpl : NotesService {
     @Autowired
     private lateinit var notesRepository: NotesRepository
 
-    override fun createNote(title: String, content: String, notebook: Notebook): Note {
+    override fun createNote(title: String, content: String, notebook: BaseNotebook): Note {
         return notesRepository.save(Note(title = title, content = content, notebook = notebook))
     }
 
@@ -27,10 +29,37 @@ class NotesServiceImpl : NotesService {
         val old = getNote(id)
         val newTitle = title ?: old.title
         val newContents = content ?: old.content
-        return notesRepository.save(old.copy(title = newTitle, content = newContents))
+        println("Update with $newTitle")
+        val note =  notesRepository.save(old.copy(title = newTitle, content = newContents))
+        println(note)
+        return note
     }
 
     override fun deleteNote(id: Long) {
         return notesRepository.deleteById(id)
+    }
+
+
+    override fun exportNotes(notes: List<Note>, publishedNotebook: PublishedNotebook) {
+        notes.forEach { note ->
+            val createdNote = createNote(note.title ?: "", note.content ?:"" , publishedNotebook)
+            notesRepository.save(note.copy(sourceId = createdNote.id))
+        }
+    }
+
+    override fun importNotes(notes: List<Note>, notebook: BaseNotebook): List<Note> {
+        // Clear notes
+        notesRepository.findByNotebookId(notebook.id).forEach { notesRepository.deleteById(it.id!!) }
+
+        return notes.map {
+            if (notebook is Notebook)
+             notesRepository.save(Note(title = it.title, content = it.content, notebook = notebook, sourceId = it.id))
+             else
+            notesRepository.save(Note(title = it.title, content = it.content, notebook = notebook))
+        }
+    }
+
+    override fun getNotesFromNotebook(notebookId: String): List<Note> {
+        return notesRepository.findByNotebookId(notebookId)
     }
 }

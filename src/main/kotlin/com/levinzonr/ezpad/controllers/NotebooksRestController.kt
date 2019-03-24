@@ -3,6 +3,7 @@ package com.levinzonr.ezpad.controllers
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.Notebook
 import com.levinzonr.ezpad.domain.model.User
+import com.levinzonr.ezpad.domain.model.VersionState
 import com.levinzonr.ezpad.domain.payload.ChangeNotebookPayload
 import com.levinzonr.ezpad.domain.payload.CreateNotebookPayload
 import com.levinzonr.ezpad.domain.responses.GradientColorResponse
@@ -51,7 +52,7 @@ class NotebooksRestController {
     @ResponseStatus(code = HttpStatus.OK)
     @DeleteMapping("/{id}")
     fun deleteNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
-                       @PathVariable("id") id: Long) {
+                       @PathVariable("id") id: String) {
         val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         notebooksService.deleteNotebook(id)
     }
@@ -59,14 +60,14 @@ class NotebooksRestController {
 
     @PatchMapping("/{id}")
     fun updateNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
-                       @PathVariable("id") id: Long,
+                       @PathVariable("id") id: String,
                        @RequestBody @Valid createNotebookPayload: ChangeNotebookPayload) : NotebookResponse {
         return notebooksService.updateNotebook(id, createNotebookPayload.name, createNotebookPayload.gradientColorResponse.asString()).toResponse()
 
     }
 
     @GetMapping("/{id}/notes")
-    fun getNotesFromNotebook(@PathVariable("id") id : Long) : List<NoteResponse> {
+    fun getNotesFromNotebook(@PathVariable("id") id : String) : List<NoteResponse> {
         return notebooksService.getNotebookDetails(id).notes.map { it.toResponse() }
     }
 
@@ -78,5 +79,10 @@ class NotebooksRestController {
     @PostMapping("/import")
     fun importNotebook(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") id: String) : NotebookResponse {
         return notebooksService.createFromPublished(id, userDetails.userId).toResponse()
+    }
+
+    @GetMapping("/{id}/version")
+    fun getVersionState(@PathVariable("id") id: String) : VersionState? {
+        return notebooksService.getNotebookDetails(id).state
     }
 }

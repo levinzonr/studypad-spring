@@ -16,7 +16,17 @@ class TagServiceImpl : TagService {
     }
 
     override fun findTagsByName(query: String): List<Tag> {
-        return repo.findAll().toList()
+        val all = repo.findAll().toList()
+        println(all)
+        val filtered = all
+                .also { it.forEach { println("${it.name} contains $query == ${it.name.contains(query, true)}")  }}
                 .filter { it.name.contains(query, true) }
+        println(filtered)
+        return filtered
+    }
+
+    override fun init() {
+        val strings: List<String> = listOf("cbut", "c++", "commandore65", "hello", "spring", "s", "c#", "bipa1", "bipa2", "bipa3", "pa2", "java")
+        strings.forEach { createTag(it) }
     }
 }

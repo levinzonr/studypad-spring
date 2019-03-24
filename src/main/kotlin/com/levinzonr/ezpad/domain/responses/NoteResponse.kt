@@ -4,5 +4,5 @@ data class NoteResponse(
         val id: Long,
         val title: String,
         val content: String,
-        val notebookId: Long
+        val notebookId: String
 )
