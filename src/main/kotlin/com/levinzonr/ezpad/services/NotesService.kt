@@ -3,6 +3,7 @@ package com.levinzonr.ezpad.services
 import com.levinzonr.ezpad.domain.model.BaseNotebook
 import com.levinzonr.ezpad.domain.model.Note
 import com.levinzonr.ezpad.domain.model.Notebook
+import com.levinzonr.ezpad.domain.model.PublishedNotebook
 
 interface NotesService {
 
@@ -14,8 +15,9 @@ interface NotesService {
 
     fun deleteNote(id: Long)
 
-    fun copyAndReplace(notes: List<Note>, notebook: BaseNotebook) : List<Note>
+    fun importNotes(notes: List<Note>, notebook: BaseNotebook) : List<Note>
 
+    fun getNotesFromNotebook(notebookId: String) : List<Note>
 
-
+    fun exportNotes(notes: List<Note>, publishedNotebook: PublishedNotebook)
 }

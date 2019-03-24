@@ -107,9 +107,20 @@ class PublishedNotebooksController {
     }
 
     @PostMapping("{id}/suggestions/approve")
-    fun approveSuggestions(@AuthenticationPrincipal user: StudyPadUserDetails, @PathVariable("id") notebookId: String, @RequestParam("ids") ids: List<Long>) : PublishedNotebookResponse {
-        service.approveModifications(notebookId, ids)
-        return service.getPublishedNotebookById(notebookId).toResponse(user)
+    fun approveSuggestions(
+            @AuthenticationPrincipal user: StudyPadUserDetails,
+            @PathVariable("id") notebookId: String,
+            @RequestParam("ids") ids: List<Long>) : PublishedNotebookDetail {
+
+        service.approveModifications(notebookId, notebookId, ids)
+        return service.getPublishedNotebookById(notebookId).toDetailedResponse(user)
+    }
+
+    @PatchMapping("{id}/suggestions/local")
+    fun applyLocalChanges(
+            @AuthenticationPrincipal user: StudyPadUserDetails,
+            @PathVariable("id") notebookId: String) : PublishedNotebookDetail {
+        return service.applyLocalAuthorChanges(user.userId, notebookId).toDetailedResponse(user)
     }
 
 

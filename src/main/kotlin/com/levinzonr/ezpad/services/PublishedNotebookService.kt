@@ -29,8 +29,10 @@ interface PublishedNotebookService {
 
     fun filterByTopic(topic: String) : List<PublishedNotebook>
 
-    fun approveModifications(id: String, modificationId: List<Long>)
+    fun approveModifications(userId: String, id: String, modificationId: List<Long>) : PublishedNotebook
 
     fun findNotebooks(tags: Set<String>, topic: String) : List<PublishedNotebook>
+
+    fun applyLocalAuthorChanges(userId: String, id: String) : PublishedNotebook
 
 }

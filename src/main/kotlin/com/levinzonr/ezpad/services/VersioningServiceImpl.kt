@@ -43,10 +43,10 @@ class VersioningServiceImpl : VersioningService {
             // First time modification
             if (existedModification == null) {
                 val modification = when (type) {
-                    ModificationType.ADDED -> Modification.Added(noteId = note.id!!, title = note.title
+                    ModificationType.ADDED -> Modification.Added(noteId = note.sourceId!!, title = note.title
                             ?: "", content = note.content ?: "", state = state, user = author)
-                    ModificationType.DELETED -> Modification.Deleted(noteId = note.id!!, state = state, user = author)
-                    ModificationType.UPDATED -> Modification.Updated(note.id!!, note.title ?: "", author, note.content
+                    ModificationType.DELETED -> Modification.Deleted(noteId = note.sourceId!!, state = state, user = author)
+                    ModificationType.UPDATED -> Modification.Updated(note.sourceId!!, note.title ?: "", author, note.content
                             ?: "", state)
                 }
 
@@ -76,7 +76,7 @@ class VersioningServiceImpl : VersioningService {
         }
     }
 
-    override fun updateModifications(state: VersionState?, list: List<Long>) : VersionState {
+    override fun applyModifications(state: VersionState?, list: List<Long>) : VersionState {
         val oldState = state ?: throw Exception()
         val newState = oldState.copy(
                 version = oldState.version + 1,
@@ -85,6 +85,10 @@ class VersioningServiceImpl : VersioningService {
     }
 
     override fun getModifications(notebookId: String): List<Modification> {
-        return modificationRepository.findAll().filter { it.state.notebook.id == notebookId }
+        return modificationRepository.findAll().also { println("Find ALL: $it.") }.filter { it.state.notebook.id == notebookId }
+    }
+
+    override fun getModificationsByIds(list: List<Long>) : List<Modification> {
+        return modificationRepository.findAllById(list).toList()
     }
 }

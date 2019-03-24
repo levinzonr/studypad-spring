@@ -71,13 +71,13 @@ class NotebooksServiceImpl : NotebookService {
         if (previouslyImported == null) {
             val notebook = createNewNotebook(published.title, user)
             val state = versioningService.initLocalVersion(published, notebook)
-            val notes = notesService.copyAndReplace(published.notes, notebook)
+            val notes = notesService.importNotes(published.notes, notebook)
             return repository.save(notebook.copy(state = state, publishedVersionId = publishedId, notes = notes))
 
         } else {
             // Already improted, replace all notes and reset state
             val state = versioningService.initLocalVersion(published, previouslyImported)
-            val notes = notesService.copyAndReplace(published.notes, previouslyImported)
+            val notes = notesService.importNotes(published.notes, previouslyImported)
             return repository.save(previouslyImported.copy(state = state, notes = notes))
         }
 

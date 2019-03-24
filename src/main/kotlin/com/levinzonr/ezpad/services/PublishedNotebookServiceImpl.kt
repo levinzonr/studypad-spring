@@ -1,12 +1,11 @@
 package com.levinzonr.ezpad.services
 
+import com.levinzonr.ezpad.domain.errors.BadRequestException
 import com.levinzonr.ezpad.domain.errors.InvalidPayloadException
 import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
-import com.levinzonr.ezpad.domain.repositories.PublishedNoteRepository
 import com.levinzonr.ezpad.domain.repositories.PublishedNotebookRepository
-import com.sun.org.apache.xpath.internal.operations.Mod
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -39,7 +38,8 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     private lateinit var versioningService: VersioningService
 
     override fun publishNotebook(userId: String, notebookId: String, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
-        val author = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
+        val author = userService.findUserById(userId)
+                ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
 
         // Check if notebook has been already published
@@ -72,7 +72,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
             notebookService.updateState(notebook, versioningService.initLocalVersion(published, notebook))
             published.state = state
 
-            notesService.copyAndReplace(notebook.notes, published)
+            notesService.exportNotes(notebook.notes, published)
 
 
             return sharedNotebookRepo.save(published)
@@ -80,8 +80,9 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     }
 
 
-    override fun quickPublish(userId: String, notebookId: String) : PublishedNotebook {
-        val author = userService.findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
+    override fun quickPublish(userId: String, notebookId: String): PublishedNotebook {
+        val author = userService.findUserById(userId)
+                ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         val notebook = notebookService.getNotebookDetails(notebookId)
 
         // Check if notebook has been already published
@@ -108,7 +109,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
             notebookService.updateState(notebook, versioningService.initLocalVersion(published, notebook))
 
-            notesService.copyAndReplace(notebook.notes, published)
+            notesService.exportNotes(notebook.notes, published)
             return sharedNotebookRepo.save(published)
         }
     }
@@ -133,7 +134,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         }
     }
 
-    override fun filterByTopic(topic: String) : List<PublishedNotebook> {
+    override fun filterByTopic(topic: String): List<PublishedNotebook> {
         return sharedNotebookRepo.findAll().filter { it.topic?.name.toString().contains(topic, true) }
     }
 
@@ -154,19 +155,43 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         return sharedNotebookRepo.findById(id).orElseThrow { NotFoundException.Builder(PublishedNotebook::class).buildWithId(id) }
     }
 
-    override fun approveModifications(id: String, modificationIds: List<Long>) {
-        val shared = getPublishedNotebookById(id)
+    override fun approveModifications(userId: String, id: String, modificationIds: List<Long>): PublishedNotebook {
+        val shared = getPublishedNotebookById(id).also { it.checkWritePolicy(userId) }
+        versioningService.getModificationsByIds(modificationIds)
+                .map { mod ->
+                    println("Mode $mod")
+                    when (mod) {
+                        is Modification.Deleted -> {
+                            notesService.deleteNote(mod.noteId)
+                            null
+                        }
+                        is Modification.Updated -> {
+                            notesService.updateNote(mod.noteId, mod.title, mod.content)
+                        }
+                        is Modification.Added -> {
+                            notesService.createNote(mod.title, mod.content, shared)
+                        }
+                    }
+                }
 
-        versioningService.getModifications(id).filter { modificationIds.contains(it.id) }.forEach { mod ->
-            when (mod) {
-                is Modification.Deleted -> { notesService.deleteNote(mod.noteId) }
-                is Modification.Updated -> { notesService.updateNote(mod.noteId, mod.title, mod.content)}
-                is Modification.Added -> {notesService.createNote(mod.title, mod.content, shared)}
-            }
-        }
-
-        val newState = versioningService.updateModifications(shared.state, modificationIds)
-        shared.state = newState
-        sharedNotebookRepo.save(shared)
+        shared.notes = notesService.getNotesFromNotebook(id)
+        shared.state = versioningService.applyModifications(shared.state, modificationIds)
+        println(shared.notes.first())
+        return sharedNotebookRepo.save(shared)
     }
+
+
+    override fun applyLocalAuthorChanges(userId: String, id: String): PublishedNotebook {
+        val shared = getPublishedNotebookById(id).also { it.checkWritePolicy(userId) }
+        val user = userService.findUserById(userId) ?: throw NotFoundException.buildWithId<User>(userId)
+        val notebook = notebookService.getUserNotebooks(user).firstOrNull { it.publishedVersionId == id }
+                ?: throw NotFoundException.buildWithId<Notebook>(userId)
+        val modifications = notebook.state?.modifications ?: listOf()
+        if (modifications.isEmpty()) throw BadRequestException("No modifications to apply")
+        return  approveModifications(userId, id, modifications.map { it.id }).also {
+            notebookService.updateState(notebook, versioningService.initLocalVersion(shared, notebook))
+
+        }
+    }
+
 }
