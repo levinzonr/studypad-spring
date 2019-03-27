@@ -169,7 +169,8 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                             notesService.updateNote(mod.noteId, mod.title, mod.content)
                         }
                         is Modification.Added -> {
-                            notesService.createNote(mod.title, mod.content, shared)
+                            val note = notesService.createNote(mod.title, mod.content, shared)
+                            notesService.updateNote(mod.noteId, sourceId = note.id)
                         }
                     }
                 }

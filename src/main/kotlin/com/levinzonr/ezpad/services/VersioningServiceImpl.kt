@@ -37,13 +37,12 @@ class VersioningServiceImpl : VersioningService {
     override fun modify(state: VersionState?, note: Note, type: ModificationType, user: User?) {
         state?.let { currrentVersionState ->
             val author = user ?: state.notebook.author
-            val existedModification = modificationRepository.findAll().firstOrNull { it.id == note.id }
-
+            val existedModification = state.modifications.firstOrNull { it.id == note.id }
 
             // First time modification
             if (existedModification == null) {
                 val modification = when (type) {
-                    ModificationType.ADDED -> Modification.Added(noteId = note.sourceId!!, title = note.title
+                    ModificationType.ADDED -> Modification.Added(noteId = note.id!!, title = note.title
                             ?: "", content = note.content ?: "", state = state, user = author)
                     ModificationType.DELETED -> Modification.Deleted(noteId = note.sourceId!!, state = state, user = author)
                     ModificationType.UPDATED -> Modification.Updated(note.sourceId!!, note.title ?: "", author, note.content
@@ -59,7 +58,7 @@ class VersioningServiceImpl : VersioningService {
                     if (type == ModificationType.DELETED) {
                         modificationRepository.deleteById(existedModification.id)
                     } else {
-                        val newModification = Modification.Added(existedModification.id, existedModification.title, author, existedModification.content, state)
+                        val newModification = Modification.Added(existedModification.id, note.title ?: "", author, note.content ?: "", state)
                         modificationRepository.save(newModification)
                     }
 

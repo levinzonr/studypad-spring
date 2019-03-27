@@ -25,12 +25,13 @@ class NotesServiceImpl : NotesService {
         }
     }
 
-    override fun updateNote(id: Long, title: String?, content: String?): Note {
+    override fun updateNote(id: Long, title: String?, content: String?, sourceId: Long?): Note {
         val old = getNote(id)
         val newTitle = title ?: old.title
         val newContents = content ?: old.content
+        val newSource = sourceId ?: old.sourceId
         println("Update with $newTitle")
-        val note =  notesRepository.save(old.copy(title = newTitle, content = newContents))
+        val note =  notesRepository.save(old.copy(title = newTitle, content = newContents, sourceId = newSource))
         println(note)
         return note
     }

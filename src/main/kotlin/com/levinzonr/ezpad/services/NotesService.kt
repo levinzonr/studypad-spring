@@ -11,7 +11,7 @@ interface NotesService {
 
     fun getNote(id: Long) : Note
 
-    fun updateNote(id: Long, title: String?, content: String?) : Note
+    fun updateNote(id: Long, title: String? = null, content: String? = null, sourceId: Long? = null) : Note
 
     fun deleteNote(id: Long)
 
