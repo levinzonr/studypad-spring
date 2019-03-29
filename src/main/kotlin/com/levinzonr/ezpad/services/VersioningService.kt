@@ -8,7 +8,7 @@ interface VersioningService {
 
     fun initPublishedVersion(publishedNotebook: PublishedNotebook) : VersionState
 
-    fun modify(state: VersionState?, note: Note, type: ModificationType, user: User? = null)
+    fun modify(state: VersionState?, note: NoteBody, type: ModificationType, user: User? = null)
 
     fun getModifications(notebookId: String) : List<Modification>
 

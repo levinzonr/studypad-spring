@@ -28,4 +28,10 @@ data class Note(
                         notebookId = notebook.id!!
                 )
         }
+
+        fun toBody() : NoteBody {
+                return NoteBody(id, title, content, sourceId = sourceId)
+        }
 }
+
+data class NoteBody(val id: Long?, val title: String?, val content: String?, val sourceId: Long? = null)

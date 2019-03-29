@@ -33,6 +33,10 @@ interface PublishedNotebookService {
 
     fun findNotebooks(tags: Set<String>, topic: String) : List<PublishedNotebook>
 
-    fun applyLocalAuthorChanges(userId: String, id: String) : PublishedNotebook
+    fun applyLocalAuthorChanges(user: User, id: String) : PublishedNotebook
+
+    fun migrateToSuggestions(user: User, notebookId: String) : PublishedNotebook
+
+    fun handleChangesMigration(user: User, notebookId: String) : PublishedNotebook
 
 }

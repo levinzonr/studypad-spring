@@ -116,16 +116,9 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
     override fun createSuggestion(user: User, postSuggestionPayload: PostSuggestionPayload, notebookId: String) {
         val notebook = getPublishedNotebookById(notebookId)
-        if (postSuggestionPayload.noteId == null) {
-            versioningService.modify(notebook.state, Note(title = postSuggestionPayload.newTitle, content = postSuggestionPayload.newContent, notebook = notebook), ModificationType.ADDED)
-        } else {
-            val note = notesService.getNote(postSuggestionPayload.noteId)
-            if (postSuggestionPayload.newContent == null && postSuggestionPayload.newTitle == null) {
-                versioningService.modify(notebook.state, note, ModificationType.DELETED)
-            } else {
-                versioningService.modify(notebook.state, note.copy(title = postSuggestionPayload.newTitle, content = postSuggestionPayload.newContent), ModificationType.DELETED)
-            }
-        }
+        val id = postSuggestionPayload.noteId
+        val sourcedNote = NoteBody(title = postSuggestionPayload.newTitle, content = postSuggestionPayload.newContent, id = id, sourceId = id)
+        versioningService.modify(notebook.state, sourcedNote, postSuggestionPayload.type.modType, user)
     }
 
     override fun filterByTag(tag: String): List<PublishedNotebook> {
@@ -162,15 +155,15 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                     println("Mode $mod")
                     when (mod) {
                         is Modification.Deleted -> {
-                            notesService.deleteNote(mod.noteId)
+                            notesService.deleteNote(mod.noteId!!)
                             null
                         }
                         is Modification.Updated -> {
-                            notesService.updateNote(mod.noteId, mod.title, mod.content)
+                            notesService.updateNote(mod.noteId!!, mod.title, mod.content)
                         }
                         is Modification.Added -> {
                             val note = notesService.createNote(mod.title, mod.content, shared)
-                            notesService.updateNote(mod.noteId, sourceId = note.id)
+                            mod.noteId?.let { notesService.updateNote(mod.noteId, sourceId = note.id) }
                         }
                     }
                 }
@@ -181,18 +174,38 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         return sharedNotebookRepo.save(shared)
     }
 
+    override fun migrateToSuggestions(user: User, notebookId: String): PublishedNotebook {
+        val shared = getPublishedNotebookById(notebookId)
+        val notebook = notebookService.getUserNotebooks(user).firstOrNull { it.publishedVersionId == notebookId }
+                ?: throw NotFoundException.buildWithId<Notebook>(notebookId)
+        val localModifications = notebook.state?.modifications ?: listOf()
+        val payloads = localModifications.map {
+            when (it) {
+                is Modification.Added -> PostSuggestionPayload(noteId =  it.id, newContent = it.content, newTitle = it.title,  type = ModificationType.ADDED.toRepsonse())
+                is Modification.Updated -> PostSuggestionPayload(noteId = it.noteId, newTitle = it.title, newContent = it.content,  type = ModificationType.UPDATED.toRepsonse())
+                is Modification.Deleted -> PostSuggestionPayload(noteId = it.noteId, type = ModificationType.DELETED.toRepsonse())
+            }
+        }
+        payloads.forEach { createSuggestion(user, it, notebookId) }
+        notebookService.updateState(notebook,versioningService.initLocalVersion(shared, notebook))
+        return getPublishedNotebookById(notebookId)
+    }
 
-    override fun applyLocalAuthorChanges(userId: String, id: String): PublishedNotebook {
-        val shared = getPublishedNotebookById(id).also { it.checkWritePolicy(userId) }
-        val user = userService.findUserById(userId) ?: throw NotFoundException.buildWithId<User>(userId)
+    override fun applyLocalAuthorChanges(user: User, id: String): PublishedNotebook {
+        val shared = getPublishedNotebookById(id).also { it.checkWritePolicy(user) }
         val notebook = notebookService.getUserNotebooks(user).firstOrNull { it.publishedVersionId == id }
-                ?: throw NotFoundException.buildWithId<Notebook>(userId)
+                ?: throw NotFoundException.buildWithId<Notebook>(id)
         val modifications = notebook.state?.modifications ?: listOf()
         if (modifications.isEmpty()) throw BadRequestException("No modifications to apply")
-        return  approveModifications(userId, id, modifications.map { it.id }).also {
+        return approveModifications(user.id!!, id, modifications.map { it.id!! }).also {
             notebookService.updateState(notebook, versioningService.initLocalVersion(shared, notebook))
 
         }
     }
 
+
+    override fun handleChangesMigration(user: User, notebookId: String): PublishedNotebook {
+        val notebook = getPublishedNotebookById(notebookId)
+        return if (user.id == notebook.author.id) applyLocalAuthorChanges(user, notebookId) else migrateToSuggestions(user, notebookId)
+    }
 }

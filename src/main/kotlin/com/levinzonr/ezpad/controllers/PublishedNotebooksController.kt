@@ -120,7 +120,8 @@ class PublishedNotebooksController {
     fun applyLocalChanges(
             @AuthenticationPrincipal user: StudyPadUserDetails,
             @PathVariable("id") notebookId: String) : PublishedNotebookDetail {
-        return service.applyLocalAuthorChanges(user.userId, notebookId).toDetailedResponse(user)
+        val u = userService.findUserById(user.id) ?: throw NotFoundException.buildWithId<User>(user.id)
+        return service.handleChangesMigration(u, notebookId).toDetailedResponse(user)
     }
 
 

@@ -72,6 +72,7 @@ class NotebooksServiceImpl : NotebookService {
             val notebook = createNewNotebook(published.title, user)
             val state = versioningService.initLocalVersion(published, notebook)
             val notes = notesService.importNotes(published.notes, notebook)
+            println("Notes saved $notes")
             return repository.save(notebook.copy(state = state, publishedVersionId = publishedId, notes = notes))
 
         } else {

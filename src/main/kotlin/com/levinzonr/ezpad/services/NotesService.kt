@@ -15,7 +15,7 @@ interface NotesService {
 
     fun deleteNote(id: Long)
 
-    fun importNotes(notes: List<Note>, notebook: BaseNotebook) : List<Note>
+    fun importNotes(notes: List<Note>, notebook: Notebook) : List<Note>
 
     fun getNotesFromNotebook(notebookId: String) : List<Note>
 
