@@ -45,7 +45,11 @@ sealed class Modification(
                 val content: String, state: VersionState) : Modification(state = state, noteId = noteId, author = user)
 
     fun toResponse(): ModificationResponse {
-        return ModificationResponse(this.javaClass.simpleName)
+       return when(this) {
+           is Added -> ModificationResponse(ModificationType.ADDED.toRepsonse(), title, content, author = author.toAuthorResponse())
+           is Updated -> ModificationResponse(ModificationType.UPDATED.toRepsonse(), title, content, sourceId = noteId, author = author.toAuthorResponse())
+           is Deleted -> ModificationResponse(ModificationType.DELETED.toRepsonse(), author = author.toAuthorResponse())
+       }
     }
 }
 
