@@ -37,12 +37,12 @@ sealed class Modification(
             state: VersionState) : Modification(state = state, noteId = noteId, author = user)
 
     @Entity
-    class Added(noteId: Long?,
+    class Added(id: Long? = null, noteId: Long?,
                 @Column(columnDefinition = "TEXT")
                 val title: String, user: User,
 
                 @Column(columnDefinition = "TEXT")
-                val content: String, state: VersionState) : Modification(state = state, noteId = noteId, author = user)
+                val content: String, state: VersionState) : Modification(id = id, state = state, noteId = noteId, author = user)
 
     fun toResponse(): ModificationResponse {
        return when(this) {
@@ -50,6 +50,10 @@ sealed class Modification(
            is Updated -> ModificationResponse(ModificationType.UPDATED.toRepsonse(), title, content, sourceId = noteId, author = author.toAuthorResponse())
            is Deleted -> ModificationResponse(ModificationType.DELETED.toRepsonse(), author = author.toAuthorResponse())
        }
+    }
+
+    override fun toString(): String {
+        return "Mod ${javaClass.simpleName}, note $noteId, ${author.firstName}"
     }
 }
 

@@ -1,5 +1,7 @@
 package com.levinzonr.ezpad.domain.responses
 
+import com.levinzonr.ezpad.domain.model.ExportedUniversity
+
 class PublishedNotebookResponse(
         val title: String,
         val notesCount: Long,
@@ -11,6 +13,7 @@ class PublishedNotebookResponse(
         val topic: String?,
         val lastUpdated: Long,
         val languageCode: String?,
-        val authoredByMe: Boolean
+        val authoredByMe: Boolean,
+        val university: UniversityResponse? = null
 
 )

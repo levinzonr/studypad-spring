@@ -72,7 +72,8 @@ class PublishedNotebook(
                 topic = topic?.name,
                 lastUpdated = lastUpdatedTimestamp,
                 languageCode = languageCode,
-                authoredByMe = user.id == author.id
+                authoredByMe = user.id == author.id,
+                university = university?.toResponse()
         )
     }
 
@@ -89,7 +90,8 @@ class PublishedNotebook(
                 lastUpdate = updatedAt.time,
                 languageCode = languageCode,
                 versionState = state?.toResponse()!!,
-                authoredByMe = author.id == user.id
+                authoredByMe = author.id == user.id,
+                university = university?.toResponse()
         )
     }
 

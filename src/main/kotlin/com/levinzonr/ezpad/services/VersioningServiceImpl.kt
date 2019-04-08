@@ -41,7 +41,9 @@ class VersioningServiceImpl : VersioningService {
 
 
             // We are only initerested in notes modifications from concrete users
-            val existedModification = state.modifications.filter { it.author.id == user?.id }.firstOrNull { it.noteId == note.id }
+            println("Mods: ${state.modifications}")
+            val existedModification = state.modifications.filter { it.author.id == author.id }.firstOrNull { it.noteId == note.id }
+            println("Existed: ${existedModification}")
 
             // First time modification
             if (existedModification == null) {
@@ -57,17 +59,18 @@ class VersioningServiceImpl : VersioningService {
             } else {
 
                 if (existedModification is Modification.Added) {
-
+                    println("Exited modification :$existedModification")
                     // If its a modifcation created by user, thats now is deleted - delete ic completetylly
                     if (type == ModificationType.DELETED) {
                         modificationRepository.deleteById(existedModification.id!!)
                     } else {
-                        val newModification = Modification.Added(existedModification.noteId!!, note.title ?: "", author, note.content ?: "", state)
+                        val newModification = Modification.Added(existedModification.id, existedModification.noteId!!, note.title ?: "", author, note.content ?: "", state)
                         modificationRepository.save(newModification)
                     }
 
 
                 } else if (existedModification is Modification.Updated && type == ModificationType.DELETED) {
+                    modificationRepository.delete(existedModification)
                     val nextModification = Modification.Deleted(existedModification.noteId!!, author, state)
                     modificationRepository.save(nextModification)
                 } else {

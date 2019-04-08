@@ -1,6 +1,7 @@
 package com.levinzonr.ezpad.domain.responses
 
 import com.levinzonr.ezpad.domain.model.Topic
+import com.levinzonr.ezpad.domain.model.University
 
 
 data class PublishedNotebookDetail(
@@ -15,7 +16,8 @@ data class PublishedNotebookDetail(
         val lastUpdate: Long,
         val languageCode: String?,
         var versionState: VersionStateResponse,
-        val authoredByMe: Boolean
+        val authoredByMe: Boolean,
+        val university: UniversityResponse? = null
 
 )
 

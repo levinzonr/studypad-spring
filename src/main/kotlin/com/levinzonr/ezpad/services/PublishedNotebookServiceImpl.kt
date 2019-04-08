@@ -218,7 +218,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
     override fun getFeed(user: User): List<Section> {
 
-        val secionSize = 20
+        val secionSize = 10
 
         val recent = getAll().sortedByDescending { it.updatedAt.time }.first(secionSize)
         val fromUniversity = if (user.university != null ) getAll().filter { it.university?.id == user.university.id }.first(secionSize) else listOf()
