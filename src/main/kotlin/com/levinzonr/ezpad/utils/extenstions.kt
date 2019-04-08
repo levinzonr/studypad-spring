@@ -23,6 +23,9 @@ fun <T> Optional<T>.tryGet() : T? {
 }
 inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 
+fun <T> List<T>.first(n: Int) : List<T> {
+    return if (size < n) this else subList(0, n)
+}
 
 inline fun <reified T> Gson.fromJsonFile(jsonFile: String) : T {
     val json = File("src/main/resources/$jsonFile").inputStream().readBytes().toString(Charsets.UTF_8)

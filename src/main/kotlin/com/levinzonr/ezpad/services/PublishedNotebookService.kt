@@ -1,10 +1,8 @@
 package com.levinzonr.ezpad.services
 
-import com.levinzonr.ezpad.domain.model.Modification
-import com.levinzonr.ezpad.domain.model.Notebook
-import com.levinzonr.ezpad.domain.model.PublishedNotebook
-import com.levinzonr.ezpad.domain.model.User
+import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
+import com.levinzonr.ezpad.domain.responses.SectionResponse
 
 interface PublishedNotebookService {
 
@@ -38,5 +36,9 @@ interface PublishedNotebookService {
     fun migrateToSuggestions(user: User, notebookId: String) : PublishedNotebook
 
     fun handleChangesMigration(user: User, notebookId: String) : PublishedNotebook
+
+    fun getFeed(user: User) : List<Section>
+
+    fun getAll() : List<PublishedNotebook>
 
 }

@@ -6,6 +6,8 @@ import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.repositories.PublishedNotebookRepository
+import com.levinzonr.ezpad.domain.responses.SectionResponse
+import com.levinzonr.ezpad.utils.first
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -207,5 +209,24 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     override fun handleChangesMigration(user: User, notebookId: String): PublishedNotebook {
         val notebook = getPublishedNotebookById(notebookId)
         return if (user.id == notebook.author.id) applyLocalAuthorChanges(user, notebookId) else migrateToSuggestions(user, notebookId)
+    }
+
+
+    override fun getAll(): List<PublishedNotebook> {
+        return sharedNotebookRepo.findAll().filterNot { it.excludeFromSearch }
+    }
+
+    override fun getFeed(user: User): List<Section> {
+
+        val secionSize = 20
+
+        val recent = getAll().sortedByDescending { it.updatedAt.time }.first(secionSize)
+        val fromUniversity = if (user.university != null ) getAll().filter { it.university?.id == user.university.id }.first(secionSize) else listOf()
+        val popular = getAll().sortedByDescending { it.comments.count() }.first(secionSize)
+
+        return listOf(
+                Section("From My University", fromUniversity),
+                Section("Recently Updated", recent),
+                Section("Popular", popular))
     }
 }

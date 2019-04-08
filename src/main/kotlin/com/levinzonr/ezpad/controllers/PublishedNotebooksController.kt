@@ -6,10 +6,7 @@ import com.levinzonr.ezpad.domain.model.Topic
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
-import com.levinzonr.ezpad.domain.responses.CommentResponse
-import com.levinzonr.ezpad.domain.responses.ModificationResponse
-import com.levinzonr.ezpad.domain.responses.PublishedNotebookDetail
-import com.levinzonr.ezpad.domain.responses.PublishedNotebookResponse
+import com.levinzonr.ezpad.domain.responses.*
 import com.levinzonr.ezpad.security.StudyPadUserDetails
 import com.levinzonr.ezpad.services.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,8 +38,11 @@ class PublishedNotebooksController {
 
 
     @GetMapping
-    fun getRelevant(@AuthenticationPrincipal user: StudyPadUserDetails) : List<PublishedNotebookResponse> {
-        return service.getMostRelevant().map { it.toResponse(user) }
+    fun getRelevant(@AuthenticationPrincipal user: StudyPadUserDetails) : List<SectionResponse> {
+        val _user = userService.findUserById(user.id) ?: throw NotFoundException.buildWithId<User>(user.id)
+        return service.getFeed(_user)
+                .filterNot { it.items.isEmpty() }
+                .map { SectionResponse(it.title, it.items.map { item -> item.toResponse(user) }) }
     }
 
     @PostMapping
