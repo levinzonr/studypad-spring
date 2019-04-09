@@ -229,7 +229,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
         return listOf(
                 Section("university", fromUniversity),
-                Section("recentc", recent),
+                Section("recent", recent),
                 Section("popular", popular))
     }
 
