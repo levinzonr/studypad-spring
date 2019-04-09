@@ -146,6 +146,9 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
     }
 
+
+
+
     override fun getPublishedNotebookById(id: String): PublishedNotebook {
         return sharedNotebookRepo.findById(id).orElseThrow { NotFoundException.Builder(PublishedNotebook::class).buildWithId(id) }
     }
@@ -225,8 +228,47 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         val popular = getAll().sortedByDescending { it.comments.count() }.first(secionSize)
 
         return listOf(
-                Section("From My University", fromUniversity),
-                Section("Recently Updated", recent),
-                Section("Popular", popular))
+                Section("university", fromUniversity),
+                Section("recentc", recent),
+                Section("popular", popular))
     }
+
+
+    override fun searchNotebooks(query: String?, universityID: Long?, tags: Set<String>?, topics: List<Long>?, languageCode: String): List<PublishedNotebook> {
+        val byUniversity =universityID?.let(universityService::findByIdOrNull)
+        val byTopics: List<Topic> = (topics ?: listOf()).mapNotNull(topicService::findByIdOrNull)
+
+        return getAll()
+                .filterByQuery(query)
+                .filterByUniversity(byUniversity)
+                .filterByTopics(byTopics)
+                .filterByTags(tags)
+    }
+
+
+    private fun List<PublishedNotebook>.filterByQuery(query: String?) : List<PublishedNotebook> {
+        return if (query.isNullOrBlank()) this
+        else {
+            val byName = filter { it.title.contains(query) }
+            val byDescription = filter { if (it.description == null) false else it.description.contains(query)  }
+            return listOf(byName, byDescription).flatten().distinctBy { it.id }
+        }
+
+    }
+
+    private fun List<PublishedNotebook>.filterByUniversity(university: University?) : List<PublishedNotebook> {
+        return if (university != null ) filter { it.university?.id == university.id } else this
+    }
+
+
+    private fun List<PublishedNotebook>.filterByTopics(topics: List<Topic>) : List<PublishedNotebook> {
+        return if (topics.isEmpty()) this else  filter { topics.contains(it.topic) }
+    }
+
+    private fun List<PublishedNotebook>.filterByTags(tags: Set<String>?) : List<PublishedNotebook> {
+        return if (tags.isNullOrEmpty()) this else filter {
+            it.tags.any { tag -> tags.contains(tag.name) }
+        }
+    }
+
 }

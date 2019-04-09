@@ -126,4 +126,4 @@ data class PublishedNote(
     }
 }
 
-data class Section(val title: String, val items: List<PublishedNotebook>)
+data class Section(val type: String, val items: List<PublishedNotebook>)

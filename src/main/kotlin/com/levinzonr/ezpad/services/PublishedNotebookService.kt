@@ -25,6 +25,8 @@ interface PublishedNotebookService {
 
     fun filterByTag(tag: String) : List<PublishedNotebook>
 
+    fun searchNotebooks(query: String?, universityID: Long?, tags: Set<String>?, topics: List<Long>?, languageCode: String) : List<PublishedNotebook>
+
     fun filterByTopic(topic: String) : List<PublishedNotebook>
 
     fun approveModifications(userId: String, id: String, modificationId: List<Long>) : PublishedNotebook

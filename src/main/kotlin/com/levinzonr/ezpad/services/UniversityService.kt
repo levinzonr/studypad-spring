@@ -15,6 +15,8 @@ interface UniversityService {
 
     fun findById(uniId: Long) : University
 
+    fun findByIdOrNull(id: Long) : University?
+
     fun deleteUniversity(id: Long)
 
     fun updateUniversity(id: Long, newFullName: String? = null, newShortName: String? = null) : University

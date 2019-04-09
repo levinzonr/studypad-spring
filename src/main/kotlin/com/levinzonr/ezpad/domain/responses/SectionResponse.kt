@@ -1,6 +1,6 @@
 package com.levinzonr.ezpad.domain.responses
 
 data class SectionResponse(
-        val title: String,
+        val type: String,
         val items: List<PublishedNotebookResponse>
 )

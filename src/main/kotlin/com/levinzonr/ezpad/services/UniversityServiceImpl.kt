@@ -58,6 +58,11 @@ class UniversityServiceImpl : UniversityService {
         return newUni
     }
 
+
+    override fun findByIdOrNull(id: Long): University? {
+        return universityRepository.findById(id).orElse(null)
+    }
+
     override fun findById(uniId: Long): University {
         return universityRepository.findById(uniId)
                 .orElseThrow {
