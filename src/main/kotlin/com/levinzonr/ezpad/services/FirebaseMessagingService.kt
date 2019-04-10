@@ -24,7 +24,7 @@ class FirebaseMessagingService : MessageService {
 
     override fun notifyOnUpdate(publishedNotebook: PublishedNotebook, subscribers: List<User>) {
         val holder = Builder(publishedNotebook)
-                .setRecepients(subscribers)
+                .setRecepients(subscribers.filter { it.id != publishedNotebook.author.id })
                 .setType(ApiMessages.Notifications.Types.UPDATE)
                 .build()
         repository.saveAll(holder.domainNotifications)
