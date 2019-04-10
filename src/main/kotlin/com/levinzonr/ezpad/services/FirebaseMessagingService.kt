@@ -50,6 +50,10 @@ class FirebaseMessagingService : MessageService {
     }
 
 
+    override fun getUserNotifications(userId: String, unreadOnly: Boolean): List<NotificationPayload> {
+        return repository.findAll().filter { it.userId == userId }.filter { if(unreadOnly) !it.read else true}
+    }
+
     inner class Builder(val notebook: PublishedNotebook) {
 
         private var title: String = ""
@@ -57,6 +61,7 @@ class FirebaseMessagingService : MessageService {
         private var type = ""
         private var recepients: List<User> = listOf()
         private lateinit var notification: Notification
+        private lateinit var notificationPayload: NotificationPayload
 
         fun setType(type: String, user: User? = null): Builder {
             this.type = type
@@ -75,7 +80,7 @@ class FirebaseMessagingService : MessageService {
                 }
 
             }
-            user?.let { message = message.replace("[user]", it.displayName.toString()) }
+            user?.let { message = message.replace("[name]", it.displayName.toString()) }
             message = message.replace("[notebook]", notebook.title)
             notification = Notification(title, message)
             return this
@@ -89,6 +94,13 @@ class FirebaseMessagingService : MessageService {
 
         fun build(): NotificationHolder {
             val domainNotification = recepients.map { buildPayload(it) }
+            notificationPayload = NotificationPayload(
+                    body = message,
+                    title = title,
+                    read = false,
+                    notebookId = notebook.id,
+                    type = type,
+                    userId = "")
             val tokens = recepients.map { it.firebaseTokens }.flatten()
             val messages = buildMessages(tokens)
             return NotificationHolder(domainNotification, messages)
@@ -106,7 +118,7 @@ class FirebaseMessagingService : MessageService {
         }
 
         private fun buildMessages(list: List<String>): List<Message> {
-            val notificationString = Gson().toJson(notification)
+            val notificationString = Gson().toJson(notificationPayload)
             return list.map {
                 Message.builder()
                         .setNotification(notification)
