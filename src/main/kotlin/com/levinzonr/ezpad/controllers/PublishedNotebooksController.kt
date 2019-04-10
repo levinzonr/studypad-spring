@@ -21,7 +21,7 @@ class PublishedNotebooksController {
     private lateinit var service: PublishedNotebookService
 
     @Autowired
-    private lateinit var notebookService: NotebookService
+    private lateinit var messageService: MessageService
 
     @Autowired
     private lateinit var commentService: CommentService

@@ -16,6 +16,7 @@ import org.springframework.core.io.ClassPathResource
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.levinzonr.ezpad.security.AuthEntryPoint
 import com.levinzonr.ezpad.security.AuthHandler
 import com.levinzonr.ezpad.services.TagService
@@ -48,6 +49,11 @@ class EzpadApplication {
     @Bean
     fun provideAuthEntryPoint() : AuthenticationEntryPoint{
         return AuthEntryPoint()
+    }
+
+    @Bean
+    fun provideMessagingService() : FirebaseMessaging {
+        return FirebaseMessaging.getInstance()
     }
 
     @Bean

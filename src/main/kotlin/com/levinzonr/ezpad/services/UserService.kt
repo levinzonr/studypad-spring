@@ -23,4 +23,6 @@ interface UserService {
 
 
     fun updateUser(userId: String, universityId: Long? = null) : User
+
+    fun registerFirebaseToken(userId: String, token: String)
 }

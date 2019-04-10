@@ -15,6 +15,9 @@ data class User(
         val photoUrl: String? = null,
 
 
+        @ElementCollection(fetch = FetchType.EAGER)
+        val firebaseTokens: List<String> = arrayListOf(),
+
         @ManyToOne
         @JoinColumn(name = "university_id")
         val university: University? = null,

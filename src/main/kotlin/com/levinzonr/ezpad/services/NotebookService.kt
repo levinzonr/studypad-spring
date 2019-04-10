@@ -21,4 +21,6 @@ interface NotebookService {
     fun updateState(notebook: Notebook, versionState: VersionState)
 
     fun createFromPublished(publishedId: String, userId: String) : Notebook
+
+    fun getAll() : List<Notebook>
 }

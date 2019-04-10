@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service
 @Service
 class CommentServiceImpl : CommentService {
 
+
+    @Autowired
+    private lateinit var messageService: MessageService
+
     @Autowired
     private lateinit var repo: CommentRepository
 
@@ -26,7 +30,7 @@ class CommentServiceImpl : CommentService {
         return repo.save(Comment(
                 author = user,
                 content = comment,
-                notebook = notebook))
+                notebook = notebook)).also { messageService.notifyOnComment(notebook, user) }
     }
 
     override fun deleteComment(commentId: Long) {

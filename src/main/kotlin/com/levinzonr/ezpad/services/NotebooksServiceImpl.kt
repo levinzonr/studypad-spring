@@ -84,6 +84,10 @@ class NotebooksServiceImpl : NotebookService {
 
     }
 
+    override fun getAll(): List<Notebook> {
+        return repository.findAll().toList()
+    }
+
     override fun updateState(notebook: Notebook, versionState: VersionState) {
         repository.save(notebook.copy(state = versionState))
     }
