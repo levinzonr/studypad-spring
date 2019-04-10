@@ -22,4 +22,24 @@ object ApiMessages {
         const val ERROR_UNI_NOT_FOUND = "No university exists by id [id]"
     }
 
+    object Notifications {
+
+        object Types {
+            const val COMMENT = "comment"
+            const val SUGGESTION = "suggestion"
+            const val UPDATE = "update"
+        }
+
+        object Messages {
+            const val COMMENT_TITLE = "New Activity"
+            const val COMMENT_MESSAGE = "[name] has left a new comment on your [notebook] notebook"
+            const val UPDATE_TITLE = "Update Available"
+            const val UPDATE_MESSAGE = "New version of the [notebook] notebook is available!"
+            const val SUGGESTION_TITLE = "New Suggestion"
+            const val SUGGESTION_MESSAGE = "[notebook] notebook got a new pending suggestion, take a look!"
+        }
+
+
+    }
+
 }

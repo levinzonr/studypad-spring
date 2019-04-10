@@ -39,6 +39,13 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     @Autowired
     private lateinit var versioningService: VersioningService
 
+    @Autowired
+    private lateinit var messageService: MessageService
+
+    override fun getSubscribers(publishedNotebook: PublishedNotebook): List<User> {
+        return notebookService.getAll().filter { it.publishedVersionId == publishedNotebook.id }.map { it.author }
+    }
+
     override fun publishNotebook(userId: String, notebookId: String, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>, universityID: Long?): PublishedNotebook {
         val author = userService.findUserById(userId)
                 ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
@@ -116,11 +123,11 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         }
     }
 
-    override fun createSuggestion(user: User, postSuggestionPayload: PostSuggestionPayload, notebookId: String) {
+    override fun createSuggestion(user: User, postSuggestionPayload: PostSuggestionPayload, notebookId: String, multiple: Boolean) {
         val notebook = getPublishedNotebookById(notebookId)
         val id = postSuggestionPayload.noteId
         val sourcedNote = NoteBody(title = postSuggestionPayload.newTitle, content = postSuggestionPayload.newContent, id = id, sourceId = id)
-        versioningService.modify(notebook.state, sourcedNote, postSuggestionPayload.type.modType, user)
+        versioningService.modify(notebook.state, sourcedNote, postSuggestionPayload.type.modType, user).also { if(!multiple) messageService.notifyOnSuggestionAdded(notebook) }
     }
 
     override fun filterByTag(tag: String): List<PublishedNotebook> {
@@ -176,7 +183,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         shared.notes = notesService.getNotesFromNotebook(id)
         shared.state = versioningService.applyModifications(shared.state, modificationIds)
         println(shared.notes.first())
-        return sharedNotebookRepo.save(shared)
+        return sharedNotebookRepo.save(shared).also { messageService.notifyOnUpdate(shared, getSubscribers(shared)) }
     }
 
     override fun migrateToSuggestions(user: User, notebookId: String): PublishedNotebook {
@@ -191,13 +198,15 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                 is Modification.Deleted -> PostSuggestionPayload(noteId = it.noteId, type = ModificationType.DELETED.toRepsonse())
             }
         }
-        payloads.forEach { createSuggestion(user, it, notebookId) }
+        payloads.forEach { createSuggestion(user, it, notebookId, true) }
         notebookService.updateState(notebook,versioningService.initLocalVersion(shared, notebook))
+        messageService.notifyOnSuggestionAdded(shared)
         return getPublishedNotebookById(notebookId)
     }
 
     override fun applyLocalAuthorChanges(user: User, id: String): PublishedNotebook {
         val shared = getPublishedNotebookById(id).also { it.checkWritePolicy(user) }
+
         val notebook = notebookService.getUserNotebooks(user).firstOrNull { it.publishedVersionId == id }
                 ?: throw NotFoundException.buildWithId<Notebook>(id)
         val modifications = notebook.state?.modifications ?: listOf()

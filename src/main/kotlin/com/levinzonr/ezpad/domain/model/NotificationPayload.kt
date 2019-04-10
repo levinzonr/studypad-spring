@@ -6,22 +6,14 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity
-data class Notification(
+data class NotificationPayload(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
         val body: String,
+        val title: String,
         val userId: String,
         val type: String,
         val read: Boolean,
-        val notebookId: String) {
-
-    fun toHashMap() : HashMap<String, String> {
-        return hashMapOf(
-                "body" to body,
-                "userId" to userId,
-                "type" to type,
-                "read" to read.toString(),
-                "notebookId" to notebookId)
-    }
-}
+        val notebookId: String,
+        val createdAt: Long = System.currentTimeMillis())

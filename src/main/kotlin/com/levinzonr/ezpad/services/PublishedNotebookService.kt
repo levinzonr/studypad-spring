@@ -21,7 +21,7 @@ interface PublishedNotebookService {
 
     fun getPublishedNotebookById(id: String) : PublishedNotebook
 
-    fun createSuggestion(user: User, postSuggestionPayload: PostSuggestionPayload, notebookId: String)
+    fun createSuggestion(user: User, postSuggestionPayload: PostSuggestionPayload, notebookId: String, multiple: Boolean = false)
 
     fun filterByTag(tag: String) : List<PublishedNotebook>
 
@@ -42,5 +42,7 @@ interface PublishedNotebookService {
     fun getFeed(user: User) : List<Section>
 
     fun getAll() : List<PublishedNotebook>
+
+    fun getSubscribers(publishedNotebook: PublishedNotebook) : List<User>
 
 }

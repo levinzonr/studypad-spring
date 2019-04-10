@@ -1,6 +1,6 @@
 package com.levinzonr.ezpad.domain.repositories
 
-import com.levinzonr.ezpad.domain.model.Notification
+import com.levinzonr.ezpad.domain.model.NotificationPayload
 import org.springframework.data.repository.CrudRepository
 
-interface NotificationRepository : CrudRepository<Notification, Long>
+interface NotificationRepository : CrudRepository<NotificationPayload, Long>

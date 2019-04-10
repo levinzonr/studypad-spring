@@ -64,9 +64,7 @@ class PublishedNotebooksController {
     fun postNotebookComment(@AuthenticationPrincipal user: StudyPadUserDetails,
                             @RequestParam comment: String,
                             @PathVariable("id") id: String): CommentResponse {
-        val comment = commentService.postNotebookComment(user.userId, id, comment).toResponse()
-        messageService.notifyOnComment(service.getPublishedNotebookById(id))
-        return comment
+        return commentService.postNotebookComment(user.userId, id, comment).toResponse()
     }
 
 
