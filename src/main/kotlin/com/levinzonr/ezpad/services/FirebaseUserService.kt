@@ -157,6 +157,13 @@ class FirebaseUserService : UserService {
         return user
     }
 
+    override fun registerFirebaseToken(userId: String, token: String) {
+        val user = repository.findById(userId).orElse(null) ?: return
+        val tokens = user.firebaseTokens.toMutableList().apply { add(token) }
+        val updated = user.copy(firebaseTokens = tokens)
+        repository.save(updated)
+    }
+
     override fun updateUser(userId: String, universityId: Long?) : User {
         var user = findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         universityId?.let { id ->

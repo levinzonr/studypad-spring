@@ -43,5 +43,12 @@ class UserRestController {
 
     }
 
+    @PostMapping("/notifications/register")
+    fun registerFirebaseToken(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("token") token: String) {
+        userService.registerFirebaseToken(userDetails.userId, token)
+    }
+
+
+
 
 }

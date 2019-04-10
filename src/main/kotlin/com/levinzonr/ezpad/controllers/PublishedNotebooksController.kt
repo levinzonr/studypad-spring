@@ -21,7 +21,7 @@ class PublishedNotebooksController {
     private lateinit var service: PublishedNotebookService
 
     @Autowired
-    private lateinit var notebookService: NotebookService
+    private lateinit var messageService: MessageService
 
     @Autowired
     private lateinit var commentService: CommentService
@@ -64,7 +64,9 @@ class PublishedNotebooksController {
     fun postNotebookComment(@AuthenticationPrincipal user: StudyPadUserDetails,
                             @RequestParam comment: String,
                             @PathVariable("id") id: String): CommentResponse {
-        return commentService.postNotebookComment(user.userId, id, comment).toResponse()
+        val comment = commentService.postNotebookComment(user.userId, id, comment).toResponse()
+        messageService.notifyOnComment(service.getPublishedNotebookById(id))
+        return comment
     }
 
 
