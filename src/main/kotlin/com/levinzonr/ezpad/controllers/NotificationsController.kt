@@ -25,7 +25,7 @@ class NotificationsController {
     }
 
 
-    @GetMapping()
+    @GetMapping
     fun getLatestNotifications(@AuthenticationPrincipal userDetails: StudyPadUserDetails) : List<NotificationPayload> {
         return messageService.getUserNotifications(userDetails.userId)
     }
