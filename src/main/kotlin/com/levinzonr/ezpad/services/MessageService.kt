@@ -10,4 +10,5 @@ interface MessageService {
     fun notifyOnComment(publishedNotebook: PublishedNotebook, commentAuthor: User)
     fun notifyOnSuggestionAdded(publishedNotebook: PublishedNotebook)
     fun getUserNotifications(userId: String, unreadOnly: Boolean = false) : List<NotificationPayload>
+    fun markNotificationsAsRead(userId: String, list: List<Long>)
 }

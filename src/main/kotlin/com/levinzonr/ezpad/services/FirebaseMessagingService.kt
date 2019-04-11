@@ -34,11 +34,14 @@ class FirebaseMessagingService : MessageService {
     override fun notifyOnComment(publishedNotebook: PublishedNotebook, commentAuthor: User) {
         val holder = Builder(publishedNotebook)
                 .setRecepients(listOf(publishedNotebook.author))
+                .setShowAsNotification(publishedNotebook.author.id == commentAuthor.id)
                 .setType(ApiMessages.Notifications.Types.COMMENT, commentAuthor)
                 .build()
         repository.saveAll(holder.domainNotifications)
         holder.messages.forEach { messageService.send(it) }
     }
+
+
 
     override fun notifyOnSuggestionAdded(publishedNotebook: PublishedNotebook) {
         val holder = Builder(publishedNotebook)
@@ -49,6 +52,11 @@ class FirebaseMessagingService : MessageService {
         holder.messages.forEach { messageService.send(it) }
     }
 
+    override fun markNotificationsAsRead(userId: String, list: List<Long>) {
+        val toMark = repository.findAllById(list)
+        toMark.forEach { it.read = true }
+        repository.saveAll(toMark)
+    }
 
     override fun getUserNotifications(userId: String, unreadOnly: Boolean): List<NotificationPayload> {
         return repository.findAll().filter { it.userId == userId }.filter { if(unreadOnly) !it.read else true}
@@ -62,6 +70,7 @@ class FirebaseMessagingService : MessageService {
         private var recepients: List<User> = listOf()
         private lateinit var notification: Notification
         private lateinit var notificationPayload: NotificationPayload
+        private var showAsNotification = false
 
         fun setType(type: String, user: User? = null): Builder {
             this.type = type
@@ -91,6 +100,11 @@ class FirebaseMessagingService : MessageService {
             return this
         }
 
+        fun setShowAsNotification(isShow: Boolean) : Builder {
+            this.showAsNotification = isShow
+            return this
+        }
+
 
         fun build(): NotificationHolder {
             val domainNotification = recepients.map { buildPayload(it) }
@@ -105,6 +119,7 @@ class FirebaseMessagingService : MessageService {
             val messages = buildMessages(tokens)
             return NotificationHolder(domainNotification, messages)
         }
+
 
 
         private fun buildPayload(user: User): NotificationPayload {
@@ -124,6 +139,7 @@ class FirebaseMessagingService : MessageService {
                         .setNotification(notification)
                         .setToken(it)
                         .putData("payload", notificationString)
+                        .putData("showAsNotification", showAsNotification.toString())
                         .build()
             }
         }

@@ -14,6 +14,6 @@ data class NotificationPayload(
         val title: String,
         val userId: String,
         val type: String,
-        val read: Boolean,
+        var read: Boolean,
         val notebookId: String,
         val createdAt: Long = System.currentTimeMillis())
