@@ -159,6 +159,7 @@ class FirebaseUserService : UserService {
 
     override fun registerFirebaseToken(userId: String, token: String) {
         val user = repository.findById(userId).orElse(null) ?: return
+        if (user.firebaseTokens.contains(token))  return
         val tokens = user.firebaseTokens.toMutableList().apply { add(token) }
         val updated = user.copy(firebaseTokens = tokens)
         repository.save(updated)
