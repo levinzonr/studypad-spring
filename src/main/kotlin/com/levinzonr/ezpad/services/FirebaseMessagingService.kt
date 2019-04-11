@@ -59,7 +59,10 @@ class FirebaseMessagingService : MessageService {
     }
 
     override fun getUserNotifications(userId: String, unreadOnly: Boolean): List<NotificationPayload> {
-        return repository.findAll().filter { it.userId == userId }.filter { if(unreadOnly) !it.read else true}
+        return repository.findAll()
+                .filter { it.userId == userId }
+                .filter { if(unreadOnly) !it.read else true}
+                .sortedByDescending { it.createdAt }
     }
 
     inner class Builder(val notebook: PublishedNotebook) {
