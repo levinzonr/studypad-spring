@@ -137,8 +137,8 @@ class FirebaseUserService : UserService {
         val userRecord = auth.getUser(firebaseId)
         println("Create from firebase recoed")
         val names = userRecord.displayName.split(" ")
-        val firstName = names.getOrNull(0)
-        val lastName = names.getOrNull(1)
+        val firstName = names.getOrNull(0) ?: ""
+        val lastName = names.getOrNull(1) ?: ""
 
         val nb = Gson().fromJson<ExportedNotebook>(firstNotebookString)
 
