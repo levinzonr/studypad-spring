@@ -22,7 +22,7 @@ interface UserService {
     fun findUserById(id: String) : User?
 
 
-    fun updateUser(userId: String, universityId: Long? = null) : User
+    fun updateUser(userId: String, displayName: String?, universityId: Long? = null) : User
 
     fun registerFirebaseToken(userId: String, token: String)
 }

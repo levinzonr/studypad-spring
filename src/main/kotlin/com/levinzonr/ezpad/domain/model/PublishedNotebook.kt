@@ -34,6 +34,8 @@ class PublishedNotebook(
 
         val title: String,
 
+
+        @Column(columnDefinition = "TEXT")
         val description: String? = null,
 
         notes: List<Note> = listOf(),

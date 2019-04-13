@@ -5,9 +5,8 @@ import javax.validation.constraints.Size
 
 data class UpdateUserPayload(
 
-        val firstName: String?,
-        val lastName: String?,
+        val universityId: Long?,
 
-        @field: Size(min = 6, max =  100)
-        val password: String?
+        @field:NotEmpty
+        val displayName: String?
 )

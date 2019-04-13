@@ -12,6 +12,8 @@ interface VersioningService {
 
     fun getModifications(notebookId: String) : List<Modification>
 
+    fun deleteModifications(list: List<Long>)
+
     fun applyModifications(state: VersionState?, list: List<Long>) : VersionState
 
     fun getModificationsByIds(list: List<Long>) : List<Modification>

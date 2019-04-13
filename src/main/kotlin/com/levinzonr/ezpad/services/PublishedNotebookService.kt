@@ -31,6 +31,8 @@ interface PublishedNotebookService {
 
     fun approveModifications(userId: String, id: String, modificationId: List<Long>) : PublishedNotebook
 
+    fun rejectModifications(userId: String, id: String, modificationId: List<Long>) : PublishedNotebook
+
     fun findNotebooks(tags: Set<String>, topic: String) : List<PublishedNotebook>
 
     fun applyLocalAuthorChanges(user: User, id: String) : PublishedNotebook

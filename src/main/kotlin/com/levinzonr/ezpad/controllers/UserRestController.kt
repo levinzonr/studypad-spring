@@ -1,15 +1,13 @@
 package com.levinzonr.ezpad.controllers
 
 import com.levinzonr.ezpad.domain.model.NotificationPayload
-import com.levinzonr.ezpad.domain.payload.FinishSignupPayload
+import com.levinzonr.ezpad.domain.payload.UpdateUserPayload
 import com.levinzonr.ezpad.domain.responses.UserResponse
 import com.levinzonr.ezpad.security.StudyPadUserDetails
-import com.levinzonr.ezpad.security.firebase.FirebaseAuthToken
 import com.levinzonr.ezpad.services.MessageService
 import com.levinzonr.ezpad.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -37,13 +35,13 @@ class UserRestController {
         return userService.findUserById(userId)!!.toResponse()
     }
 
-    @PostMapping("/signup/finish")
+    @PostMapping("/me")
     fun updateUserUniversity(
-            @Valid @RequestBody finishSignup: FinishSignupPayload,
+            @Valid @RequestBody payload: UpdateUserPayload,
             @AuthenticationPrincipal userDetails: StudyPadUserDetails) : UserResponse {
 
-        println("Update $finishSignup")
-        return userService.updateUser(userDetails.userId, finishSignup.universityId).toResponse()
+        println("Update $payload")
+        return userService.updateUser(userDetails.userId, payload.displayName, payload.universityId).toResponse()
 
     }
 

@@ -160,6 +160,11 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         return sharedNotebookRepo.findById(id).orElseThrow { NotFoundException.Builder(PublishedNotebook::class).buildWithId(id) }
     }
 
+    override fun rejectModifications(userId: String, id: String, modificationId: List<Long>): PublishedNotebook {
+        val shared = getPublishedNotebookById(id).also { it.checkWritePolicy(userId) }
+        versioningService.deleteModifications(modificationId)
+        return shared
+    }
     override fun approveModifications(userId: String, id: String, modificationIds: List<Long>): PublishedNotebook {
         val shared = getPublishedNotebookById(id).also { it.checkWritePolicy(userId) }
         versioningService.getModificationsByIds(modificationIds)

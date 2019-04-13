@@ -118,13 +118,15 @@ class PublishedNotebooksController {
         return service.getPublishedNotebookById(notebookId).state?.modifications?.map { it.toResponse() } ?: listOf()
     }
 
-    @PostMapping("{id}/suggestions/approve")
+    @PostMapping("{id}/suggestions/review")
     fun approveSuggestions(
             @AuthenticationPrincipal user: StudyPadUserDetails,
             @PathVariable("id") notebookId: String,
-            @RequestParam("ids") ids: List<Long>): PublishedNotebookDetail {
+            @RequestParam("approved") approved: List<Long>,
+            @RequestParam("rejected") rejectedIds: List<Long>): PublishedNotebookDetail {
 
-        service.approveModifications(notebookId, notebookId, ids)
+        service.rejectModifications(user.userId, notebookId, rejectedIds)
+        service.approveModifications(notebookId, notebookId, approved)
         return service.getPublishedNotebookById(notebookId).toDetailedResponse(user)
     }
 

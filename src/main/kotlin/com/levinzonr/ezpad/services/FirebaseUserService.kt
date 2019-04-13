@@ -165,12 +165,14 @@ class FirebaseUserService : UserService {
         repository.save(updated)
     }
 
-    override fun updateUser(userId: String, universityId: Long?) : User {
+    override fun updateUser(userId: String, displayName: String?, universityId: Long?) : User {
         var user = findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         universityId?.let { id ->
             val uni = universityService.findById(id)
             user = repository.save(user.copy(university = uni))
         }
+        val name = displayName ?: user.displayName
+        user = repository.save(user.copy(displayName = name))
 
         return user
     }

@@ -33,6 +33,9 @@ class VersioningServiceImpl : VersioningService {
         return versionStateRepository.save(state)
     }
 
+    override fun deleteModifications(list: List<Long>) {
+       list.forEach(modificationRepository::deleteById)
+    }
 
     override fun modify(state: VersionState?, note: NoteBody, type: ModificationType, user: User?) {
         println("Modification: $note, of type $type")

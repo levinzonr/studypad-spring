@@ -46,9 +46,9 @@ sealed class Modification(
 
     fun toResponse(): ModificationResponse {
        return when(this) {
-           is Added -> ModificationResponse(ModificationType.ADDED.toRepsonse(), title, content, author = author.toAuthorResponse())
-           is Updated -> ModificationResponse(ModificationType.UPDATED.toRepsonse(), title, content, sourceId = noteId, author = author.toAuthorResponse())
-           is Deleted -> ModificationResponse(ModificationType.DELETED.toRepsonse(), author = author.toAuthorResponse())
+           is Added -> ModificationResponse(id!!, ModificationType.ADDED.toRepsonse(), title, content, author = author.toAuthorResponse())
+           is Updated -> ModificationResponse(id!!, ModificationType.UPDATED.toRepsonse(), title, content, sourceId = noteId, author = author.toAuthorResponse())
+           is Deleted -> ModificationResponse(id!!, ModificationType.DELETED.toRepsonse(), author = author.toAuthorResponse())
        }
     }
 
