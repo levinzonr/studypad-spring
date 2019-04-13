@@ -126,7 +126,7 @@ class PublishedNotebooksController {
             @RequestBody reviewPayload: SubmitReviewPayload): PublishedNotebookDetail {
 
         service.rejectModifications(user.userId, notebookId, reviewPayload.rejected)
-        service.approveModifications(notebookId, notebookId, reviewPayload.approved)
+        service.approveModifications(user.userId, notebookId, reviewPayload.approved)
         return service.getPublishedNotebookById(notebookId).toDetailedResponse(user)
     }
 
