@@ -4,6 +4,7 @@ import com.levinzonr.ezpad.domain.errors.NotFoundException
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
+import com.levinzonr.ezpad.domain.payload.SubmitReviewPayload
 import com.levinzonr.ezpad.domain.responses.*
 import com.levinzonr.ezpad.security.StudyPadUserDetails
 import com.levinzonr.ezpad.services.*
@@ -122,11 +123,10 @@ class PublishedNotebooksController {
     fun approveSuggestions(
             @AuthenticationPrincipal user: StudyPadUserDetails,
             @PathVariable("id") notebookId: String,
-            @RequestParam("approved") approved: List<Long>,
-            @RequestParam("rejected") rejectedIds: List<Long>): PublishedNotebookDetail {
+            @RequestBody reviewPayload: SubmitReviewPayload): PublishedNotebookDetail {
 
-        service.rejectModifications(user.userId, notebookId, rejectedIds)
-        service.approveModifications(notebookId, notebookId, approved)
+        service.rejectModifications(user.userId, notebookId, reviewPayload.rejected)
+        service.approveModifications(notebookId, notebookId, reviewPayload.approved)
         return service.getPublishedNotebookById(notebookId).toDetailedResponse(user)
     }
 
