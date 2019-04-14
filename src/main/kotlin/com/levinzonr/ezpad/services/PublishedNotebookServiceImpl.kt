@@ -7,9 +7,11 @@ import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.repositories.PublishedNotebookRepository
 import com.levinzonr.ezpad.domain.responses.SectionResponse
+import com.levinzonr.ezpad.utils.Logger
 import com.levinzonr.ezpad.utils.first
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.lang.Exception
 import java.util.*
 
 @Service
@@ -167,9 +169,10 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     }
     override fun approveModifications(userId: String, id: String, modificationIds: List<Long>): PublishedNotebook {
         val shared = getPublishedNotebookById(id).also { it.checkWritePolicy(userId) }
+        Logger.log(this, "App;yu mods to notes :${shared.notes}")
         versioningService.getModificationsByIds(modificationIds)
                 .map { mod ->
-                    println("Mode $mod")
+                    Logger.log(this, "${mod.javaClass.simpleName} mod for npte ${mod.noteId}")
                     when (mod) {
                         is Modification.Deleted -> {
                             notesService.deleteNote(mod.noteId!!)
@@ -180,7 +183,11 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                         }
                         is Modification.Added -> {
                             val note = notesService.createNote(mod.title, mod.content, shared)
-                            mod.noteId?.let { notesService.updateNote(mod.noteId, sourceId = note.id) }
+                            try {
+                                mod.noteId?.let { notesService.updateNote(mod.noteId, sourceId = note.id) }
+                            } catch (exception: Exception) {
+
+                            }
                         }
                     }
                 }
@@ -196,13 +203,15 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         val notebook = notebookService.getUserNotebooks(user).firstOrNull { it.publishedVersionId == notebookId }
                 ?: throw NotFoundException.buildWithId<Notebook>(notebookId)
         val localModifications = notebook.state?.modifications ?: listOf()
+        Logger.log(this,"Local mods notes ids: ${notebook.state?.modifications?.joinToString(","){ it.noteId.toString() }}")
         val payloads = localModifications.map {
             when (it) {
-                is Modification.Added -> PostSuggestionPayload(noteId =  it.id, newContent = it.content, newTitle = it.title,  type = ModificationType.ADDED.toRepsonse())
+                is Modification.Added -> PostSuggestionPayload(noteId =  it.noteId, newContent = it.content, newTitle = it.title,  type = ModificationType.ADDED.toRepsonse())
                 is Modification.Updated -> PostSuggestionPayload(noteId = it.noteId, newTitle = it.title, newContent = it.content,  type = ModificationType.UPDATED.toRepsonse())
                 is Modification.Deleted -> PostSuggestionPayload(noteId = it.noteId, type = ModificationType.DELETED.toRepsonse())
             }
         }
+        Logger.log(this, "Paylaods: $payloads")
         payloads.forEach { createSuggestion(user, it, notebookId, true) }
         notebookService.updateState(notebook,versioningService.initLocalVersion(shared, notebook))
         messageService.notifyOnSuggestionAdded(shared)

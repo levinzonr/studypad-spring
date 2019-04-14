@@ -10,6 +10,7 @@ import com.levinzonr.ezpad.services.NotebookService
 import com.levinzonr.ezpad.services.NotesService
 import com.levinzonr.ezpad.services.UserService
 import com.levinzonr.ezpad.services.VersioningService
+import com.levinzonr.ezpad.utils.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -52,6 +53,7 @@ class NotesController {
     @PatchMapping("/{id}")
     fun updateNote(@PathVariable("id") id: Long, @Valid @RequestBody createNotePayload: UpdateNotePayload) : NoteResponse {
         val note = noteService.getNote(id)
+        Logger.log(this, "Note created $note")
         val updated =  noteService.updateNote(id, createNotePayload.title, createNotePayload.content)
         versioningService.modify(note.notebook.state, updated.toBody(), ModificationType.UPDATED)
         return updated.toResponse()

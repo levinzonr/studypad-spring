@@ -3,8 +3,10 @@ package com.levinzonr.ezpad.services
 import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.repositories.ModificationRepository
 import com.levinzonr.ezpad.domain.repositories.VersionStateRepository
+import com.levinzonr.ezpad.utils.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import sun.rmi.runtime.Log
 import java.lang.Exception
 
 @Service
@@ -38,15 +40,15 @@ class VersioningServiceImpl : VersioningService {
     }
 
     override fun modify(state: VersionState?, note: NoteBody, type: ModificationType, user: User?) {
-        println("Modification: $note, of type $type")
+        Logger.log(this, "Modification: $note, of type $type")
         state?.let { currrentVersionState ->
             val author = user ?: state.notebook.author
 
 
             // We are only initerested in notes modifications from concrete users
-            println("Mods: ${state.modifications}")
-            val existedModification = state.modifications.filter { it.author.id == author.id }.firstOrNull { it.noteId == note.id }
-            println("Existed: ${existedModification}")
+            Logger.log(this, "Mods: ${state.modifications.joinToString(",") { "noteId: ${it.noteId}, authorId: ${it.author.id}" }}")
+            val existedModification = state.modifications.filter { it.author.id == author.id }.firstOrNull { it.noteId == note.sourceId || it.noteId == note.id }
+            Logger.log(this, "Existed: ${existedModification}")
 
             // First time modification
             if (existedModification == null) {
@@ -77,6 +79,10 @@ class VersioningServiceImpl : VersioningService {
                     val nextModification = Modification.Deleted(existedModification.noteId!!, author, state)
                     modificationRepository.save(nextModification)
                 } else {
+                    val next =  Modification.Updated(note.sourceId!!, note.title ?: "", author, note.content
+                            ?: "", state)
+                    next.id = existedModification.id
+                    modificationRepository.save(next)
 
                 }
 

@@ -9,10 +9,10 @@ data class Note(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
-        val title: String? = null,
+        val title: String = "",
 
         @Column(columnDefinition = "TEXT")
-        val content: String? = null,
+        val content: String = "",
 
         @ManyToOne
         @JoinColumn(name = "notebook_id")
@@ -20,6 +20,11 @@ data class Note(
 
         val sourceId: Long? = null
 ) {
+
+        override fun toString(): String {
+                return "Note[id: $id, sourceId: $sourceId, title:$title]"
+        }
+
         fun toResponse() : NoteResponse {
                 return NoteResponse(
                         id = id!!,

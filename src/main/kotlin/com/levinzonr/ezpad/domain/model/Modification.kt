@@ -10,7 +10,7 @@ import javax.persistence.*
 sealed class Modification(
         @Id
         @GeneratedValue
-        val id: Long? = null,
+        var id: Long? = null,
 
         val noteId: Long?,
 
