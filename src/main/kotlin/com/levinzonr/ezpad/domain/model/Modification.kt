@@ -14,6 +14,7 @@ sealed class Modification(
 
         val noteId: Long?,
 
+
         @ManyToOne
         val state: VersionState,
 

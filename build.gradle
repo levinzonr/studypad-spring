@@ -52,7 +52,7 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('com.fasterxml.jackson.module:jackson-module-kotlin')
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	compile 'org.springframework.social:spring-social-facebook:2.0.3.RELEASE'
+	implementation 'org.springframework.social:spring-social-facebook:2.0.3.RELEASE'
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation 'com.google.guava:guava:27.0.1-jre'

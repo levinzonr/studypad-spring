@@ -194,8 +194,11 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
         shared.notes = notesService.getNotesFromNotebook(id)
         shared.state = versioningService.applyModifications(shared.state, modificationIds)
-        println(shared.notes.first())
-        return sharedNotebookRepo.save(shared).also { messageService.notifyOnUpdate(shared, getSubscribers(shared)) }
+        versioningService.deleteModifications(modificationIds)
+        Logger.log(this, shared.state.toString())
+        return sharedNotebookRepo.save(shared).also {
+            Logger.log(this, it.state.toString())
+            messageService.notifyOnUpdate(shared, getSubscribers(shared)) }
     }
 
     override fun migrateToSuggestions(user: User, notebookId: String): PublishedNotebook {

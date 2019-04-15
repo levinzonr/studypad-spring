@@ -55,12 +55,12 @@ class VersioningServiceImpl : VersioningService {
                 val modification = when (type) {
                     ModificationType.ADDED -> Modification.Added(noteId = note.id, title = note.title
                             ?: "", content = note.content ?: "", state = state, user = author)
-                    ModificationType.DELETED -> Modification.Deleted(noteId = note.sourceId!!, state = state, user = author)
                     ModificationType.UPDATED -> Modification.Updated(note.sourceId!!, note.title ?: "", author, note.content
                             ?: "", state)
+                    else -> null
                 }
 
-                 modificationRepository.save(modification)
+                 modification?.let(modificationRepository::save)
             } else {
 
                 if (existedModification is Modification.Added) {
@@ -93,6 +93,8 @@ class VersioningServiceImpl : VersioningService {
 
     override fun applyModifications(state: VersionState?, list: List<Long>) : VersionState {
         val oldState = state ?: throw Exception()
+        val remains = oldState.modifications.filterNot { list.contains(it.id) }
+        Logger.log(this, remains.joinToString(",") { it.noteId.toString()  })
         val newState = oldState.copy(
                 version = oldState.version + 1,
                 modifications = oldState.modifications.filterNot { list.contains(it.id) })
