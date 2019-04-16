@@ -275,8 +275,8 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
     private fun List<PublishedNotebook>.filterByQuery(query: String?) : List<PublishedNotebook> {
         return if (query.isNullOrBlank()) this
         else {
-            val byName = filter { it.title.contains(query) }
-            val byDescription = filter { if (it.description == null) false else it.description.contains(query)  }
+            val byName = filter { it.title.contains(query, true) }
+            val byDescription = filter { if (it.description == null) false else it.description.contains(query, true)  }
             return listOf(byName, byDescription).flatten().distinctBy { it.id }
         }
 
