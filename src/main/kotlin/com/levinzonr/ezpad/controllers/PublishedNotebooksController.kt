@@ -5,6 +5,7 @@ import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.payload.PublishedNotebookPayload
 import com.levinzonr.ezpad.domain.payload.SubmitReviewPayload
+import com.levinzonr.ezpad.domain.payload.UpdatePublishedNotebookPayload
 import com.levinzonr.ezpad.domain.responses.*
 import com.levinzonr.ezpad.security.StudyPadUserDetails
 import com.levinzonr.ezpad.services.*
@@ -55,6 +56,14 @@ class PublishedNotebooksController {
         return service.getPublishedNotebookById(id).toDetailedResponse(details)
     }
 
+    @PatchMapping("/{id}")
+    fun updatePublishedNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
+                                @RequestBody payload: UpdatePublishedNotebookPayload,
+                                @PathVariable("id") id: String): PublishedNotebookDetail {
+        return service.updatePublishNotebook(id, details.userId, payload.languageCode, payload.title, payload.description, payload.topicId, payload.tags, payload.universityId)
+                .toDetailedResponse(details)
+    }
+
     @PostMapping("/quick")
     fun quickShare(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") notebookId: String): PublishedNotebookResponse {
         return service.quickPublish(userId = userDetails.userId, notebookId = notebookId).toResponse(userDetails)
@@ -96,7 +105,7 @@ class PublishedNotebooksController {
                 universityID = universityId,
                 query = query,
                 languageCode = locale
-                ).map { it.toResponse(user) }
+        ).map { it.toResponse(user) }
 
     }
 

@@ -14,6 +14,7 @@ interface PublishedNotebookService {
                         topicId: Long?, tags: Set<String> = setOf(),
                         universityID: Long? = null): PublishedNotebook
 
+    fun updatePublishNotebook(notebookId: String, userId: String, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>?, universityID: Long?) : PublishedNotebook
 
     fun quickPublish(userId: String, notebookId: String) : PublishedNotebook
 

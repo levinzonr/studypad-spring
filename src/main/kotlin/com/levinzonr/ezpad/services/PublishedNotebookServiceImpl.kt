@@ -90,6 +90,29 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         }
     }
 
+    override fun updatePublishNotebook(notebookId: String, userId: String, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>?, universityID: Long?): PublishedNotebook {
+        val publishedNotebook = getPublishedNotebookById(notebookId).also { it.checkWritePolicy(userId) }
+        val newUni = universityID?.let(universityService::findByIdOrNull) ?: publishedNotebook.university
+        val newTitle = title ?: publishedNotebook.title
+        val newDescriptio = description ?: publishedNotebook.description
+        val newTopic = topicId?.let(topicService::findByIdOrNull) ?: publishedNotebook.topic
+        val tags = tags?.map(tagService::createTag)?.toSet() ?: publishedNotebook.tags
+
+        val updated = PublishedNotebook(
+                publishedNotebook.id,
+                publishedNotebook.author,
+                publishedNotebook.lastUpdatedTimestamp,
+                publishedNotebook.createdTimestamp,
+                title = newTitle,
+                description = newDescriptio,
+                topic = newTopic,
+                tags = tags,
+                university = newUni
+                )
+
+        return sharedNotebookRepo.save(updated)
+    }
+
 
     override fun quickPublish(userId: String, notebookId: String): PublishedNotebook {
         val author = userService.findUserById(userId)
@@ -103,6 +126,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
 
             val published = sharedNotebookRepo.save(PublishedNotebook(
+
                     author = author,
                     excludeFromSearch = true,
                     title = notebook.name,

@@ -16,6 +16,8 @@ import javax.persistence.PrePersist
 @Entity(name = "shared")
 class PublishedNotebook(
 
+        id: String = UUID.randomUUID().toString(),
+
         author: User,
 
         val lastUpdatedTimestamp: Long,
@@ -60,7 +62,9 @@ class PublishedNotebook(
         @JoinColumn(name = "topic_id")
         val topic: Topic? = null
 
-) : BaseNotebook(author = author, notes = notes) {
+) : BaseNotebook(id = id, author = author, notes = notes) {
+
+
 
     fun toResponse(user: StudyPadUserDetails): PublishedNotebookResponse {
         return PublishedNotebookResponse(
