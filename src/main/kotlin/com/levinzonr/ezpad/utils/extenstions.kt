@@ -32,4 +32,7 @@ inline fun <reified T> Gson.fromJsonFile(jsonFile: String) : T {
     return this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 }
 
-
+fun String?.contains(substring: String) : Boolean {
+    return if (this == null)  false
+    else contains(substring, true)
+}

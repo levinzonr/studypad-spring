@@ -8,6 +8,7 @@ import com.levinzonr.ezpad.domain.payload.PostSuggestionPayload
 import com.levinzonr.ezpad.domain.repositories.PublishedNotebookRepository
 import com.levinzonr.ezpad.domain.responses.SectionResponse
 import com.levinzonr.ezpad.utils.Logger
+import com.levinzonr.ezpad.utils.contains
 import com.levinzonr.ezpad.utils.first
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -96,21 +97,15 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         val newTitle = title ?: publishedNotebook.title
         val newDescriptio = description ?: publishedNotebook.description
         val newTopic = topicId?.let(topicService::findByIdOrNull) ?: publishedNotebook.topic
-        val tags = tags?.map(tagService::createTag)?.toSet() ?: publishedNotebook.tags
+        val newTags = tags?.map(tagService::createTag)?.toSet() ?: publishedNotebook.tags
 
-        val updated = PublishedNotebook(
-                publishedNotebook.id,
-                publishedNotebook.author,
-                publishedNotebook.lastUpdatedTimestamp,
-                publishedNotebook.createdTimestamp,
-                title = newTitle,
-                description = newDescriptio,
-                topic = newTopic,
-                tags = tags,
-                university = newUni
-                )
+        publishedNotebook.university = newUni
+        publishedNotebook.title = newTitle
+        publishedNotebook.description = newDescriptio
+        publishedNotebook.topic = newTopic
+        publishedNotebook.tags = newTags
 
-        return sharedNotebookRepo.save(updated)
+        return sharedNotebookRepo.save(publishedNotebook)
     }
 
 
@@ -301,7 +296,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
         return if (query.isNullOrBlank()) this
         else {
             val byName = filter { it.title.contains(query, true) }
-            val byDescription = filter { if (it.description == null) false else it.description.contains(query, true)  }
+            val byDescription = filter { it.description.contains(query)  }
             return listOf(byName, byDescription).flatten().distinctBy { it.id }
         }
 

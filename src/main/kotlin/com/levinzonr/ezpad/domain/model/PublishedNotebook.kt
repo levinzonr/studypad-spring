@@ -34,20 +34,20 @@ class PublishedNotebook(
 
 
 
-        val title: String,
+        var title: String,
 
 
         @Column(columnDefinition = "TEXT")
-        val description: String? = null,
+        var description: String? = null,
 
         notes: List<Note> = listOf(),
-        val languageCode: String? = null,
+        var languageCode: String? = null,
 
-        val excludeFromSearch: Boolean = false,
+        var excludeFromSearch: Boolean = false,
 
         @ManyToOne
         @JoinColumn(name = "university_id")
-        val university: University? = null,
+        var university: University? = null,
 
         @OneToMany(mappedBy = "notebook", cascade = [CascadeType.ALL])
         val comments: List<Comment> = listOf(),
@@ -56,11 +56,11 @@ class PublishedNotebook(
         @JoinTable(name = "shared_tags",
                 joinColumns = [JoinColumn(name = "shared_id")],
                 inverseJoinColumns = [JoinColumn(name = "tag_name")])
-        val tags: Set<Tag>,
+        var tags: Set<Tag>,
 
         @ManyToOne
         @JoinColumn(name = "topic_id")
-        val topic: Topic? = null
+        var topic: Topic? = null
 
 ) : BaseNotebook(id = id, author = author, notes = notes) {
 
