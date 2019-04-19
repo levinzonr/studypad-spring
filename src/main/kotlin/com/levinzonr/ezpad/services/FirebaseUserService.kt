@@ -181,4 +181,12 @@ class FirebaseUserService : UserService {
 
         return user
     }
+
+    override fun unregisterFirebaseToken(userId: String, token: String) {
+        val user = repository.findById(userId).orElse(null) ?: return
+        if (user.firebaseTokens.contains(token)) {
+            val withRemoved = user.firebaseTokens.toMutableList().apply { remove(token) }
+            repository.save(user.copy(firebaseTokens = withRemoved))
+        }
+    }
 }

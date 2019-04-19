@@ -50,6 +50,10 @@ class UserRestController {
         userService.registerFirebaseToken(userDetails.userId, token)
     }
 
+    @PostMapping("/notifications/unregister")
+    fun unregisterFirebaseToken(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("token") token: String) {
+        userService.unregisterFirebaseToken(userDetails.userId, token)
+    }
 
     @GetMapping("/me/notifications")
     fun getLatestNotificatios(@AuthenticationPrincipal userDetails: StudyPadUserDetails) : List<NotificationPayload> {

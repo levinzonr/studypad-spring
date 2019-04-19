@@ -25,4 +25,6 @@ interface UserService {
     fun updateUser(userId: String, displayName: String?, universityId: Long? = null, locale: String? = null) : User
 
     fun registerFirebaseToken(userId: String, token: String)
+
+    fun unregisterFirebaseToken(userId: String, token: String)
 }
