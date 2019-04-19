@@ -37,7 +37,7 @@ class UserRestController {
 
     @PostMapping("/me")
     fun updateUserUniversity(
-            @Valid @RequestBody payload: UpdateUserPayload,
+            @RequestBody payload: UpdateUserPayload,
             @AuthenticationPrincipal userDetails: StudyPadUserDetails) : UserResponse {
 
         println("Update $payload")

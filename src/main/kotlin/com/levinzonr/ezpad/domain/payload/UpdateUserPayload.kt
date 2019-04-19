@@ -7,6 +7,5 @@ data class UpdateUserPayload(
 
         val universityId: Long?,
 
-        @field:NotEmpty
         val displayName: String?
 )

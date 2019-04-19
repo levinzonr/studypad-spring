@@ -36,3 +36,4 @@ fun String?.contains(substring: String) : Boolean {
     return if (this == null)  false
     else contains(substring, true)
 }
+
