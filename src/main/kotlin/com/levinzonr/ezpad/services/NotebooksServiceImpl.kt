@@ -34,9 +34,9 @@ class NotebooksServiceImpl : NotebookService {
         return repository.findByAuthor(user)
     }
 
-    override fun createNewNotebook(name: String, user: User): Notebook {
+    override fun createNewNotebook(name: String, user: User, authoredByMe: Boolean): Notebook {
         val color = colorService.getRandomColor()
-        return repository.save(Notebook(name = name, user = user, colour = color))
+        return repository.save(Notebook(name = name, user = user, colour = color, authoredByMe = authoredByMe))
     }
 
     override fun getNotebookDetails(id: String): Notebook {
@@ -69,7 +69,7 @@ class NotebooksServiceImpl : NotebookService {
         val previouslyImported = getUserNotebooks(user).firstOrNull { it.publishedVersionId == publishedId  }
 
         if (previouslyImported == null) {
-            val notebook = createNewNotebook(published.title, user)
+            val notebook = createNewNotebook(published.title, user, authoredByMe = user.id == published.author.id)
             val state = versioningService.initLocalVersion(published, notebook)
             val notes = notesService.importNotes(published.notes, notebook)
             println("Notes saved $notes")

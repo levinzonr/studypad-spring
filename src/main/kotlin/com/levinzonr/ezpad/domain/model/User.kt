@@ -14,6 +14,7 @@ data class User(
         val displayName: String? = null,
         val photoUrl: String? = null,
 
+        val currentLocaleString :String? = null,
 
         @ElementCollection(fetch = FetchType.EAGER)
         val firebaseTokens: List<String> = arrayListOf(),

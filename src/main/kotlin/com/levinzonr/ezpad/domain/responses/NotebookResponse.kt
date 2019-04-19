@@ -8,5 +8,6 @@ data class NotebookResponse (
         val color: GradientColorResponse,
         val notesCount: Int,
         val publishedNotebookId: String?,
-        val state: VersionStateResponse?
+        val state: VersionStateResponse?,
+        val authoredByMe: Boolean
 )

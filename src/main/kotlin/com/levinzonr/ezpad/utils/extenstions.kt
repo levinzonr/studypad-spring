@@ -31,3 +31,5 @@ inline fun <reified T> Gson.fromJsonFile(jsonFile: String) : T {
     val json = File("src/main/resources/$jsonFile").inputStream().readBytes().toString(Charsets.UTF_8)
     return this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 }
+
+

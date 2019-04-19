@@ -12,9 +12,9 @@ interface UserService {
     /**
      * Creates firebase user, saves him to the database
      */
-    fun createUser(email: String, password: String, firstName: String?, lastName: String?) : User
+    fun createUser(email: String, password: String, firstName: String?, lastName: String?, locale: String) : User
 
-    fun createUser(firebaseId: String) : User
+    fun createUser(firebaseId: String, locale: String) : User
 
     /**
      * Returns a user from the database
@@ -22,7 +22,7 @@ interface UserService {
     fun findUserById(id: String) : User?
 
 
-    fun updateUser(userId: String, displayName: String?, universityId: Long? = null) : User
+    fun updateUser(userId: String, displayName: String?, universityId: Long? = null, locale: String? = null) : User
 
     fun registerFirebaseToken(userId: String, token: String)
 }

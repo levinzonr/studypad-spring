@@ -93,6 +93,7 @@ class PublishedNotebook(
                 languageCode = languageCode,
                 versionState = state?.toResponse()!!,
                 authoredByMe = author.id == user.id,
+                excludedFromSearch = excludeFromSearch,
                 university = university?.toResponse()
         )
     }

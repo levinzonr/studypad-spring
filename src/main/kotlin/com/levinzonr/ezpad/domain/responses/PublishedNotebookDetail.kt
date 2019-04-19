@@ -16,6 +16,7 @@ data class PublishedNotebookDetail(
         val lastUpdate: Long,
         val languageCode: String?,
         var versionState: VersionStateResponse,
+        val excludedFromSearch: Boolean,
         val authoredByMe: Boolean,
         val university: UniversityResponse? = null
 

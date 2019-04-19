@@ -7,10 +7,7 @@ import com.levinzonr.ezpad.services.AuthenticationService
 import com.levinzonr.ezpad.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.query.Param
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
@@ -26,20 +23,21 @@ class AuthenticationController {
 
 
     @PostMapping("/register")
-    fun createUser(@RequestBody createUserPayload: CreateUserPayload) : FirebaseTokenResponse {
+    fun createUser(@RequestHeader("Locale") locale: String, @RequestBody createUserPayload: CreateUserPayload) : FirebaseTokenResponse {
         val user = userService.createUser(
                 createUserPayload.email!!,
                 createUserPayload.password!!,
                 createUserPayload.firstName,
-                createUserPayload.lastName)
+                createUserPayload.lastName,
+                locale)
 
         return FirebaseTokenResponse(authenticationService.createCustomToken(user.id!!), user.toResponse())
     }
 
     @PostMapping("/login")
-    fun loginUsingFirebaseToken(@Param ("token") token: String) : UserResponse {
+    fun loginUsingFirebaseToken(@RequestHeader("Locale") locale: String, @Param ("token") token: String) : UserResponse {
         val uuid  = authenticationService.userIdFromToken(token)
-        val user = userService.findUserById(uuid) ?: userService.createUser(uuid)
+        val user = userService.findUserById(uuid) ?: userService.createUser(uuid, locale = locale)
         return user.toResponse()
     }
 

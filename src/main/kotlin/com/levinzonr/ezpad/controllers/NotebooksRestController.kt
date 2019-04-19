@@ -45,7 +45,7 @@ class NotebooksRestController {
     fun postNewNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                         @Valid @RequestBody createNotebookPayload: CreateNotebookPayload) : NotebookResponse {
         val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
-        return notebooksService.createNewNotebook(createNotebookPayload.name, user).toResponse()
+        return notebooksService.createNewNotebook(createNotebookPayload.name, user, true).toResponse()
     }
 
 

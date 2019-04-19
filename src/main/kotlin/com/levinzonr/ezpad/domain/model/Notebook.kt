@@ -7,9 +7,9 @@ import java.util.*
 
 @Entity
 class Notebook(
-
         val name: String,
         val colour: String? = null,
+        val authoredByMe: Boolean,
 
         id: String = UUID.randomUUID().toString(),
 
@@ -18,8 +18,6 @@ class Notebook(
         user: User,
 
         notes: List<Note> = listOf(),
-
-
 
         val publishedVersionId: String? = null
 ) : BaseNotebook(id = id, author = user, notes = notes, state = state) {
@@ -31,7 +29,8 @@ class Notebook(
                         color = colour.toGradient(),
                         notesCount = notes.count(),
                         publishedNotebookId = publishedVersionId,
-                        state = state?.toResponse()
+                        state = state?.toResponse(),
+                        authoredByMe = authoredByMe
 
                 )
         }
@@ -40,6 +39,7 @@ class Notebook(
                 return Notebook(name ?: this.name,
                         colour ?: this.colour,
                         notes = notes ?: this.notes,
+                        authoredByMe = this.authoredByMe,
                         user = this.author, id = id,
                         state = state,
                         publishedVersionId = publishedVersionId ?: this.publishedVersionId)

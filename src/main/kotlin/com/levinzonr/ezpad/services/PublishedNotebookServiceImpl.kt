@@ -109,6 +109,7 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
                     lastUpdatedTimestamp = Date().time,
                     createdTimestamp = Date().time,
                     university = null,
+                    languageCode = author.currentLocaleString,
                     tags = setOf()
             ))
 

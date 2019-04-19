@@ -8,7 +8,7 @@ interface NotebookService {
 
     fun getUserNotebooks(user: User) : List<Notebook>
 
-    fun createNewNotebook(name: String, user: User) : Notebook
+    fun createNewNotebook(name: String, user: User, authoredByMe: Boolean) : Notebook
 
     fun getNotebookDetails(id: String) : Notebook
 

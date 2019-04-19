@@ -109,7 +109,7 @@ class FirebaseUserService : UserService {
             "  }\n"
 
 
-    override fun createUser(email: String, password: String, firstName: String?, lastName: String?): User {
+    override fun createUser(email: String, password: String, firstName: String?, lastName: String?, locale: String): User {
         val displayName = if ("${firstName ?: ""} ${lastName
                         ?: ""}".isBlank()) "Unknown user" else "$firstName $lastName"
         println("Create from firebase reqyest")
@@ -130,11 +130,11 @@ class FirebaseUserService : UserService {
 
         val userRecord = auth.createUserAsync(request).get()
 
-        val user = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl)
+        val user = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl, locale)
         return repository.save(user)
     }
 
-    override fun createUser(firebaseId: String): User {
+    override fun createUser(firebaseId: String, locale: String): User {
         val userRecord = auth.getUser(firebaseId)
         println("Create from firebase recoed")
         val names = userRecord.displayName.split(" ")
@@ -144,10 +144,10 @@ class FirebaseUserService : UserService {
         val nb = Gson().fromJson<ExportedNotebook>(firstNotebookString)
 
 
-        val dbUser = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl)
+        val dbUser = User(userRecord.uid, userRecord.email, firstName, lastName, userRecord.displayName, userRecord.photoUrl, locale)
         return repository.save(dbUser).apply { isNewUser = true }.also {
 
-            val created = notebookService.createNewNotebook(nb.name, it)
+            val created = notebookService.createNewNotebook(nb.name, it, true)
             nb.notes.entries.map { it.value }.forEach {
                 Logger.log(this, "Crete: $it")
                 notesService.createNote(it.title, it.content, created) }
@@ -168,14 +168,16 @@ class FirebaseUserService : UserService {
         repository.save(updated)
     }
 
-    override fun updateUser(userId: String, displayName: String?, universityId: Long?) : User {
+    override fun updateUser(userId: String, displayName: String?, universityId: Long?, locale: String?) : User {
         var user = findUserById(userId) ?: throw NotFoundException.Builder(User::class).buildWithId(userId)
         universityId?.let { id ->
             val uni = universityService.findById(id)
             user = repository.save(user.copy(university = uni))
         }
+
+        val locale = locale ?: user.currentLocaleString
         val name = displayName ?: user.displayName
-        user = repository.save(user.copy(displayName = name))
+        user = repository.save(user.copy(displayName = name, currentLocaleString = locale))
 
         return user
     }
