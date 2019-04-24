@@ -93,17 +93,23 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
     override fun updatePublishNotebook(notebookId: String, userId: String, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>?, universityID: Long?): PublishedNotebook {
         val publishedNotebook = getPublishedNotebookById(notebookId).also { it.checkWritePolicy(userId) }
+        Logger.log(this, "$publishedNotebook")
         val newUni = universityID?.let(universityService::findByIdOrNull) ?: publishedNotebook.university
         val newTitle = title ?: publishedNotebook.title
         val newDescriptio = description ?: publishedNotebook.description
         val newTopic = topicId?.let(topicService::findByIdOrNull) ?: publishedNotebook.topic
         val newTags = tags?.map(tagService::createTag)?.toSet() ?: publishedNotebook.tags
+        Logger.log(this, "new$newUni, $newTags, $newTopic")
 
         publishedNotebook.university = newUni
         publishedNotebook.title = newTitle
         publishedNotebook.description = newDescriptio
         publishedNotebook.topic = newTopic
-        publishedNotebook.tags = newTags
+        publishedNotebook.tags = publishedNotebook.tags.toMutableSet().apply { addAll(newTags) }
+
+        publishedNotebook.excludeFromSearch = false
+
+        Logger.log(this, "Hello ${publishedNotebook.tags}")
 
         return sharedNotebookRepo.save(publishedNotebook)
     }

@@ -41,7 +41,7 @@ class Notebook(
                         notes = notes ?: this.notes,
                         authoredByMe = this.authoredByMe,
                         user = this.author, id = id,
-                        state = state,
+                        state = state ?: this.state,
                         publishedVersionId = publishedVersionId ?: this.publishedVersionId)
         }
 }

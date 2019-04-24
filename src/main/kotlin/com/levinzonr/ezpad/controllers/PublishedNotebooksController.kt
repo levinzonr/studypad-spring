@@ -9,6 +9,7 @@ import com.levinzonr.ezpad.domain.payload.UpdatePublishedNotebookPayload
 import com.levinzonr.ezpad.domain.responses.*
 import com.levinzonr.ezpad.security.StudyPadUserDetails
 import com.levinzonr.ezpad.services.*
+import com.levinzonr.ezpad.utils.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -60,6 +61,7 @@ class PublishedNotebooksController {
     fun updatePublishedNotebook(@AuthenticationPrincipal details: StudyPadUserDetails,
                                 @RequestBody payload: UpdatePublishedNotebookPayload,
                                 @PathVariable("id") id: String): PublishedNotebookDetail {
+        Logger.log(this, "$payload")
         return service.updatePublishNotebook(id, details.userId, payload.languageCode, payload.title, payload.description, payload.topicId, payload.tags, payload.universityId)
                 .toDetailedResponse(details)
     }
