@@ -81,6 +81,11 @@ class NotebooksRestController {
         return notebooksService.createFromPublished(id, userDetails.userId).toResponse()
     }
 
+    @PostMapping("/copy")
+    fun importNotebookAsCopy(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") id: String) : NotebookResponse {
+        return notebooksService.createLocalCopy(id, userId = userDetails.userId).toResponse()
+    }
+
     @GetMapping("/{id}/version")
     fun getVersionState(@PathVariable("id") id: String) : VersionState? {
         return notebooksService.getNotebookDetails(id).state

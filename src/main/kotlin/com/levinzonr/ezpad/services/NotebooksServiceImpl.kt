@@ -84,6 +84,15 @@ class NotebooksServiceImpl : NotebookService {
 
     }
 
+    override fun createLocalCopy(publishedId: String, userId: String): Notebook {
+        val user = userService.findUserById(userId) ?: throw NotFoundException.buildWithId<User>(userId)
+        val published = publishedRepo.getPublishedNotebookById(publishedId)
+        val name = "${published.title} (Copy)"
+        val notebook = createNewNotebook(name, user, true)
+        published.notes.forEach { notesService.createNote(it.title, it.content, notebook)}
+        return notebook
+    }
+
     override fun getAll(): List<Notebook> {
         return repository.findAll().toList()
     }

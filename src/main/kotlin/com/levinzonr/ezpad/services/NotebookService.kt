@@ -22,5 +22,7 @@ interface NotebookService {
 
     fun createFromPublished(publishedId: String, userId: String) : Notebook
 
+    fun createLocalCopy(publishedId: String, userId: String) : Notebook
+
     fun getAll() : List<Notebook>
 }
