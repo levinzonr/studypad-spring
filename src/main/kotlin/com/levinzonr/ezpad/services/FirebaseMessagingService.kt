@@ -137,7 +137,7 @@ class FirebaseMessagingService : MessageService {
                     userInfo = userInfo,
                     type = type,
                     userId = "")
-            val tokens = recepients.map { it.firebaseTokens }.flatten()
+            val tokens = recepients.mapNotNull { it.id }
             val messages = buildMessages(tokens)
             return NotificationHolder(domainNotification, messages)
         }
@@ -158,7 +158,7 @@ class FirebaseMessagingService : MessageService {
             val notificationString = Gson().toJson(notificationPayload)
             return list.map {
                 Message.builder()
-                        .setToken(it)
+                        .setTopic("user_$it")
                         .putData("payload", notificationString)
                         .putData("showAsNotification", showAsNotification.toString())
                         .build()

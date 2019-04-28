@@ -2,8 +2,12 @@ package com.levinzonr.ezpad.controllers
 
 import com.levinzonr.ezpad.domain.model.Topic
 import com.levinzonr.ezpad.domain.payload.TopicPayload
+import com.levinzonr.ezpad.domain.payload.UserFeedbackPayload
+import com.levinzonr.ezpad.security.StudyPadUserDetails
+import com.levinzonr.ezpad.services.FeedbackService
 import com.levinzonr.ezpad.services.TopicService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,6 +20,9 @@ class ConfigurationController {
 
     @Autowired
     private lateinit var tagService: TopicService
+
+    @Autowired
+    private lateinit var feedbackService: FeedbackService
 
 
     @PostMapping("/topics")
@@ -37,4 +44,12 @@ class ConfigurationController {
     fun getTopics() : List<Topic> {
         return topicService.getTopics()
     }
+
+
+    @PostMapping("/feedback")
+    fun postUserFeedback(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestBody payload: UserFeedbackPayload) {
+        feedbackService.saveFeedback(userDetails.userId, payload)
+    }
+
+
 }
