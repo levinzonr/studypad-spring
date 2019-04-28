@@ -1,9 +1,7 @@
 package com.levinzonr.ezpad.services
 
 import com.levinzonr.ezpad.domain.errors.NotFoundException
-import com.levinzonr.ezpad.domain.model.Notebook
-import com.levinzonr.ezpad.domain.model.User
-import com.levinzonr.ezpad.domain.model.VersionState
+import com.levinzonr.ezpad.domain.model.*
 import com.levinzonr.ezpad.domain.repositories.NotebooksRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -77,7 +75,15 @@ class NotebooksServiceImpl : NotebookService {
 
         } else {
             // Already improted, replace all notes and reset state
+
+            val mods = versioningService.getModifications(previouslyImported.id)
+                    .mapNotNull { it as? Modification.Added }
+
             val state = versioningService.initLocalVersion(published, previouslyImported)
+            mods.forEach {
+                versioningService.modify(state, NoteBody(it.noteId, it.title, it.content), ModificationType.ADDED)
+            }
+
             val notes = notesService.importNotes(published.notes, previouslyImported)
             return repository.save(previouslyImported.copy(state = state, notes = notes))
         }

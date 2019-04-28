@@ -50,7 +50,7 @@ class NotesServiceImpl : NotesService {
 
     override fun importNotes(notes: List<Note>, notebook: Notebook): List<Note> {
         // Clear notes
-        notesRepository.findByNotebookId(notebook.id).forEach { notesRepository.deleteById(it.id!!) }
+        notesRepository.findByNotebookId(notebook.id).filter { it.sourceId != null }.forEach { notesRepository.deleteById(it.id!!) }
         return notes.map { notesRepository.save(Note(title = it.title, content = it.content, notebook = notebook, sourceId = it.id)) }
     }
 
