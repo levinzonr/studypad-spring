@@ -1,12 +1,11 @@
 package com.levinzonr.ezpad.domain.model
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.JoinColumn
-import javax.persistence.OneToOne
+import javax.persistence.*
 
 @Entity
 data class Feedback(
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
 
         @OneToOne
