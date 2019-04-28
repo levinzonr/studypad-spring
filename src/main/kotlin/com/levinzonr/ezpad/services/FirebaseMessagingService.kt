@@ -151,6 +151,7 @@ class FirebaseMessagingService : MessageService {
                     userId = user.id!!,
                     read = false,
                     notebookInfo = notebookInfo,
+                    userInfo = userInfo,
                     type = type)
         }
 
