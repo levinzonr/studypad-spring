@@ -102,7 +102,8 @@ class VersioningServiceImpl : VersioningService {
     }
 
     override fun getModifications(notebookId: String): List<Modification> {
-        return modificationRepository.findAll().also { println("Find ALL: $it.") }.filter { it.state.notebook.id == notebookId }
+        return modificationRepository.findAll().also { println("Find ALL: $it.") }.also {
+        }.filter { it.state.notebook?.id == notebookId }
     }
 
     override fun getModificationsByIds(list: List<Long>) : List<Modification> {
