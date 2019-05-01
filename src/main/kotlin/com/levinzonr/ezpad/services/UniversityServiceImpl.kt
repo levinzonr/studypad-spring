@@ -6,6 +6,7 @@ import com.levinzonr.ezpad.domain.model.ExportedUniversity
 import com.levinzonr.ezpad.domain.model.University
 import com.levinzonr.ezpad.domain.model.User
 import com.levinzonr.ezpad.domain.repositories.UniversityRepository
+import com.levinzonr.ezpad.utils.first
 import com.levinzonr.ezpad.utils.fromJsonFile
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -27,6 +28,8 @@ class UniversityServiceImpl : UniversityService {
                 all.filter { it.fullName.contains(query, true) }.toList(),
                 all.filter { it.aliases().any {it.contains(query, true)} }
         ).flatten().distinctBy { it.id }
+                .sortedByDescending { it.students.count() }
+                .first(30)
 
     }
 
