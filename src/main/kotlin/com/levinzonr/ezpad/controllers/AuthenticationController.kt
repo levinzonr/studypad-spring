@@ -31,14 +31,14 @@ class AuthenticationController {
                 createUserPayload.lastName,
                 locale)
 
-        return FirebaseTokenResponse(authenticationService.createCustomToken(user.id!!), user.toResponse())
+        return FirebaseTokenResponse(authenticationService.createCustomToken(user.id!!), user.toResponse(0))
     }
 
     @PostMapping("/login")
     fun loginUsingFirebaseToken(@RequestHeader("Locale") locale: String, @Param ("token") token: String) : UserResponse {
         val uuid  = authenticationService.userIdFromToken(token)
         val user = userService.findUserById(uuid) ?: userService.createUser(uuid, locale = locale)
-        return user.toResponse()
+        return user.toResponse(0)
     }
 
 

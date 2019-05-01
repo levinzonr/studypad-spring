@@ -29,10 +29,11 @@ data class User(
         @Enumerated(EnumType.STRING)
         val roles: Set<UserRole> = setOf(UserRole.USER)) {
 
+
         @Transient
         var isNewUser: Boolean = false
 
-    fun toResponse(): UserResponse {
+    fun toResponse(notifications: Int): UserResponse {
         return UserResponse(
                 uuid = id!!,
                 email = email,
@@ -41,7 +42,8 @@ data class User(
                 displayName = displayName,
                 university = university?.toResponse(),
                 photoUrl = photoUrl,
-                isNewUser = isNewUser
+                isNewUser = isNewUser,
+                unreadNotifications = notifications
         )
     }
 

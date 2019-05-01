@@ -11,6 +11,8 @@ interface UniversityService {
 
     fun createUniversity(fullName: String, shortName: String, aliases: List<String>? = null) : University
 
+    fun createTempUniversity(fullName: String) : University
+
     fun getStudentsFromUniversity(uniId: Long) : List<User>
 
     fun findById(uniId: Long) : University

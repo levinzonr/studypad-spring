@@ -88,4 +88,8 @@ class UniversityServiceImpl : UniversityService {
         return joinToString(";")
     }
 
+    override fun createTempUniversity(fullName: String): University {
+        val uni = University(fullName = fullName, country = "Not Specified", validated = false, countryCode = "ERR")
+        return universityRepository.save(uni)
+    }
 }

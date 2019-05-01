@@ -34,7 +34,10 @@ class CommentServiceImpl : CommentService {
     }
 
     override fun deleteComment(commentId: Long) {
-        repo.delete(findComment(commentId))
+        val comment  = findComment(commentId)
+        repo.delete(comment).also {
+            messageService.notifyCommentUpdate(comment.notebook)
+        }
     }
 
     override fun findComment(commentId: Long): Comment {
@@ -43,6 +46,7 @@ class CommentServiceImpl : CommentService {
 
     override fun updateComment(commentId: Long, comment: String): Comment {
         val oldComment = findComment(commentId)
-        return repo.save(oldComment.copy(content = comment, edited = true))
+        return repo.save(oldComment.copy(content = comment, edited = true)).also {
+            messageService.notifyCommentUpdate(oldComment.notebook) }
+        }
     }
-}

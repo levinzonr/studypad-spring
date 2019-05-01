@@ -13,12 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/university")
 class UniversityRestController {
-    @CrossOrigin(origins = ["http://localhost:3000"])
-    @ResponseStatus(HttpStatus.OK)
-    @RequestMapping("/find")
-    fun test() {
-        println("tsts")
-    }
+
 
     @Autowired
     private lateinit var universityService: UniversityService
@@ -46,12 +41,9 @@ class UniversityRestController {
     }
 
 
-    @PostMapping
-    fun createUniversity(@RequestBody createUniversityPayload: CreateUniversityPayload) : UniversityResponse {
-        if (createUniversityPayload.fullName == null || createUniversityPayload.shortName == null) {
-            throw InvalidPayloadException()
-        } else {
-            return universityService.createUniversity(createUniversityPayload.fullName, createUniversityPayload.shortName, createUniversityPayload.aliases.toList()).toResponse()
-        }
+
+    @PostMapping("/tmp")
+    fun createTemporaryUniversity(@RequestParam(name = "name") name: String) : UniversityResponse {
+        return universityService.createTempUniversity(name).toResponse()
     }
 }

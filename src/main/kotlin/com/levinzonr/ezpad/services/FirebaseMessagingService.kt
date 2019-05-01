@@ -55,6 +55,9 @@ class FirebaseMessagingService : MessageService {
     }
 
 
+    override fun notifyCommentUpdate(publishedNotebook: PublishedNotebook) {
+        messageService.send(Message.builder().setTopic("comments_${publishedNotebook.id}").build())
+    }
 
     override fun notifyOnSuggestionAdded(publishedNotebook: PublishedNotebook) {
         val holder = Builder(publishedNotebook)

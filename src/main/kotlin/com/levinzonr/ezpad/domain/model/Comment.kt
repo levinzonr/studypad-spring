@@ -29,7 +29,7 @@ data class Comment(
 
         fun toResponse() : CommentResponse {
                 return CommentResponse(
-                        author = author.toResponse(),
+                        author = author.toResponse(0),
                         content = content,
                         dateCreated = dateCreated,
                         id = id!!,

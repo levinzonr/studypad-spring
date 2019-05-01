@@ -8,6 +8,7 @@ data class UserResponse(
         val lastName: String?,
         val displayName: String?,
         val university: UniversityResponse?,
+        val unreadNotifications: Int,
         val photoUrl: String?,
         val isNewUser: Boolean = false
 )

@@ -14,6 +14,8 @@ data class University(
         val country: String,
         val countryCode: String,
 
+        val validated: Boolean = true,
+
         @OneToMany(mappedBy = "university")
         val students: Set<User> = setOf(),
 
@@ -49,6 +51,6 @@ data class ExportedUniversity(
 
     fun toDomain() : University {
         val alisase = domains.plus(web_pages).joinToString(";")
-        return University(null, name, country, alpha_two_code, setOf(), aliases = alisase)
+        return University(null, name, country, alpha_two_code, true, setOf(), aliases = alisase)
     }
 }

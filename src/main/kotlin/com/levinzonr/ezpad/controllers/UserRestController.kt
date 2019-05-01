@@ -24,7 +24,8 @@ class UserRestController {
 
     @GetMapping("/me")
     fun getCurrentUser(@AuthenticationPrincipal details: StudyPadUserDetails): UserResponse {
-        return userService.findUserById(details.userId)!!.toResponse()
+        val notificaitons = messageService.getUserNotifications(details.userId, true).count()
+        return userService.findUserById(details.userId)!!.toResponse(notificaitons)
     }
 
 
@@ -32,7 +33,8 @@ class UserRestController {
 
     @GetMapping("/{userId}")
     fun getUserById(@PathVariable("userId") userId: String): UserResponse {
-        return userService.findUserById(userId)!!.toResponse()
+
+        return userService.findUserById(userId)!!.toResponse(0)
     }
 
     @PostMapping("/me")
@@ -41,7 +43,7 @@ class UserRestController {
             @AuthenticationPrincipal userDetails: StudyPadUserDetails) : UserResponse {
 
         println("Update $payload")
-        return userService.updateUser(userDetails.userId, payload.displayName, payload.universityId).toResponse()
+        return userService.updateUser(userDetails.userId, payload.displayName, payload.universityId).toResponse(0)
 
     }
 
