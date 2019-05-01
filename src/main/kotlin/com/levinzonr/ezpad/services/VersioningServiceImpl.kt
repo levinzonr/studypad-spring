@@ -55,7 +55,8 @@ class VersioningServiceImpl : VersioningService {
                 val modification = when (type) {
                     ModificationType.ADDED -> Modification.Added(noteId = note.id, title = note.title
                             ?: "", content = note.content ?: "", state = state, user = author)
-                    ModificationType.UPDATED -> Modification.Updated(note.sourceId!!, note.title ?: "", author, note.content
+                    ModificationType.UPDATED -> if (note.sourceId == null )  Modification.Added(noteId = note.id, title = note.title
+                            ?: "", content = note.content ?: "", state = state, user = author) else  Modification.Updated(note.sourceId, note.title ?: "", author, note.content
                             ?: "", state)
                     else -> null
                 }
