@@ -28,7 +28,6 @@ class UniversityServiceImpl : UniversityService {
                 all.filter { it.fullName.contains(query, true) }.toList(),
                 all.filter { it.aliases().any {it.contains(query, true)} }
         ).flatten().distinctBy { it.id }
-                .sortedByDescending { it.students.count() }
                 .first(30)
 
     }
