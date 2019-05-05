@@ -26,7 +26,6 @@ class TagServiceImpl : TagService {
     }
 
     override fun init() {
-        val strings: List<String> = listOf("cbut", "c++", "commandore65", "hello", "spring", "s", "c#", "bipa1", "bipa2", "bipa3", "pa2", "java")
-        strings.forEach { createTag(it) }
+
     }
 }

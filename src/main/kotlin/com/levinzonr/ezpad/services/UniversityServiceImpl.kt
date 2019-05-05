@@ -79,10 +79,12 @@ class UniversityServiceImpl : UniversityService {
     }
 
     override fun init() {
+        if (universityRepository.findAll().count() == 0) {
         universityRepository.deleteAll()
         val unis = Gson().fromJsonFile<List<ExportedUniversity>>("source_unis.json")
         val saveUnist = unis.map { it.toDomain() }
         universityRepository.saveAll(saveUnist)
+       }
     }
 
 

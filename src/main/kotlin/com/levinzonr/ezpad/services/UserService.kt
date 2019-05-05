@@ -27,4 +27,6 @@ interface UserService {
     fun registerFirebaseToken(userId: String, token: String)
 
     fun unregisterFirebaseToken(userId: String, token: String)
+
+    fun hasAdminPriveleges(userId: String) : Boolean
 }

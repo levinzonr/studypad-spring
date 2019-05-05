@@ -43,7 +43,6 @@ class TopicServiceImpl : TopicService {
     }
 
     override fun init() {
-        val topics = Gson().fromJsonFile<List<Topic>>("source_topics.json")
-        repo.saveAll(topics)
+
     }
 }
