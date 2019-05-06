@@ -60,9 +60,9 @@ dependencies {
 	implementation 'com.google.firebase:firebase-admin:6.6.0'
 
 
-	runtimeOnly('com.h2database:h2')
+//	runtimeOnly('com.h2database:h2')
 
-	// runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '9.4-1206-jdbc42'
+	runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '9.4-1206-jdbc42'
 	implementation "org.springframework.boot:spring-boot-configuration-processor"
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
