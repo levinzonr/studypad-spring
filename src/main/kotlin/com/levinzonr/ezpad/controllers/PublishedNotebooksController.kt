@@ -66,6 +66,12 @@ class PublishedNotebooksController {
                 .toDetailedResponse(details)
     }
 
+    @PatchMapping("/{id}/hide")
+    fun excludeFromSearch(@AuthenticationPrincipal details: StudyPadUserDetails,
+                                @PathVariable("id") id: String) {
+        service.hide(details.userId, id)
+    }
+
     @PostMapping("/quick")
     fun quickShare(@AuthenticationPrincipal userDetails: StudyPadUserDetails, @RequestParam("id") notebookId: String): PublishedNotebookResponse {
         return service.quickPublish(userId = userDetails.userId, notebookId = notebookId).toResponse(userDetails)

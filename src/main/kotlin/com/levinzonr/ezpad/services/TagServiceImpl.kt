@@ -20,7 +20,7 @@ class TagServiceImpl : TagService {
         println(all)
         val filtered = all
                 .also { it.forEach { println("${it.name} contains $query == ${it.name.contains(query, true)}")  }}
-                .filter { it.name.contains(query, true) }
+                .filter { it.name.contains(query, true) }.sortedBy { it.name }
         println(filtered)
         return filtered
     }

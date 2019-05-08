@@ -19,7 +19,7 @@ class TopicServiceImpl : TopicService {
     }
 
     override fun getTopics(): List<Topic> {
-        return repo.findAll().toList()
+        return repo.findAll().toList().sortedBy { it.name }
     }
 
     override fun findById(id: Long): Topic {

@@ -65,11 +65,15 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
             val domainTags = tags.map { tagService.createTag(it) }.toSet()
 
+            val desc = if (author.roles.contains(UserRole.ADMIN)) {
+                "${description ?: ""}\n• Provided by StudyPad • "
+            } else description
+
             val published = sharedNotebookRepo.save(PublishedNotebook(
                     author = author,
                     lastUpdatedTimestamp = Date().time,
                     createdTimestamp = Date().time,
-                    description = description,
+                    description = desc,
                     title = title ?: notebook.name,
                     university = uni,
                     languageCode = languageCode,
@@ -89,6 +93,13 @@ class PublishedNotebookServiceImpl : PublishedNotebookService {
 
             return sharedNotebookRepo.save(published)
         }
+    }
+
+    override fun hide(userId: String, notebookId: String) {
+        val publishedNotebook = getPublishedNotebookById(notebookId).also { it.checkWritePolicy(userId) }
+        publishedNotebook.excludeFromSearch = true
+        sharedNotebookRepo.save(publishedNotebook)
+
     }
 
     override fun updatePublishNotebook(notebookId: String, userId: String, languageCode: String?, title: String?, description: String?, topicId: Long?, tags: Set<String>?, universityID: Long?): PublishedNotebook {

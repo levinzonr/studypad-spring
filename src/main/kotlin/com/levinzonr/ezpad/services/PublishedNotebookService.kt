@@ -46,6 +46,8 @@ interface PublishedNotebookService {
 
     fun getAll() : List<PublishedNotebook>
 
+    fun hide(userId: String, notebookId: String)
+
     fun getSubscribers(publishedNotebook: PublishedNotebook) : List<User>
 
 }
