@@ -36,6 +36,7 @@ class NotebooksRestController {
 
     @GetMapping
     fun getCurrentUserNotebooks(@AuthenticationPrincipal details: StudyPadUserDetails): List<NotebookResponse> {
+
         val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         return notebooksService.getUserNotebooks(user).map { it.toResponse() }
     }
@@ -46,6 +47,7 @@ class NotebooksRestController {
                         @Valid @RequestBody createNotebookPayload: CreateNotebookPayload) : NotebookResponse {
         val user = userService.findUserById(details.userId) ?: throw NotFoundException.Builder(User::class).buildWithId(details.id)
         return notebooksService.createNewNotebook(createNotebookPayload.name, user, true).toResponse()
+
     }
 
 
